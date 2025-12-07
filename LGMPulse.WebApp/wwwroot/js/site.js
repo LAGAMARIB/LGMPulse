@@ -1,4 +1,6 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Registrar Service Worker
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js")
+        .catch(err => console.error("Erro ao registrar Service Worker:", err));
+}
 
-// Write your JavaScript code.

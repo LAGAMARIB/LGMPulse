@@ -1,49 +1,660 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - LGMPulse.WebApp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/LGMPulse.WebApp.styles.css" asp-append-version="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - LAGAMA</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#E6B44A">
+    <link rel="apple-touch-icon" href="/icons/pulse.png">
+
+    <!-- FONTES -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+
+    <!-- FontAwesome -->
+    <link href="/Content/fa/css/all.css" rel="stylesheet" />
+    <link href="/Content/fa/css/font-awesome.min.css" rel="stylesheet" />
+
+    <!-- Select2 -->
+    <link href="/Content/select2.min.css" rel="stylesheet" />
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="/css/site.css" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/Scripts/jquery.mask.min.js"></script>
+    <script src="/Scripts/jquery-ui.min.js"></script>
+    <script src="/Scripts/select2.min.js"></script>
+    <script src="/Scripts/moment.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <!-- Scripts personalizados -->
+    <script src="/js/site.js" asp-append-version="true"></script>
+    <script src="/js/select2.js"></script>
+
+    <style>
+        :root {
+            --footer-height: 70px;
+            --header-height: 32px;
+            --pulse-bg-start: #e7e1d5;
+            --pulse-bg-end: #3d2f00;
+            --insight-text: #3d2f00;
+            --footer-bg: #CCCCCC;
+            --main-header-bar: #3d2f00;
+            --title-color: #e7e1d5;
+        }
+
+        .mainContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* ocupa exatamente a tela */
+            overflow: hidden; /* impede qualquer scroll */
+            background: transparent;
+        }
+
+        .MainHeader {
+            display: flex;
+            background-color: var(--main-header-bar);
+            color: var(--title-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid var(--input-border-color);
+        }
+
+            .MainHeader h5 {
+                margin: 0;
+                font-weight: bold;
+                color: var(--main-header-title);
+            }
+
+        .user-menu {
+            position: absolute;
+            top: 4px;
+            right: 15px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+            .user-menu .avatar-icon {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 18px;
+            }
+
+            .user-menu .dropdown-menu .dropdown-header {
+                font-weight: bold;
+                padding: 5px 20px;
+                color: var(--dropdown-item-color);
+                border-bottom: 1px solid var(--dropdown-item-color);
+                text-align: center;
+                width: 100%;
+            }
+
+        .dropdown-menu {
+            min-width: 150px;
+            padding: 0;
+            box-shadow: 0px 4px 6px var(--dropdown-shadow);
+            border: none;
+            border-radius: 5px;
+            background-color: var(--light-color-bar);
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            font-weight: bold;
+            color: var(--dropdown-item-color);
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+            .dropdown-item:hover {
+                background-color: var(--dropdown-item-hover-bg);
+                color: var(--btn-success-color);
+            }
+
+            .dropdown-item i {
+                margin-right: 8px;
+            }
+
+        .childContainer {
+            flex: 1;
+            padding: 8px;
+            overflow-y: auto;
+            background: transparent;
+            padding-bottom: var(--footer-height);
+            padding-top: var(--header-height);
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--footer-bg);
+            border-top: 1px solid var(--input-border-color);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--footer-height);
+            padding-top: 15px;
+            z-index: 100;
+        }
+
+            footer a {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 0.7rem;
+                color: var(--color-link);
+                text-decoration: none;
+                transition: color 0.3s ease;
+                z-index: 110;
+            }
+
+                footer a i {
+                    font-size: 1.2rem;
+                    margin-bottom: 4px;
+                }
+
+                footer a:hover {
+                    color: var(--color-link-hover);
+                }
+
+                footer a.disabled {
+                    pointer-events: none;
+                    opacity: 0.3;
+                }
+
+        .allmodal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background-image: url('/img/spin02.gif');
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            background-color: var(--modal-overlay-bg);
+            backdrop-filter: blur(3px);
+        }
+
+        body.loading .allmodal {
+            overflow: hidden;
+            display: block;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        #userDropdown {
+            color: var(--main-header-title);
+        }
+
+            #userDropdown::after {
+                display: none;
+            }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+        }
+
+        .custom-toast {
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 8px 14px var(--toast-shadow);
+            opacity: 1;
+            transition: opacity 1s ease-out, transform 0.3s ease;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+            .custom-toast.success {
+                color: var(--toast-success-text);
+                background-color: var(--toast-success-bg);
+            }
+
+            .custom-toast.warning {
+                color: var(--toast-warning-text);
+                background-color: var(--toast-warning-bg);
+            }
+
+            .custom-toast.error {
+                color: var(--toast-error-text);
+                background-color: var(--toast-error-bg);
+            }
+
+            .custom-toast.fade-out {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+        .mainFooter a,
+        .mainFooter a:hover,
+        .mainFooter a:focus,
+        .mainFooter a:active {
+            text-decoration: none;
+        }
+
+        button, .btn, .btn-new-record,
+        .itemCard, .card, .tabButton,
+        .mainFooter a {
+            transition: all 0.15s ease-in-out;
+        }
+
+            /* Efeito de toque/click (mobile e desktop) */
+            button:active, .btn:active, .btn-new-record:active,
+            .itemCard:active, .card:active, .tabButton:active,
+            .mainFooter a:active {
+                transform: scale(0.97);
+                opacity: 0.85;
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15) inset;
+            }
+
+            /* Efeito de foco (navegação por teclado ou tab) */
+            button:focus-visible, .btn:focus-visible, .tabButton:focus-visible,
+            .itemCard:focus-visible, .mainFooter a:focus-visible {
+                outline: none;
+                box-shadow: 0 0 0 2px var(--cor-icone-acao-hover);
+                transform: scale(0.99);
+            }
+
+            /* Tab pressionado */
+            .tabButton:active {
+                background-color: var(--cor-fundo-botao);
+                color: #fff;
+            }
+
+            /* Botão flutuante animado */
+            .btn-new-record:active {
+                background-color: var(--cor-icone-acao-hover);
+                color: #fff;
+            }
+
+            /* Rodapé com leve realce no toque */
+            .mainFooter a:active {
+                filter: brightness(1.2);
+                transform: translateY(1px);
+            }
+
+        .close-icon {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            opacity: 0.85;
+            transition: all 0.15s ease-in-out;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
+        }
+
+            /* Ao passar o mouse (desktop) */
+            .close-icon:hover {
+                transform: scale(1.15) rotate(5deg);
+                opacity: 1;
+            }
+
+            /* Ao clicar ou tocar (mobile e desktop) */
+            .close-icon:active {
+                transform: scale(0.85) rotate(-8deg);
+            }
+
+            /* Acessibilidade (teclado) */
+            .close-icon:focus-visible {
+                outline: none;
+                transform: scale(1.1);
+            }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title i {
+            margin-right: 10px;
+        }
+
+        .modal-footer {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: end;
+            gap: 0.5rem;
+            flex-direction: row;
+        }
+
+            .modal-footer button {
+                min-width: 100px;
+                white-space: nowrap;
+            }
+
+
+    </style>
+
+    @RenderSection("style", required: false)
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">LGMPulse.WebApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <div class="mainContainer">
+
+        <!-- HEADER -->
+        <div class="MainHeader">
+            <h5>@ViewBag.Title</h5>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Session?.User?.UserName))
+            {
+                <div class="user-menu">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" id="userDropdown" data-toggle="dropdown">
+                            <div class="avatar-icon"><i class="fas fa-user"></i></div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-header">@ViewBag.Session.User.UserName</div>
+
+                            <a class="dropdown-item" id="alterar-senha">
+                                <i class="fas fa-key"></i> Alterar senha...
+                            </a>
+
+                            <a class="dropdown-item" id="toggle-theme">
+                                <i class="fas fa-moon"></i> Mudar Tema
+                            </a>
+
+                            <a class="dropdown-item" href="@Url.Action("Login", "Home")">
+                                <i class="fas fa-door-open"></i>Sair
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            }
+        </div>
+
+        <!-- TOASTS -->
+        <div id="toast-container">
+            @if (TempData["Mensagem"] is string msgS && !string.IsNullOrWhiteSpace(msgS))
+            {
+                foreach (var t in msgS.Split('|'))
+                {
+                    <div class="custom-toast success">@t</div>
+                }
+            }
+            @if (TempData["Aviso"] is string msgW && !string.IsNullOrWhiteSpace(msgW))
+            {
+                foreach (var t in msgW.Split('|'))
+                {
+                    <div class="custom-toast warning">@t</div>
+                }
+            }
+            @if (TempData["Erro"] is string msgE && !string.IsNullOrWhiteSpace(msgE))
+            {
+                foreach (var t in msgE.Split('|'))
+                {
+                    <div class="custom-toast error">@t</div>
+                }
+            }
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="childContainer">
             @RenderBody()
-        </main>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="mainFooter">
+            <a data-id="1" href="/home"><i class="fas fa-home"></i><span>Início</span></a>
+            <a data-id="2" href="/lancar"><i class="fas fa-exchange-alt"></i><span>Lançar</span></a>
+            <a data-id="2" href="/agenda"><i class="fas fa-calendar-alt"></i><span>Agenda</span></a>
+            <a data-id="3" href="/relatorios"><i class="fas fa-line-chart"></i><span>Relatorios</span></a>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - LGMPulse.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- SPINNER GLOBAL -->
+    <div class="allmodal"></div>
+
+    <!-- MODAL CONFIRMAÇÃO -->
+    <div class="modal fade" id="modalConfirmacao" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle"></i> Confirmação</h5>
+                </div>
+                <div class="modal-body" id="modalConfirmacaoMensagem">Deseja continuar?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success" id="modalConfirmacaoOK">Confirmar</button>
+                </div>
+            </div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    </div>
+
+    <!-- MODAL FORM -->
+    <div class="modal fade" id="modalForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFormTitle"></h5>
+                    <img class="close-icon" data-dismiss="modal" src="/icons/xmark.svg" />
+                </div>
+                <div class="modal-body" id="modalFormConteudo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ícones do rodapé
+        function DisableIcon(id) {
+            $(".mainFooter a").addClass("disabled");
+            $(`.mainFooter a[data-id='${id}']`).removeClass("disabled");
+        }
+
+        // Modal de confirmação
+        function showModalDialog({ titulo, mensagem, tipo = "info", onConfirm }) {
+            const $modal = $('#modalConfirmacao');
+            const $header = $modal.find('.modal-header');
+            const $title = $modal.find('.modal-title');
+            const $body = $modal.find('.modal-body');
+            const $btnConfirmar = $('#modalConfirmacaoOK');
+            const $btnCancelar = $modal.find(".btn-secondary");
+
+            // Limpar classes antigas
+            $header.removeClass().addClass('modal-header text-white');
+            $btnConfirmar.removeClass().addClass('btn');
+
+            let icon, cor, btnClass;
+
+            switch (tipo) {
+                case "alertar":
+                    icon = "fas fa-exclamation-triangle";
+                    cor = "bg-warning";
+                    btnClass = "btn-warning";
+                    break;
+                case "excluir":
+                    icon = "fas fa-trash-alt";
+                    cor = "bg-danger";
+                    btnClass = "btn-danger";
+                    break;
+                case "erro":
+                    icon = "fas fa-times-circle";
+                    cor = "bg-danger";
+                    btnClass = "btn-danger";
+                    break;
+                case "confirmar":
+                    icon = "fas fa-question-circle";
+                    cor = "bg-primary";
+                    btnClass = "btn-primary";
+                    break;
+                default:
+                    icon = "fas fa-info-circle";
+                    cor = "bg-info";
+                    btnClass = "btn-info";
+                    break;
+            }
+
+            // Exibe ou não o botão cancelar
+            if (tipo === "info" || tipo === "erro") {
+                $btnCancelar.hide();
+                $btnConfirmar.text("OK");
+            } else {
+                $btnCancelar.show();
+                $btnConfirmar.text("Confirmar");
+            }
+
+            // Aplicações de estilo
+            $header.addClass(cor);
+            $title.html(`<i class="${icon}"></i> ${titulo}`);
+            $body.html(mensagem);
+            $btnConfirmar.addClass(btnClass);
+
+            // Eventos
+            $btnConfirmar.off('click').on('click', function () {
+                if (typeof onConfirm === "function") onConfirm();
+                $modal.modal("hide");
+            });
+
+            $btnCancelar.off('click').on('click', function () {
+                $modal.modal("hide");
+            });
+
+            $modal.modal("show");
+        }
+
+        // Modal de formulário (carrega via AJAX)
+        function showFormModal(title, url) {
+            $("#modalFormTitle").html(title);
+            $("#modalFormConteudo").html("<div class='text-center'><img src='/img/spin02.gif'/></div>");
+            $("#modalForm").modal("show");
+
+            $.get(url, function (data) {
+                $("#modalFormConteudo").html(data);
+            });
+        }
+
+        $('form').submit(function () {
+            $('[data-mask]').each(function () {
+                $(this).val($(this).val().replace('.', ''));
+            });
+        })
+
+        $(document).ready(function () {
+            $('[data-mask]').each(function () {
+                $(this).mask($(this).attr("data-mask"));
+            });
+            $('[data-mask-reverse]').each(function () {
+                $(this).mask($(this).attr("data-mask"), { reverse: true });
+            });
+            $('.select2').select2();
+            $('.select2[multiple]').select2({
+                allowClear: true
+            });
+        });
+
+        $(document).on({
+            ajaxStart: function () { $("body").addClass("loading"); },
+            ajaxStop: function () { $("body").removeClass("loading"); }
+        });
+
+        function showLoading() {
+            document .body.classList.add("loading");
+        }
+
+        function hideLoading() {
+            document .body.classList.remove("loading");
+        }
+
+        window.addEventListener("beforeunload", showLoading);
+
+        document.addEventListener("click", function (e) {
+                const link = e.target.closest("a[href]");
+                if (link && !link.hasAttribute("target") && !link.getAttribute("href").startsWith("#")) {
+                    showLoading();
+                }
+            });
+
+        document.addEventListener("submit", function (e) {
+                // Só mostra se for submissão normal (não Ajax)
+                if (!e.target.hasAttribute("data-ajax") && !e.target.hasAttribute("data-no-loading")) {
+                    showLoading();
+                }
+            });
+
+        document.addEventListener("hidden.bs.modal", function () {
+            hideLoading();
+        });
+
+        window.addEventListener("pageshow", hideLoading);
+
+        window.addEventListener("load", hideLoading);
+
+
+        $(document).ready(function () {
+            $('.custom-toast').each(function (index) {
+                let $toast = $(this);
+                setTimeout(function () {
+                    $toast.addClass('fade-out');
+                    setTimeout(function () {
+                        $toast.remove();
+                    }, 1000);
+                }, 3000 + index * 300);
+            });
+
+            const $themeButton = $("#toggle-theme");
+            const $body = $("body");
+
+            if (localStorage.getItem("theme") === "dark") {
+                $body.addClass("dark-mode");
+            }
+
+            $themeButton.on("click", function () {
+                $body.toggleClass("dark-mode");
+                if ($body.hasClass("dark-mode")) {
+                    localStorage.setItem("theme", "dark");
+                } else {
+                    localStorage.setItem("theme", "light");
+                }
+            });
+
+            $('#alterar-senha').on('click', function() {
+                window.location.href = "/Home/AlterarSenha";
+            });
+        });
+
+    </script>
+
+    @RenderSection("script", required: false)
+
 </body>
 </html>

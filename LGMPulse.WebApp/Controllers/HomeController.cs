@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +14,14 @@ namespace LGMPulse.WebApp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            HealthyDashViewModel viewModel = new()
+            {
+                TotalDespesas = 5360.00m,
+                TotalReceitas = 6900.85m,
+                PercDiferenca = 12.82m
+            };
+            return View(viewModel);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }
