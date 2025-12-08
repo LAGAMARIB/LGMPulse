@@ -40,6 +40,11 @@
     --shadow-hover: 0 5px 20px rgba(0,0,0,.10);
     /* Transições */
     --pulse: 0.18s ease;
+    /* Tons diversos */
+    --add-text: #2a3a55; /* texto equilibrado */
+    --overlay-dark: rgba(16,20,28,0.96); /* tela escura opaca (quase preta) */
+    --add-bg-start: #f5f3ef; /* botão - claro */
+    --add-bg-end: #e5d6a3; /* botão - tom quente */
 }
 
 * {
