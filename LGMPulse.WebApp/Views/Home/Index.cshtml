@@ -310,7 +310,13 @@
             z-index: 5;
         }
 
+        #btnReceita {
+            background: linear-gradient(145deg, var(--sphere-income-start), var(--sphere-income-end));
+        }
 
+        #btnDespesa {
+            background: linear-gradient(145deg, var(--sphere-expense-start), var(--sphere-expense-end));
+        }
 
     </style>
 }
@@ -354,8 +360,8 @@
 
         <!-- Tela inicial -->
         <div id="overlayHome">
-            <button class="overlay-option" data-type="receita">Nova Receita</button>
-            <button class="overlay-option" data-type="despesa">Nova Despesa</button>
+            <button class="overlay-option" id="btnReceita" data-type="receita">Nova Receita</button>
+            <button class="overlay-option" id="btnDespesa" data-type="despesa">Nova Despesa</button>
         </div>
 
         <!-- Tela do formulário (via MVC) -->
@@ -367,6 +373,8 @@
 
 @section script {
     <script>
+        let overlayHistory = [];
+
         function RefreshSpheres() {
             const income = parseFloat("@Model.TotalReceitas".replace(",", "."));
             const expenses = parseFloat("@Model.TotalDespesas".replace(",", "."));
@@ -401,38 +409,45 @@
             }
         }
 
-        let overlayHistory = [];
-
         function openOverlayView(htmlContent) {
             const overlay = $("#addOverlay");
-
-            // salva o estado anterior (se existir)
-            const previous = overlay.html();
-            if (previous && previous.trim() !== "") {
-                overlayHistory.push(previous);
-            }
 
             // aplica o novo conteúdo
             overlay.html(htmlContent);
         }
 
         function closeOverlay() {
-            overlayHistory = [];
             $("#addOverlay").removeClass("active");
             $("#addButton").removeClass("hidden");
         }
 
+        function pushOverlay(url) {
+            if (overlayHistory.length === 0 || overlayHistory[overlayHistory.length - 1] !== url) {
+                overlayHistory.push(url);
+            }
+        }
+
         function goBackOverlay() {
             if (overlayHistory.length === 0) {
-                closeOverlay();
+                // voltou ao início
+                $("#overlayFrame").attr("src", "").hide();
+                $("#overlayHome").show();
+                $("#backOverlayButton").hide();
                 return;
             }
 
-            const previous = overlayHistory.pop();
-            $("#addOverlay").html(previous);
+            const lastUrl = overlayHistory.pop();
+
+            $("#overlayFrame")
+                .attr("src", lastUrl)
+                .show();
+
+            $("#overlayHome").hide();
+            $("#backOverlayButton").show();
         }
 
         $(document).ready(function () {
+
             // ABRIR overlay com tela inicial
             $("#addButton").on("click", function () {
                 $("#addOverlay").addClass("active");
@@ -457,13 +472,24 @@
                 $("#backOverlayButton").show();
 
                 // carrega view da action
-                if (tipo === "receita")
+                if (tipo === "receita") {
+                    pushOverlay("/Lancamento/NovaReceita");
                     $("#overlayFrame").attr("src", "/Lancamento/NovaReceita");
-                else
+                } else {
+                    pushOverlay("/Lancamento/NovaDespesa");
                     $("#overlayFrame").attr("src", "/Lancamento/NovaDespesa");
+                }
             });
 
             // VOLTAR para os dois botões grandes
+            // $("#backOverlayButton").on("click", function () {
+            //     // volta para os dois botões grandes
+            //     $("#overlayFrame").attr("src", "").hide();
+            //     $("#overlayHome").show();
+
+            //     // esconde o botão voltar
+            //     $("#backOverlayButton").hide();
+            // });
             $("#backOverlayButton").on("click", function () {
                 goBackOverlay();
             });

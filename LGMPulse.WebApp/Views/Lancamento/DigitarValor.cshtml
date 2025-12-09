@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .value-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .display-value {
+            font-family: 'Digital-7', monospace, sans-serif;
+            font-size: 3rem;
+            background: #111;
+            color: #28f028;
+            padding: 12px;
+            border-radius: 8px;
+            letter-spacing: 2px;
+            text-align: right;
+            text-shadow: 0 0 4px #0f0;
+            transition: all .1s ease-out;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            padding: 10px;
+        }
+
+        .key {
+            font-size: 28px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: transform 0.12s, background 0.12s;
+        }
+
+            .key:active {
+                transform: scale(0.92);
+                background: #e2e2e2;
+            }
+
+        .action-key {
+            background: #ffe2e2;
+        }
+
+            .action-key:active {
+                background: #ffcdcd;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="value-container">
+        <div id="displayValue" class="display-value">0,00</div>
+
+        <div class="keypad">
+            <button class="key" data-digit="1">1</button>
+            <button class="key" data-digit="2">2</button>
+            <button class="key" data-digit="3">3</button>
+
+            <button class="key" data-digit="4">4</button>
+            <button class="key" data-digit="5">5</button>
+            <button class="key" data-digit="6">6</button>
+
+            <button class="key" data-digit="7">7</button>
+            <button class="key" data-digit="8">8</button>
+            <button class="key" data-digit="9">9</button>
+
+            <button class="key action-key" data-action="clear">C</button>
+            <button class="key" data-digit="0">0</button>
+            <button class="key action-key" data-action="back">&larr;</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            // este valor SEMPRE representa centavos!
+            // exemplo: "523410" significa 5234,10
+            let rawValue = "";
+
+            function updateDisplay() {
+                let number = parseInt(rawValue || "0"); // sempre inteiro
+                let formatted = (number / 100).toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                });
+
+                $("#displayValue")
+                    .text(formatted);
+            }
+
+            $(".key[data-digit]").on("click", function () {
+                const digit = $(this).data("digit");
+                rawValue += digit;
+                updateDisplay();
+            });
+
+            $(".key[data-action='clear']").on("click", function () {
+                rawValue = "";
+                updateDisplay();
+            });
+
+            $(".key[data-action='back']").on("click", function () {
+                rawValue = rawValue.slice(0, -1);
+                updateDisplay();
+            });
+
+        });
+    </script>
+
+</body>
+</html>

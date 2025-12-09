@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Nova Despesa";
+}
+
+@section style {
+    <style>
+        body > div.mainContainer > div.MainHeader  {
+           background-color: var(--pulse-red);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 18px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px); /* Para o mobile com header */
+        }
+
+        .category-item {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+        }
+
+            .category-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+            }
+
+            .category-item img {
+                width: 52px;
+                height: 52px;
+                margin-bottom: 12px;
+            }
+
+            .category-item span {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #333;
+            }
+
+        /* Melhorar o toque no mobile */
+        @@media (hover: none) {
+            .category-item:active
+
+        {
+            transform: scale(0.96);
+        }
+
+        }
+    </style>
+}
+
+<div class="category-grid">
+
+    <div class="category-item">
+        <img src="icons/carro.png" alt="Carro">
+        <span>Carro</span>
+    </div>
+
+    <div class="category-item">
+        <img src="icons/casa.png" alt="Moradia">
+        <span>Moradia</span>
+    </div>
+
+    <div class="category-item">
+        <img src="icons/saude.png" alt="Saúde">
+        <span>Saúde</span>
+    </div>
+
+    <div class="category-item">
+        <img src="icons/alimentacao.png" alt="Alimentação">
+        <span>Alimentação</span>
+    </div>
+
+    <div class="category-item">
+        <img src="icons/mercado.png" alt="Mercado">
+        <span>Mercado</span>
+    </div>
+
+    <div class="category-item">
+        <img src="icons/outras_despesas.png" alt="Outras">
+        <span>Outras</span>
+    </div>
+
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            $(".category-item").on("click", function () {
+
+                $(window.parent.document).find("#overlayFrame").each(function () {
+
+                    // pega o src atual para salvar no histórico
+                    const currentUrl = $(this).attr("src");
+
+                    // salva na pilha do pai
+                    window.parent.pushOverlay(currentUrl);
+
+                    // troca para DigitarValor
+                    $(this)
+                        .attr("src", "/Lancamento/DigitarValor")
+                        .show();
+                });
+
+                // mostrar o botão voltar
+                $(window.parent.document)
+                    .find("#backOverlayButton")
+                    .show();
+
+                // esconder tela inicial
+                $(window.parent.document)
+                    .find("#overlayHome")
+                    .hide();
+            });
+        });
+
+    </script>
+}
