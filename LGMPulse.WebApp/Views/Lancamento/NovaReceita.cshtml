@@ -59,22 +59,22 @@
 
 <div class="category-grid">
 
-    <div class="category-item">
+    <div class="category-item" data-grupo="4">
         <img src="/icons/salary.svg" alt="Salário">
         <span>Salário</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-grupo="1">
         <img src="/icons/rendimentos.svg" alt="Rendimentos">
         <span>Rendimentos</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-grupo="2">
         <img src="/icons/seller.svg" alt="Vendas">
         <span>Vendas</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-grupo="3">
         <img src="/icons/open-pocket.svg" alt="Outras receitas">
         <span>Outras receitas</span>
     </div>
@@ -88,9 +88,13 @@
 
                 window.parent.pushOverlay("/Lancamento/DigitarValor");
 
+                const idGrupo = $(this).data('grupo');
+                const descGrupo = $(this).find("span").html();
+                const RECEITA = 0;
+                const URL = `/Lancamento/DigitarValor/${RECEITA}/${idGrupo}/${descGrupo}`;
                 $(window.parent.document).find("#overlayFrame").each(function () {
                     $(this)
-                        .attr("src", "/Lancamento/DigitarValor")
+                        .attr("src", URL)
                         .show();
                 });
 

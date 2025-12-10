@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LGMPulse.WebApp.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LGMPulse.WebApp.Controllers;
 
@@ -14,8 +15,15 @@ public class LancamentoController : Controller
         return View();
     }
 
-    public IActionResult DigitarValor()
+    [HttpGet("Lancamento/DigitarValor/{tipo}/{idGrupo}/{descricao=null}")]
+    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao)
     {
-        return View();
+        DigitarValorViewModel model = new()
+        {
+            TipoMovto = tipo,
+            IDGrupo = idGrupo,
+            DescGrupo = descricao ?? ""
+        };
+        return View(model);
     }
 }

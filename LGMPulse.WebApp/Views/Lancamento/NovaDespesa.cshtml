@@ -62,37 +62,37 @@
 
 <div class="category-grid">
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="5">
         <img src="/icons/icon-car.svg" alt="Carro">
         <span>Carro</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="6">
         <img src="/icons/home.svg" alt="Moradia">
         <span>Moradia</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="7">
         <img src="/icons/aid.svg" alt="Saúde">
         <span>Saúde</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="8">
         <img src="/icons/education.svg" alt="Outras">
         <span>Educação</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="9">
         <img src="/icons/game.svg" alt="Lazer">
         <span>Hobies & Lazer</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="10">
         <img src="/icons/shopping.svg" alt="Mercado">
         <span>Mercado</span>
     </div>
 
-    <div class="category-item">
+    <div class="category-item" data-idGrupo="11">
         <img src="/icons/misc-buy.svg" alt="Outras">
         <span>Outras despesas</span>
     </div>
@@ -106,9 +106,13 @@
 
                 window.parent.pushOverlay("/Lancamento/DigitarValor");
 
+                const idGrupo = $(this).data('grupo');
+                const descGrupo = $(this).find("span").text();
+                const DESPESA = 1;
+                const URL = `/Lancamento/DigitarValor/${DESPESA}/${idGrupo}/${descGrupo}`;
                 $(window.parent.document).find("#overlayFrame").each(function () {
                     $(this)
-                        .attr("src", "/Lancamento/DigitarValor")
+                        .attr("src", URL)
                         .show();
                 });
 
