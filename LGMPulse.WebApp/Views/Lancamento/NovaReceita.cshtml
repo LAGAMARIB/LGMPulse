@@ -60,22 +60,22 @@
 <div class="category-grid">
 
     <div class="category-item">
-        <img src="icons/salario.png" alt="Salário">
+        <img src="/icons/salary.svg" alt="Salário">
         <span>Salário</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/rendimentos.png" alt="Rendimentos">
+        <img src="/icons/rendimentos.svg" alt="Rendimentos">
         <span>Rendimentos</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/saude.png" alt="Vendas">
+        <img src="/icons/seller.svg" alt="Vendas">
         <span>Vendas</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/outras_receitas.png" alt="Outras receitas">
+        <img src="/icons/open-pocket.svg" alt="Outras receitas">
         <span>Outras receitas</span>
     </div>
 
@@ -86,15 +86,9 @@
         $(document).ready(function () {
             $(".category-item").on("click", function () {
 
+                window.parent.pushOverlay("/Lancamento/DigitarValor");
+
                 $(window.parent.document).find("#overlayFrame").each(function () {
-
-                    // pega o src atual para salvar no histórico
-                    const currentUrl = $(this).attr("src");
-
-                    // salva na pilha do pai
-                    window.parent.pushOverlay(currentUrl);
-
-                    // troca para DigitarValor
                     $(this)
                         .attr("src", "/Lancamento/DigitarValor")
                         .show();

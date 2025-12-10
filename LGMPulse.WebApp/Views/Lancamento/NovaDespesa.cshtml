@@ -63,33 +63,38 @@
 <div class="category-grid">
 
     <div class="category-item">
-        <img src="icons/carro.png" alt="Carro">
+        <img src="/icons/icon-car.svg" alt="Carro">
         <span>Carro</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/casa.png" alt="Moradia">
+        <img src="/icons/home.svg" alt="Moradia">
         <span>Moradia</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/saude.png" alt="Saúde">
+        <img src="/icons/aid.svg" alt="Saúde">
         <span>Saúde</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/alimentacao.png" alt="Alimentação">
-        <span>Alimentação</span>
+        <img src="/icons/education.svg" alt="Outras">
+        <span>Educação</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/mercado.png" alt="Mercado">
+        <img src="/icons/game.svg" alt="Lazer">
+        <span>Hobies & Lazer</span>
+    </div>
+
+    <div class="category-item">
+        <img src="/icons/shopping.svg" alt="Mercado">
         <span>Mercado</span>
     </div>
 
     <div class="category-item">
-        <img src="icons/outras_despesas.png" alt="Outras">
-        <span>Outras</span>
+        <img src="/icons/misc-buy.svg" alt="Outras">
+        <span>Outras despesas</span>
     </div>
 
 </div>
@@ -99,15 +104,9 @@
         $(document).ready(function () {
             $(".category-item").on("click", function () {
 
+                window.parent.pushOverlay("/Lancamento/DigitarValor");
+
                 $(window.parent.document).find("#overlayFrame").each(function () {
-
-                    // pega o src atual para salvar no histórico
-                    const currentUrl = $(this).attr("src");
-
-                    // salva na pilha do pai
-                    window.parent.pushOverlay(currentUrl);
-
-                    // troca para DigitarValor
                     $(this)
                         .attr("src", "/Lancamento/DigitarValor")
                         .show();

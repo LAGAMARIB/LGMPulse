@@ -1,11 +1,9 @@
 ﻿@{
-    Layout = null;
+    ViewBag.Title = "Digite o valor";
+    ViewBag.SubTitle = "Despesa - Mercado";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@section style {
     <style>
         .value-container {
             text-align: center;
@@ -48,16 +46,34 @@
             }
 
         .action-key {
-            background: #ffe2e2;
+            background: var(--color-sand);
         }
 
-            .action-key:active {
-                background: #ffcdcd;
-            }
-    </style>
-</head>
+        #subTitle {
+            text-align: center;
+            font-size: 2.0rem;
+            font-weight: 400;
+            margin: 12px 0;
+            text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+        }
 
-<body>
+            #subTitle.despesa {
+                color: var(--pulse-red);
+            }
+
+            #subTitle.receita {
+                color: var(--pulse-green);
+            }
+
+        #btnConfirm {
+            width: 80%;
+            background-color: var(--color-amber);
+            margin-top: 40px;
+        }
+    </style>
+}
+
+    <div id="subTitle" class="despesa">@ViewBag.SubTitle</div>
 
     <div class="value-container">
         <div id="displayValue" class="display-value">0,00</div>
@@ -78,16 +94,14 @@
             <button class="key action-key" data-action="clear">C</button>
             <button class="key" data-digit="0">0</button>
             <button class="key action-key" data-action="back">&larr;</button>
+    
         </div>
+        <button class="key" id="btnConfirm">Confirmar</button>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+@section script {
     <script>
         $(document).ready(function () {
-
-            // este valor SEMPRE representa centavos!
-            // exemplo: "523410" significa 5234,10
             let rawValue = "";
 
             function updateDisplay() {
@@ -118,6 +132,6 @@
 
         });
     </script>
+}
 
-</body>
-</html>
+

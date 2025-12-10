@@ -36,8 +36,8 @@
     /* Radius padrão */
     --radius: 14px;
     /* Sombras */
-    --shadow-soft: 0 3px 12px rgba(0,0,0,.06);
-    --shadow-hover: 0 5px 20px rgba(0,0,0,.10);
+    --shadow-soft: 0 3px 12px rgba(0,0,0,.70);
+    --shadow-hover: 0 5px 20px rgba(0,0,0,.88);
     /* Transições */
     --pulse: 0.18s ease;
     /* Tons diversos */

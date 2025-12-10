@@ -383,12 +383,10 @@
             const $expenses = $("#expensesCircle");
             const $liquid = $("#liquidCircle");
 
-            // limpa classes anteriores
             $income.removeClass("big small");
             $expenses.removeClass("big small");
             $liquid.removeClass("blue yellow");
 
-            // regra principal Receita vs Despesa
             if (income > expenses) {
                 $income.addClass("big");
                 $expenses.addClass("small");
@@ -400,7 +398,6 @@
                 $expenses.addClass("small");
             }
 
-            // liquidez
             const liquidValue = income - expenses;
             if (liquidValue >= 0) {
                 $liquid.addClass("blue");
@@ -410,10 +407,7 @@
         }
 
         function openOverlayView(htmlContent) {
-            const overlay = $("#addOverlay");
-
-            // aplica o novo conteúdo
-            overlay.html(htmlContent);
+            $("#addOverlay").html(htmlContent);
         }
 
         function closeOverlay() {
@@ -421,75 +415,69 @@
             $("#addButton").removeClass("hidden");
         }
 
+        // -------------------------------------------------------
+        // PUSH: adiciona nova URL ao histórico sem duplicar
+        // -------------------------------------------------------
         function pushOverlay(url) {
-            if (overlayHistory.length === 0 || overlayHistory[overlayHistory.length - 1] !== url) {
-                overlayHistory.push(url);
-            }
+            if (overlayHistory[overlayHistory.length - 1] === url) return;
+            overlayHistory.push(url);
         }
 
+        // -------------------------------------------------------
+        // BACK: volta à página anterior ou ao home
+        // -------------------------------------------------------
         function goBackOverlay() {
-            if (overlayHistory.length === 0) {
-                // voltou ao início
-                $("#overlayFrame").attr("src", "").hide();
+            const $frame = $("#overlayFrame");
+
+            // tira a view atual do topo
+            overlayHistory.pop();
+
+            const previous = overlayHistory[overlayHistory.length - 1];
+
+            if (!previous) {
+                // histórico vazio → volta ao início
+                $frame.attr("src", "").hide();
                 $("#overlayHome").show();
                 $("#backOverlayButton").hide();
                 return;
             }
 
-            const lastUrl = overlayHistory.pop();
-
-            $("#overlayFrame")
-                .attr("src", lastUrl)
-                .show();
-
-            $("#overlayHome").hide();
-            $("#backOverlayButton").show();
+            // carrega view anterior
+            $frame.attr("src", previous).show();
+            $("#backOverlayButton").toggle(overlayHistory.length > 0);
         }
 
         $(document).ready(function () {
 
-            // ABRIR overlay com tela inicial
+            // abrir overlay no modo HOME
             $("#addButton").on("click", function () {
                 $("#addOverlay").addClass("active");
                 $("#overlayHome").show();
                 $("#overlayFrame").hide();
                 $("#backOverlayButton").hide();
                 $("#overlayFrame").attr("src", "");
+                overlayHistory = [];   // limpa histórico ao abrir
             });
 
-            // FECHAR overlay completamente
+            // fechar overlay
             $("#closeOverlayButton").on("click", function () {
                 $("#addOverlay").removeClass("active");
             });
 
-            // SELEÇÃO (Receita / Despesa)
+            // escolher entre RECEITA e DESPESA
             $(".overlay-option").on("click", function () {
                 const tipo = $(this).data("type");
+                const url = tipo === "receita"
+                    ? "/Lancamento/NovaReceita"
+                    : "/Lancamento/NovaDespesa";
 
-                // troca de telas
+                pushOverlay(url);
+
+                $("#overlayFrame").attr("src", url).show();
                 $("#overlayHome").hide();
-                $("#overlayFrame").show();
                 $("#backOverlayButton").show();
-
-                // carrega view da action
-                if (tipo === "receita") {
-                    pushOverlay("/Lancamento/NovaReceita");
-                    $("#overlayFrame").attr("src", "/Lancamento/NovaReceita");
-                } else {
-                    pushOverlay("/Lancamento/NovaDespesa");
-                    $("#overlayFrame").attr("src", "/Lancamento/NovaDespesa");
-                }
             });
 
-            // VOLTAR para os dois botões grandes
-            // $("#backOverlayButton").on("click", function () {
-            //     // volta para os dois botões grandes
-            //     $("#overlayFrame").attr("src", "").hide();
-            //     $("#overlayHome").show();
-
-            //     // esconde o botão voltar
-            //     $("#backOverlayButton").hide();
-            // });
             $("#backOverlayButton").on("click", function () {
                 goBackOverlay();
             });
@@ -499,3 +487,5 @@
         });
     </script>
 }
+
+
