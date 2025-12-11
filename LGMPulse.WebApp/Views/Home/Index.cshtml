@@ -2,6 +2,14 @@
 @model HealthyDashViewModel;
 @{
     ViewBag.Title = ViewBag.Title ?? "LAGAMA Pulse";
+    
+    var perc = Math.Round(Model.PercDiferenca);
+    var isNegative = perc < 0;
+    var absPerc = Math.Abs(perc);
+    var texto = isNegative
+        ? $"Você está {absPerc}% abaixo do mês passado"
+        : $"Você está {absPerc}% melhor que no mês passado";
+
 }
 
 @section style {
@@ -123,6 +131,10 @@
             margin-left: 26px;
             --sphere-tilt: -6deg;
         }
+
+            #liquidCircle span {
+                font-size: 1.55rem;
+            }
 
         /* ---- FRASE DE INSIGHT ---- */
         #healthyPanel {
@@ -344,7 +356,7 @@
     </div>
 
     <div id="healthyPanel">
-        <span>Você está @( Math.Round(Model.PercDiferenca) )% melhor que no mês passado</span>
+        <span>@texto</span>
     </div>
 </div>
 
@@ -404,6 +416,23 @@
             } else {
                 $liquid.addClass("yellow");
             }
+
+            moveSpheres();
+        }
+
+        function moveSpheres() {
+            const spheres = ["#incomeCircle", "#expensesCircle", "#liquidCircle"];
+
+            spheres.forEach(id => {
+                const el = $(id);
+
+                // Número aleatório entre -120 e +120 px
+                const randomOffset = Math.floor(Math.random() * 240) - 120;
+
+                // Aplicar o deslocamento horizontal
+                el.css("margin-left", randomOffset + "px");
+
+            });
         }
 
         function openOverlayView(htmlContent) {
@@ -415,17 +444,11 @@
             $("#addButton").removeClass("hidden");
         }
 
-        // -------------------------------------------------------
-        // PUSH: adiciona nova URL ao histórico sem duplicar
-        // -------------------------------------------------------
         function pushOverlay(url) {
             if (overlayHistory[overlayHistory.length - 1] === url) return;
             overlayHistory.push(url);
         }
 
-        // -------------------------------------------------------
-        // BACK: volta à página anterior ou ao home
-        // -------------------------------------------------------
         function goBackOverlay() {
             const $frame = $("#overlayFrame");
 

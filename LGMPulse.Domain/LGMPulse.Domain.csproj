@@ -1,16 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\LGMDomains\LGMDomains.Common\LGMDomains.Common.csproj" />
     <ProjectReference Include="..\..\LGMDomains\LGMDomains.Identity\LGMDomains.Identity.csproj" />
-    <ProjectReference Include="..\LGMPulse.AppServices\LGMPulse.AppServices.csproj" />
-    <ProjectReference Include="..\LGMPulse.Connections\LGMPulse.Connections.csproj" />
   </ItemGroup>
 
 </Project>
