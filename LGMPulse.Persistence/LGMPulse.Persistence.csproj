@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LGMPulse.Domain\LGMPulse.Domain.csproj" />
-    <ProjectReference Include="..\LGMPulse.Persistence\LGMPulse.Persistence.csproj" />
+    <ProjectReference Include="..\..\LGMDAL\LGMDAL.csproj" />
+    <ProjectReference Include="..\LGMPulse.Connections\LGMPulse.Connections.csproj" />
   </ItemGroup>
 
 </Project>
