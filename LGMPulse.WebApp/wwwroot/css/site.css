@@ -16,6 +16,19 @@
     --color-sand: #f6e8c3;
     --color-amber: #efc359;
     --color-green-soft: #a3d9a5;
+    --btn-danger-bg: #dc3545;
+    --btn-danger-color: #ffffff;
+    --btn-success-bg: #5200FF;
+    --btn-success-color: #ffffff;
+    /* Formularios */
+    --form-container-bg: #f7f7f7;
+    --input-border-color: #cccccc;
+    --input-focus-bg: #3e3e3e;
+    --input-focus-border: #CCC;
+    --color-input-text: #CCC;
+    --color-input-bg: #1e1e1e;
+    --select-multi-bg: #e9ecef;
+    --select-multi-color: #333333;
     /* Neutros */
     --bg-1: #f8f9fa;
     --bg-2: #ffffff;

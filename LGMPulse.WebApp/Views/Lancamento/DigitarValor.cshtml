@@ -1,10 +1,12 @@
-﻿@using LGMPulse.WebApp.Models
+﻿@using LGMDomains.Common.Helpers
+@using LGMPulse.WebApp.Models
 @model DigitarValorViewModel
 @{
     ViewBag.Title = "Digite o valor";
     ViewBag.SubTitle = $"{Model.TipoMovto} - {Model.DescGrupo}";
 
     string subTitleClass = Model.TipoMovto == TipoMovtoEnum.Despesa ? "despesa" : "receita";
+    DateTime dataLancto = DateTimeHelper.Now().Date;
 }
 
 @section style {
@@ -72,8 +74,33 @@
         #btnConfirm {
             width: 80%;
             background: linear-gradient(145deg, var(--color-green-soft), var(--pulse-green));
-            margin-top: 40px;
+            margin-top: 20px;
         }
+
+        #btnAdvancedFields {
+            position: absolute;
+            bottom: 85px;
+            right: 15px;
+            width: 53px;
+            height: 53px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.20);
+            backdrop-filter: blur(2px);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 1.6rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+
+            #btnAdvancedFields:active {
+                transform: scale(0.92);
+                background: #e2e2e2;
+            }
+
     </style>
 }
 
@@ -101,12 +128,28 @@
     
         </div>
         <button class="key" id="btnConfirm">Confirmar</button>
+        <button id="btnAdvancedFields"><i class="fas fa-gear"></i></button>
+    </div>
+
+    <div class="form-container" id="divAdvancedFields" style="display: none">
+        <div class="form-group">
+            <label for="DataMovto">Data:</label>
+            <input type="date" id="DataMovto" name="DataMovto"
+                value="@dataLancto.Date.ToString("yyyy-MM-dd")" 
+                required class="form-input" />
+        </div>
+        <div class="form-group">
+            <label for="Descricao">Descrição:</label>
+            <input type="text" id="Descricao" name="Descricao" class="form-input"/>
+        </div>
     </div>
 
 @section script {
     <script>
         $(document).ready(function () {
             let rawValue = "";
+            let descMovto = "";
+            let dataMovto = "@dataLancto.Date.ToString("yyyy-MM-dd")";
 
             function updateDisplay() {
                 let number = parseInt(rawValue || "0"); // sempre inteiro
@@ -132,6 +175,20 @@
             $(".key[data-action='back']").on("click", function () {
                 rawValue = rawValue.slice(0, -1);
                 updateDisplay();
+            });
+
+            $('#btnAdvancedFields').on('click', function () {
+                 const cloneHtml = $('#divAdvancedFields').clone(true).prop('outerHTML');
+
+                 showFormModal({
+                    titulo: 'Dados avançados',
+                    bodyHtml: cloneHtml,
+                    onSubmit: (formData) => {
+                        descMovto = formData.Descricao;
+                        dataMovto = formData.DataMovto;
+                        $('#Descricao').val(descMovto);
+                        $('#DataMovto').val(dataMovto);                    }
+                     });
             });
 
         });

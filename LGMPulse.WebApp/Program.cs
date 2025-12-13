@@ -22,12 +22,11 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor(); // Necessário para acessar a sessão no controller
 
 // Exceptions Filter
-builder.Services.AddSingleton<ITempDataDictionaryFactory, TempDataDictionaryFactory>();
-builder.Services.AddScoped<LGMExceptionFilter>();
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.AddService<LGMExceptionFilter>();
 });
+builder.Services.AddScoped<LGMExceptionFilter>();
 
 // Add dependency injection services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
@@ -97,13 +96,13 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-app.UseAuthorization();
 app.UseSession();
+app.UseRequestLocalization(localizationOptions);
+app.UseAuthorization();
 
 // Initialize ConnectionSettings  
 ConnectionSettings.Instance.Initialize(builder.Configuration);
 
-app.UseRequestLocalization(localizationOptions);
 
 app.MapControllerRoute(
     name: "default",
