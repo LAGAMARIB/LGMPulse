@@ -101,48 +101,53 @@
                 background: #e2e2e2;
             }
 
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 1;
+        }
+
     </style>
 }
 
-    <div id="subTitle" class="@subTitleClass">@ViewBag.SubTitle</div>
+<div id="subTitle" class="@subTitleClass">@ViewBag.SubTitle</div>
 
-    <div class="value-container">
-        <div id="displayValue" class="display-value">0,00</div>
+<div class="value-container">
+    <div id="displayValue" class="display-value">0,00</div>
 
-        <div class="keypad">
-            <button class="key" data-digit="1">1</button>
-            <button class="key" data-digit="2">2</button>
-            <button class="key" data-digit="3">3</button>
+    <div class="keypad">
+        <button class="key" data-digit="1">1</button>
+        <button class="key" data-digit="2">2</button>
+        <button class="key" data-digit="3">3</button>
 
-            <button class="key" data-digit="4">4</button>
-            <button class="key" data-digit="5">5</button>
-            <button class="key" data-digit="6">6</button>
+        <button class="key" data-digit="4">4</button>
+        <button class="key" data-digit="5">5</button>
+        <button class="key" data-digit="6">6</button>
 
-            <button class="key" data-digit="7">7</button>
-            <button class="key" data-digit="8">8</button>
-            <button class="key" data-digit="9">9</button>
+        <button class="key" data-digit="7">7</button>
+        <button class="key" data-digit="8">8</button>
+        <button class="key" data-digit="9">9</button>
 
-            <button class="key action-key" data-action="clear">C</button>
-            <button class="key" data-digit="0">0</button>
-            <button class="key action-key" data-action="back">&larr;</button>
+        <button class="key action-key" data-action="clear">C</button>
+        <button class="key" data-digit="0">0</button>
+        <button class="key action-key" data-action="back">&larr;</button>
     
-        </div>
-        <button class="key" id="btnConfirm">Confirmar</button>
-        <button id="btnAdvancedFields"><i class="fas fa-gear"></i></button>
     </div>
+    <button class="key" id="btnConfirm">Confirmar</button>
+    <button id="btnAdvancedFields"><i class="fas fa-gear"></i></button>
+</div>
 
-    <div class="form-container" id="divAdvancedFields" style="display: none">
-        <div class="form-group">
-            <label for="DataMovto">Data:</label>
-            <input type="date" id="DataMovto" name="DataMovto"
-                value="@dataLancto.Date.ToString("yyyy-MM-dd")" 
-                required class="form-input" />
-        </div>
-        <div class="form-group">
-            <label for="Descricao">Descrição:</label>
-            <input type="text" id="Descricao" name="Descricao" class="form-input"/>
-        </div>
+<div class="form-container" id="divAdvancedFields" style="display: none">
+    <div class="form-group">
+        <label for="DataMovto">Data:</label>
+        <input type="date" id="DataMovto" name="DataMovto"
+            value="@dataLancto.Date.ToString("yyyy-MM-dd")" 
+            required class="form-input" />
     </div>
+    <div class="form-group">
+        <label for="Descricao">Descrição:</label>
+        <input type="text" id="Descricao" name="Descricao" class="form-input"/>
+    </div>
+</div>
 
 @section script {
     <script>

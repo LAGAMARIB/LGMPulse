@@ -194,9 +194,18 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.55);
-            display: none;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
             z-index: 1200;
         }
+
+            .lgm-backdrop.lgm-show {
+                opacity: 1;
+                pointer-events: auto;
+            }
 
         .lgm-modal {
             position: fixed;
@@ -219,7 +228,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                border-bottom: 1px solid rgba(0,0,0,0.04);
+                border-bottom: 1px solid rgba(0,0,0,0.08);
             }
 
             .lgm-modal .lgm-modal-title {
@@ -241,11 +250,13 @@
             }
 
         .lgm-btn {
-            padding: 8px 12px;
-            border-radius: 8px;
+            height: 50px;
+            border-radius: 10px;
             cursor: pointer;
             border: none;
             font-weight: 600;
+            width: 50%;
+            margin: 0 8px;
         }
 
             .lgm-btn.ghost {
@@ -255,8 +266,11 @@
             }
 
             .lgm-btn.primary {
-                background: linear-gradient(145deg, #3c7df0, #2b63d3);
-                color: #fff;
+                height: 50px;
+                border-radius: 10px;
+                background-color: var(--btn-success-bg);
+                color: var(--btn-success-color);
+                flex: 1; /* ocupa todo o espaço restante */
             }
 
         .lgm-dropdown {
@@ -294,6 +308,249 @@
 
     </style>
 
+    <!-- estilos para formulários -->
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column; /* ← ESTE é o ponto */
+            justify-content: center;
+            padding: 14px;
+            background-color: var(--form-container-bg);
+            height: 100%;
+        }
+
+        .form-container form {
+            position: relative;
+            width: 100%;
+            background-color: transparent;
+            min-height: fit-content;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+            .form-group label {
+                margin-bottom: 2px;
+                font-weight: bold;
+            }
+
+
+            .form-group > button {
+                width: 38px;
+                padding: 0;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+            .form-group > div {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .form-group > div > .form-input {
+                flex: 1;
+                width: auto;
+            }
+
+            .form-group > div > button {
+                flex-shrink: 0;
+                width: 38px;
+                height: 38px;
+                padding: 0;
+                text-align: center;
+            }
+
+            .form-group .form-inline {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap; /* Para garantir responsividade */
+            }
+
+                .form-group .form-inline input[type="checkbox"] {
+                    margin: 0;
+                }
+
+                .form-group .form-inline label {
+                    margin: 0;
+                    font-weight: bold;
+                }
+
+        .form-input {
+            flex: 1;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 1px solid var(--input-border-color);
+            color: var(--color-input-text);
+            background-color: var(--color-input-bg);
+            border-radius: 5px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+            .form-input:focus {
+                background-color: var(--input-focus-bg);
+                border-color: var(--input-focus-border);
+                outline: none;
+            }
+
+        .form-buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn-remover {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: var(--btn-danger-bg);
+            color: var(--btn-danger-color);
+            flex-shrink: 0; /* não deixa ele diminuir de tamanho */
+        }
+
+        .btn-salvar {
+            height: 50px;
+            border-radius: 10px;
+            background-color: var(--btn-success-bg);
+            color: var(--btn-success-color);
+            flex: 1; /* ocupa todo o espaço restante */
+        }
+
+        .form-container button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button.btn-success {
+                position: absolute;
+                bottom: 0px;
+                height: 50px;
+                border-radius: 10px;
+                background-color: var(--btn-success-bg);
+                color: var(--btn-success-color);
+            }
+
+        .form-container button.btn-danger {
+                background-color: var(--btn-danger-bg);
+                color: var(--btn-danger-color);
+            }
+
+        .form-container input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .form-radio-buttons label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 25px;
+            font-size: 1.1em;
+        }
+
+        .form-radio-buttons input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            margin-right: 10px;
+        }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+            .slider::before {
+                position: absolute;
+                content: "";
+                height: 20px;
+                width: 20px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+
+        .switch input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+            .switch input:checked + .slider::before {
+                transform: translateX(24px);
+            }
+
+        /* Select2 */
+        .select2-container .select2-selection--single {
+            height: 38px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--input-border-color);
+            border-radius: 5px;
+        }
+
+            .select2-container .select2-selection--single .select2-selection__rendered {
+                line-height: 38px;
+            }
+
+            .select2-container .select2-selection--single .select2-selection__arrow {
+                height: 38px;
+                display: flex;
+                align-items: center;
+            }
+
+        .select2-container .select2-selection--multiple {
+            height: auto;
+            min-height: 38px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 5px;
+        }
+
+            .select2-container .select2-selection--multiple .select2-selection__choice {
+                margin: 3px 5px;
+                padding: 3px 10px;
+                border-radius: 5px;
+                background-color: var(--select-multi-bg);
+                color: var(--select-multi-color);
+            }
+
+    </style>
+    <!-- fim de estilos para formulários -->
     @RenderSection("style", required: false)
 </head>
 
