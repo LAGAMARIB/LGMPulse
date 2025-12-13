@@ -14,9 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
-
     <!-- FontAwesome -->
     <link href="/Content/fa/css/all.css" rel="stylesheet" />
     <link href="/Content/fa/css/font-awesome.min.css" rel="stylesheet" />
@@ -27,16 +24,12 @@
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="/css/site.css" />
 
-    <!-- jQuery -->
+    <!-- jQuery (mantido) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/Scripts/jquery.mask.min.js"></script>
     <script src="/Scripts/jquery-ui.min.js"></script>
     <script src="/Scripts/select2.min.js"></script>
     <script src="/Scripts/moment.js"></script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
 
     <!-- Scripts personalizados -->
     <script src="/js/site.js" asp-append-version="true"></script>
@@ -71,11 +64,9 @@
             left: 0;
             width: 100%;
             height: var(--header-height);
-
             text-align: center;
             align-items: center;
             justify-content: center;
-
             font-size: 1.5rem;
             font-weight: bold;
             border-bottom: 2px solid var(--input-border-color);
@@ -100,47 +91,11 @@
                 width: 30px;
                 height: 30px;
                 border-radius: 50%;
-                border-color: white;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: white;
                 font-size: 18px;
-            }
-
-            .user-menu .dropdown-menu .dropdown-header {
-                font-weight: bold;
-                padding: 5px 20px;
-                color: var(--dropdown-item-color);
-                border-bottom: 1px solid var(--dropdown-item-color);
-                text-align: center;
-                width: 100%;
-            }
-
-        .dropdown-menu {
-            min-width: 150px;
-            padding: 0;
-            box-shadow: 0px 4px 6px var(--dropdown-shadow);
-            border: none;
-            border-radius: 5px;
-            background-color: var(--light-color-bar);
-        }
-
-        .dropdown-item {
-            padding: 10px 20px;
-            font-weight: bold;
-            color: var(--dropdown-item-color);
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-            .dropdown-item:hover {
-                background-color: var(--dropdown-item-hover-bg);
-                color: var(--btn-success-color);
-            }
-
-            .dropdown-item i {
-                margin-right: 8px;
             }
 
         .childContainer {
@@ -211,109 +166,6 @@
             display: block;
         }
 
-        .dropdown-toggle {
-            cursor: pointer;
-        }
-
-        #userDropdown {
-            color: var(--main-header-title);
-        }
-
-            #userDropdown::after {
-                display: none;
-            }
-
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 300px;
-        }
-
-        .custom-toast {
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 8px 14px var(--toast-shadow);
-            opacity: 1;
-            transition: opacity 1s ease-out, transform 0.3s ease;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-
-            .custom-toast.success {
-                color: var(--toast-success-text);
-                background-color: var(--toast-success-bg);
-            }
-
-            .custom-toast.warning {
-                color: var(--toast-warning-text);
-                background-color: var(--toast-warning-bg);
-            }
-
-            .custom-toast.error {
-                color: var(--toast-error-text);
-                background-color: var(--toast-error-bg);
-            }
-
-            .custom-toast.fade-out {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-        .mainFooter a,
-        .mainFooter a:hover,
-        .mainFooter a:focus,
-        .mainFooter a:active {
-            text-decoration: none;
-        }
-
-        button, .btn, .btn-new-record,
-        .itemCard, .card, .tabButton,
-        .mainFooter a {
-            transition: all 0.15s ease-in-out;
-        }
-
-            /* Efeito de toque/click (mobile e desktop) */
-            button:active, .btn:active, .btn-new-record:active,
-            .itemCard:active, .card:active, .tabButton:active,
-            .mainFooter a:active {
-                transform: scale(0.97);
-                opacity: 0.85;
-                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15) inset;
-            }
-
-            /* Efeito de foco (navegação por teclado ou tab) */
-            button:focus-visible, .btn:focus-visible, .tabButton:focus-visible,
-            .itemCard:focus-visible, .mainFooter a:focus-visible {
-                outline: none;
-                box-shadow: 0 0 0 2px var(--cor-icone-acao-hover);
-                transform: scale(0.99);
-            }
-
-            /* Tab pressionado */
-            .tabButton:active {
-                background-color: var(--cor-fundo-botao);
-                color: #fff;
-            }
-
-            /* Botão flutuante animado */
-            .btn-new-record:active {
-                background-color: var(--cor-icone-acao-hover);
-                color: #fff;
-            }
-
-            /* Rodapé com leve realce no toque */
-            .mainFooter a:active {
-                filter: brightness(1.2);
-                transform: translateY(1px);
-            }
-
         .close-icon {
             width: 28px;
             height: 28px;
@@ -323,318 +175,125 @@
             filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
         }
 
-            /* Ao passar o mouse (desktop) */
             .close-icon:hover {
                 transform: scale(1.15) rotate(5deg);
                 opacity: 1;
             }
 
-            /* Ao clicar ou tocar (mobile e desktop) */
             .close-icon:active {
                 transform: scale(0.85) rotate(-8deg);
             }
 
-            /* Acessibilidade (teclado) */
             .close-icon:focus-visible {
                 outline: none;
                 transform: scale(1.1);
             }
 
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* Generic modal / dropdown styles (lightweight replacement for bootstrap modals) */
+        .lgm-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            z-index: 1200;
         }
 
-        .modal-title i {
-            margin-right: 10px;
+        .lgm-modal {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%) scale(1.02);
+            min-width: 320px;
+            max-width: 920px;
+            width: 90%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 18px 50px rgba(6,12,34,0.45);
+            z-index: 1220;
+            display: none;
+            overflow: hidden;
         }
 
-        .modal-footer {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: end;
-            gap: 0.5rem;
-            flex-direction: row;
-        }
-
-            .modal-footer button {
-                min-width: 100px;
-                white-space: nowrap;
-            }
-
-
-    </style>
-
-    <!-- estilos para formulários -->
-    <style>
-        .form-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            padding: 14px;
-            background-color: var(--form-container-bg);
-            height: 100%;
-        }
-
-        .form-container form {
-            position: relative;
-            width: 100%;
-            background-color: transparent;
-            min-height: fit-content;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-            .form-group label {
-                margin-bottom: 5px;
-                font-weight: bold;
-            }
-
-
-            .form-group > button {
-                width: 38px;
-                padding: 0;
-                text-align: center;
-                flex-shrink: 0;
-            }
-
-            .form-group > div {
+            .lgm-modal .lgm-modal-header {
+                padding: 12px 16px;
                 display: flex;
                 align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid rgba(0,0,0,0.04);
+            }
+
+            .lgm-modal .lgm-modal-title {
+                font-weight: 600;
+            }
+
+            .lgm-modal .lgm-modal-body {
+                padding: 16px;
+                max-height: 60vh;
+                overflow: auto;
+            }
+
+            .lgm-modal .lgm-modal-footer {
+                padding: 10px 16px;
+                display: flex;
+                justify-content: flex-end;
                 gap: 8px;
+                border-top: 1px solid rgba(0,0,0,0.04);
             }
 
-            .form-group > .form-input {
-                width: 100%;
-            }
-
-            .form-group > div > .form-input {
-                flex: 1;
-                width: auto;
-            }
-
-            .form-group > div > button {
-                flex-shrink: 0;
-                width: 38px;
-                height: 38px;
-                padding: 0;
-                text-align: center;
-            }
-
-            .form-group .form-inline {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap; /* Para garantir responsividade */
-            }
-
-                .form-group .form-inline input[type="checkbox"] {
-                    margin: 0;
-                }
-
-                .form-group .form-inline label {
-                    margin: 0;
-                    font-weight: bold;
-                }
-
-        .form-input {
-            flex: 1;
-            width: 100%;
-            padding: 5px;
-            border: 1px solid var(--input-border-color);
-            color: var(--color-input-text);
-            background-color: var(--color-input-bg);
-            border-radius: 5px;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-            .form-input:focus {
-                background-color: var(--input-focus-bg);
-                border-color: var(--input-focus-border);
-                outline: none;
-            }
-
-        .form-buttons {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .btn-remover {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            background-color: var(--btn-danger-bg);
-            color: var(--btn-danger-color);
-            flex-shrink: 0; /* não deixa ele diminuir de tamanho */
-        }
-
-        .btn-salvar {
-            height: 50px;
-            border-radius: 10px;
-            background-color: var(--btn-success-bg);
-            color: var(--btn-success-color);
-            flex: 1; /* ocupa todo o espaço restante */
-        }
-
-        .form-container button {
-            width: 48%;
-            padding: 10px;
+        .lgm-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            font-weight: 600;
         }
 
-            button.btn-success {
-                position: absolute;
-                bottom: 0px;
-                height: 50px;
-                border-radius: 10px;
-                background-color: var(--btn-success-bg);
-                color: var(--btn-success-color);
+            .lgm-btn.ghost {
+                background: transparent;
+                color: #333;
+                box-shadow: none;
             }
 
-            button.btn-danger {
-                background-color: var(--btn-danger-bg);
-                color: var(--btn-danger-color);
+            .lgm-btn.primary {
+                background: linear-gradient(145deg, #3c7df0, #2b63d3);
+                color: #fff;
             }
 
-        input[type="checkbox"] {
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-
-        .form-radio-buttons label {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 25px;
-            font-size: 1.1em;
-        }
-
-        .form-radio-buttons input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-            cursor: pointer;
-            vertical-align: middle;
-        }
-
-        .switch {
+        .lgm-dropdown {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 26px;
-            margin-right: 10px;
         }
 
-            .switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-            .slider::before {
+            .lgm-dropdown .lgm-dropdown-menu {
                 position: absolute;
-                content: "";
-                height: 20px;
-                width: 20px;
-                left: 3px;
-                bottom: 3px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
+                top: calc(100% + 8px);
+                right: 0;
+                min-width: 150px;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+                display: none;
+                z-index: 1300;
+                padding: 6px 0;
             }
 
-        .switch input:checked + .slider {
-            background-color: #4CAF50;
+                .lgm-dropdown .lgm-dropdown-menu a {
+                    display: block;
+                    padding: 8px 12px;
+                    color: #333;
+                    text-decoration: none;
+                }
+
+                    .lgm-dropdown .lgm-dropdown-menu a:hover {
+                        background: rgba(0,0,0,0.03);
+                    }
+
+        .lgm-show {
+            display: block !important;
         }
 
-            .switch input:checked + .slider::before {
-                transform: translateX(24px);
-            }
-
-        /* Select2 */
-        .select2-container .select2-selection--single {
-            height: 38px;
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--input-border-color);
-            border-radius: 5px;
-        }
-
-            .select2-container .select2-selection--single .select2-selection__rendered {
-                line-height: 38px;
-            }
-
-            .select2-container .select2-selection--single .select2-selection__arrow {
-                height: 38px;
-                display: flex;
-                align-items: center;
-            }
-
-        .select2-container .select2-selection--multiple {
-            height: auto;
-            min-height: 38px;
-            border: 1px solid var(--input-border-color);
-            border-radius: 5px;
-        }
-
-            .select2-container .select2-selection--multiple .select2-selection__choice {
-                margin: 3px 5px;
-                padding: 3px 10px;
-                border-radius: 5px;
-                background-color: var(--select-multi-bg);
-                color: var(--select-multi-color);
-            }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title i {
-            margin-right: 10px;
-        }
-
-        .modal-footer {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: end;
-            gap: 0.5rem;
-            flex-direction: row;
-        }
-
-            .modal-footer button {
-                min-width: 100px;
-                white-space: nowrap;
-            }
     </style>
-    
-    <!-- fim de estilos para formulários -->
+
     @RenderSection("style", required: false)
 </head>
 
@@ -648,18 +307,18 @@
             @if (!string.IsNullOrEmpty(ViewBag.Session?.User?.UserName))
             {
                 <div class="user-menu">
-                    <div class="dropdown">
-                        <a class="dropdown-toggle" id="userDropdown" data-toggle="dropdown">
+                    <div class="lgm-dropdown">
+                        <a class="dropdown-toggle" id="userDropdown" aria-haspopup="true" aria-expanded="false">
                             <div class="avatar-icon"><i class="fas fa-user"></i></div>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right">
+                        <div class="lgm-dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <div class="dropdown-header">@ViewBag.Session.User.UserName</div>
 
-                            <a class="dropdown-item" id="alterar-senha">
+                            <a class="dropdown-item" id="alterar-senha" href="javascript:void(0);">
                                 <i class="fas fa-key"></i> Alterar senha...
                             </a>
 
-                            <a class="dropdown-item" id="toggle-theme">
+                            <a class="dropdown-item" id="toggle-theme" href="javascript:void(0);">
                                 <i class="fas fa-moon"></i> Mudar Tema
                             </a>
 
@@ -705,81 +364,33 @@
         <!-- FOOTER -->
         <footer class="mainFooter">
             <a data-id="1" href="/home"><i class="fas fa-home"></i><span>Início</span></a>
-            <a data-id="2" href="/agenda"><i class="fas fa-calendar-alt"></i><span>Agenda</span></a>
-            <a data-id="3" href="/relatorios"><i class="fas fa-line-chart"></i><span>Relatorios</span></a>
+            <a data-id="2" href="/lancar"><i class="fas fa-exchange-alt"></i><span>Lançar</span></a>
+            <a data-id="3" href="/agenda"><i class="fas fa-calendar-alt"></i><span>Agenda</span></a>
+            <a data-id="4" href="/relatorios"><i class="fas fa-line-chart"></i><span>Relatórios</span></a>
         </footer>
     </div>
 
     <!-- SPINNER GLOBAL -->
     <div class="allmodal"></div>
 
-    <!-- Modal Genérica de Confirmação -->
-    <div class="modal fade" id="modalConfirmacao" tabindex="-1" aria-hidden="true" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content border-0">
-                <div class="modal-header text-white" id="modalConfirmacaoHeader">
-                    <h5 class="modal-title" id="modalConfirmacaoTitle">
-                        <!-- Ícone e Título dinâmico -->
-                    </h5>
-                </div>
-                <div class="modal-body" id="modalConfirmacaoBody">
-                    <!-- Mensagem -->
-                </div>
-                <div class="modal-footer justify-content-end">
-                    <button type="button" id="btnCancelarModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btnConfirmarModal" class="btn">Confirmar</button>
-                </div>
+    <!-- Generic backdrop + modal container (reutilizável) -->
+    <div id="lgm-backdrop" class="lgm-backdrop" aria-hidden="true"></div>
+
+    <div id="lgm-modal" class="lgm-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="lgm-modal-header">
+            <div class="lgm-modal-title" id="lgm-modal-title"></div>
+            <div>
+                <button id="lgm-modal-close" class="lgm-btn ghost" title="Fechar">&times;</button>
             </div>
+        </div>
+        <div id="lgm-modal-body" class="lgm-modal-body"></div>
+        <div class="lgm-modal-footer">
+            <button id="lgm-modal-cancel" class="lgm-btn ghost">Cancelar</button>
+            <button id="lgm-modal-save" class="lgm-btn primary">Salvar</button>
         </div>
     </div>
 
-    <!-- Modal de confirmação com formulário -->
-    <div class="modal fade" id="modalForm" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalFormTitle"></h5>
-                </div>
-                <div class="modal-body" id="modalFormBody">
-                    <!-- os campos vão aqui -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="btnCancelarForm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnSalvarForm">Salvar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-@*     <!-- MODAL CONFIRMAÇÃO -->
-    <div class="modal fade" id="modalConfirmacao" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-question-circle"></i> Confirmação</h5>
-                </div>
-                <div class="modal-body" id="modalConfirmacaoMensagem">Deseja continuar?</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-success" id="modalConfirmacaoOK">Confirmar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL FORM -->
-    <div class="modal fade" id="modalForm" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalFormTitle"></h5>
-                    <img class="close-icon" data-dismiss="modal" src="/icons/xmark.svg" />
-                </div>
-                <div class="modal-body" id="modalFormConteudo"></div>
-            </div>
-        </div>
-    </div>
- *@
+    <!-- SCRIPTS -->
     <script>
         // Ícones do rodapé
         function DisableIcon(id) {
@@ -787,117 +398,176 @@
             $(`.mainFooter a[data-id='${id}']`).addClass("disabled");
         }
 
-
+        // Compatibility: showModalDialog (substitui versão Bootstrap)
+        // usa showFormModal por baixo dos panos para exibir confirmação
         function showModalDialog({ titulo, mensagem, tipo = "info", onConfirm }) {
-            const $modal = $('#modalConfirmacao');
-            const $header = $('#modalConfirmacaoHeader');
-            const $title = $('#modalConfirmacaoTitle');
-            const $body = $('#modalConfirmacaoBody');
-            const $btnConfirmar = $('#btnConfirmarModal');
-            const $btnCancelar = $('#btnCancelarModal');
-
-            // Limpa classes antigas
-            $header.removeClass().addClass('modal-header text-white');
-            $btnConfirmar.removeClass().addClass('btn');
-
-            if (tipo === "info" || tipo === "erro") {
-                $btnCancelar.hide();
-                $btnConfirmar.html("Ok");
-            } else {
-                $btnCancelar.show();
-                $btnConfirmar.html("Confirmar");
-            }
-
-            // Define cores e ícones por tipo
-            let icon, cor, btnClass;
+            // icone por tipo
+            let icon = "fas fa-info-circle", btnClass = "primary";
             switch (tipo) {
-                case "alertar":
-                    icon = "fas fa-exclamation-triangle";
-                    cor = "bg-warning";
-                    btnClass = "btn-warning";
-                    break;
-                case "excluir":
-                    icon = "fas fa-trash-alt";
-                    cor = "bg-danger";
-                    btnClass = "btn-danger";
-                    break;
-                case "erro":
-                    icon = "fas fa-times-circle";
-                    cor = "bg-danger";
-                    btnClass = "btn-danger";
-                    break;
-                case "confirmar":
-                    icon = "fas fa-question-circle";
-                    cor = "bg-primary";
-                    btnClass = "btn-primary";
-                    break;
-                default:
-                    icon = "fas fa-info-circle";
-                    cor = "bg-info";
-                    btnClass = "btn-info";
-                    break;
+                case "alertar": icon = "fas fa-exclamation-triangle"; btnClass = "primary"; break;
+                case "excluir": icon = "fas fa-trash-alt"; btnClass = "primary"; break;
+                case "erro": icon = "fas fa-times-circle"; btnClass = "primary"; break;
+                case "confirmar": icon = "fas fa-question-circle"; btnClass = "primary"; break;
+                default: icon = "fas fa-info-circle"; btnClass = "primary"; break;
             }
 
-            // Atualiza conteúdo
-            $header.addClass(cor);
-            $title.html(`<i class="${icon}"></i> ${titulo}`);
-            $body.html(mensagem);
-            $btnConfirmar.removeClass().addClass(`btn ${btnClass}`);
+            const content = `<div style="padding:8px 4px;font-size:0.98rem;">${mensagem}</div>`;
 
-            // Remove eventos anteriores e adiciona novo
-            $btnConfirmar.off('click').on('click', function () {
-                if (typeof onConfirm === 'function') onConfirm();
-                $('#modalConfirmacao').modal('hide');
+            showFormModal({
+                titulo: `<i class="${icon}"></i> ${titulo}`,
+                bodyHtml: content,
+                onSubmit: function () {
+                    if (typeof onConfirm === "function") onConfirm();
+                },
+                options: { backdropClose: false } // não fecha clicando fora
             });
-
-            $btnCancelar.off('click').on('click', function () {
-                $('#modalConfirmacao').modal('hide');
-            });
-
-            // Exibe o modal
-            $('#modalConfirmacao').modal('show');
         }
 
-        function showFormModal({ titulo, bodyHtml, onSubmit }) {
-            const $modal = $('#modalForm');
-            const $title = $('#modalFormTitle');
-            const $body = $('#modalFormBody');
-            const $btnSalvar = $('#btnSalvarForm');
-            const $btnCancelar = $('#btnCancelarForm');
+        // showFormModal / hideFormModal (implementação leve; exposta globalmente mais abaixo)
+        // OBS: funções reais definidas no bloco inferior (IIFE) para encapsular comportamento.
+    </script>
 
-            $title.html(titulo);
-            $body.html(bodyHtml);
+    <script>
+        /* Lightweight modal/dropdown JS (no jQuery required but compatible with jQuery usage) */
+        (function(){
+          const $backdrop = document.getElementById('lgm-backdrop');
+          const $modal = document.getElementById('lgm-modal');
+          const $title = document.getElementById('lgm-modal-title');
+          const $body = document.getElementById('lgm-modal-body');
+          const $btnSave = document.getElementById('lgm-modal-save');
+          const $btnCancel = document.getElementById('lgm-modal-cancel');
+          const $btnClose = document.getElementById('lgm-modal-close');
 
-            // botão salvar
-            $btnSalvar.off('click').on('click', function () {
-                if (typeof onSubmit === 'function') {
-                    const formData = {};
-                    $modal.find('input, select, textarea').each(function () {
-                        formData[$(this).attr('name')] = $(this).val();
-                    });
-                    onSubmit(formData);
-                }
-                $modal.modal('hide');
-            });
+          let currentOnSubmit = null;
+          let allowBackdropClose = false;
 
-            // Botão Cancelar
-            $btnCancelar.off('click').on('click', function () {
-                $modal.modal('hide');
-            });
+          function showModal({ titulo = '', bodyHtml = '', onSubmit = null, options = {} } = {}) {
+            currentOnSubmit = onSubmit;
+            allowBackdropClose = !!options.backdropClose; // default false -> static
 
-            $modal.modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-            $modal.modal('show');
-        }
+            // set title (accept HTML)
+            if (typeof titulo === 'string') $title.innerHTML = titulo;
+            else $title.textContent = String(titulo || '');
 
+            // Accept string or DOM node/jQuery object
+            if (typeof bodyHtml === 'string') {
+              $body.innerHTML = bodyHtml;
+            } else if (bodyHtml instanceof Element) {
+              $body.innerHTML = '';
+              $body.appendChild(bodyHtml);
+            } else if (window.jQuery && bodyHtml instanceof jQuery) {
+              $body.innerHTML = '';
+              bodyHtml.each(function(){ $body.appendChild(this.cloneNode(true)); });
+            } else {
+              $body.innerHTML = '';
+            }
 
+            $backdrop.classList.add('lgm-show');
+            $modal.classList.add('lgm-show');
+            $backdrop.setAttribute('aria-hidden','false');
+            $modal.setAttribute('aria-hidden','false');
+
+            // focus first input
+            setTimeout(()=> {
+              const first = $body.querySelector('input,select,textarea,button');
+              if (first) first.focus();
+            },120);
+          }
+
+          function hideModal() {
+            $backdrop.classList.remove('lgm-show');
+            $modal.classList.remove('lgm-show');
+            $backdrop.setAttribute('aria-hidden','true');
+            $modal.setAttribute('aria-hidden','true');
+            currentOnSubmit = null;
+          }
+
+          // clicks
+          $btnClose.addEventListener('click', hideModal);
+          $btnCancel.addEventListener('click', hideModal);
+
+          $btnSave.addEventListener('click', function(){
+            if (typeof currentOnSubmit === 'function') {
+              // collect form values (inputs/selects/textareas with name)
+              const formData = {};
+              Array.from($body.querySelectorAll('input[name],select[name],textarea[name]')).forEach(el=>{
+                formData[el.name] = el.value;
+              });
+              try { currentOnSubmit(formData); } catch(e){ console.error(e); }
+            }
+            hideModal();
+          });
+
+          // backdrop click (option)
+          $backdrop.addEventListener('click', function(){
+            if (allowBackdropClose) hideModal();
+          });
+
+          // Expose function globally
+          window.showFormModal = function(params){
+            showModal(params || {});
+          };
+
+          window.hideFormModal = hideModal;
+
+          /* Simple dropdown behavior: toggle .lgm-dropdown-menu for .dropdown-toggle */
+          document.addEventListener('click', function(e){
+            const toggle = e.target.closest('.dropdown-toggle');
+            if (toggle) {
+              e.preventDefault();
+              const parent = toggle.closest('.lgm-dropdown, .dropdown') || toggle.parentElement;
+              const menu = parent && parent.querySelector('.lgm-dropdown-menu, .dropdown-menu');
+              if (menu) {
+                menu.classList.toggle('lgm-show');
+              }
+              // close other menus
+              Array.from(document.querySelectorAll('.lgm-dropdown-menu.lgm-show, .dropdown-menu.lgm-show')).forEach(m=>{
+                if (m !== menu) m.classList.remove('lgm-show');
+              });
+              return;
+            }
+            // click outside closes menus
+            if (!e.target.closest('.lgm-dropdown, .dropdown')) {
+              Array.from(document.querySelectorAll('.lgm-dropdown-menu.lgm-show, .dropdown-menu.lgm-show')).forEach(m=> m.classList.remove('lgm-show'));
+            }
+          });
+
+        })();
+    </script>
+
+    <script>
+        // existing helpers (kept mostly unchanged)
         $('form').submit(function () {
             $('[data-mask]').each(function () {
                 $(this).val($(this).val().replace('.', ''));
             });
-        })
+        });
+
+        $(document).on({
+            ajaxStart: function () { $("body").addClass("loading"); },
+            ajaxStop: function () { $("body").removeClass("loading"); }
+        });
+
+        function showLoading() { document.body.classList.add("loading"); }
+        function hideLoading() { document.body.classList.remove("loading"); }
+
+        window.addEventListener("beforeunload", showLoading);
+
+        document.addEventListener("click", function (e) {
+            const link = e.target.closest("a[href]");
+            if (link && !link.hasAttribute("target") && !link.getAttribute("href").startsWith("#")) {
+                showLoading();
+            }
+        });
+
+        document.addEventListener("submit", function (e) {
+            if (!e.target.hasAttribute("data-ajax") && !e.target.hasAttribute("data-no-loading")) {
+                showLoading();
+            }
+        });
+
+        window.addEventListener("pageshow", hideLoading);
+        window.addEventListener("load", hideLoading);
 
         $(document).ready(function () {
             $('[data-mask]').each(function () {
@@ -907,57 +577,13 @@
                 $(this).mask($(this).attr("data-mask"), { reverse: true });
             });
             $('.select2').select2();
-            $('.select2[multiple]').select2({
-                allowClear: true
-            });
-        });
+            $('.select2[multiple]').select2({ allowClear: true });
 
-        $(document).on({
-            ajaxStart: function () { $("body").addClass("loading"); },
-            ajaxStop: function () { $("body").removeClass("loading"); }
-        });
-
-        function showLoading() {
-            document .body.classList.add("loading");
-        }
-
-        function hideLoading() {
-            document .body.classList.remove("loading");
-        }
-
-        window.addEventListener("beforeunload", showLoading);
-
-        document.addEventListener("click", function (e) {
-                const link = e.target.closest("a[href]");
-                if (link && !link.hasAttribute("target") && !link.getAttribute("href").startsWith("#")) {
-                    showLoading();
-                }
-            });
-
-        document.addEventListener("submit", function (e) {
-                // Só mostra se for submissão normal (não Ajax)
-                if (!e.target.hasAttribute("data-ajax") && !e.target.hasAttribute("data-no-loading")) {
-                    showLoading();
-                }
-            });
-
-        document.addEventListener("hidden.bs.modal", function () {
-            hideLoading();
-        });
-
-        window.addEventListener("pageshow", hideLoading);
-
-        window.addEventListener("load", hideLoading);
-
-
-        $(document).ready(function () {
             $('.custom-toast').each(function (index) {
                 let $toast = $(this);
                 setTimeout(function () {
                     $toast.addClass('fade-out');
-                    setTimeout(function () {
-                        $toast.remove();
-                    }, 1000);
+                    setTimeout(function () { $toast.remove(); }, 1000);
                 }, 3000 + index * 300);
             });
 
@@ -981,7 +607,6 @@
                 window.location.href = "/Home/AlterarSenha";
             });
         });
-
     </script>
 
     @RenderSection("script", required: false)

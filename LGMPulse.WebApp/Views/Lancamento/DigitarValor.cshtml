@@ -178,17 +178,21 @@
             });
 
             $('#btnAdvancedFields').on('click', function () {
-                 const cloneHtml = $('#divAdvancedFields').clone(true).prop('outerHTML');
+                 const clone = $('#divAdvancedFields')
+                                        .clone(true)
+                                        .removeAttr('style')
+                                        .show();
 
                  showFormModal({
                     titulo: 'Dados avançados',
-                    bodyHtml: cloneHtml,
+                    bodyHtml: clone,
                     onSubmit: (formData) => {
                         descMovto = formData.Descricao;
                         dataMovto = formData.DataMovto;
-                        $('#Descricao').val(descMovto);
-                        $('#DataMovto').val(dataMovto);                    }
-                     });
+                        $('#divAdvancedFields #Descricao').val(descMovto);
+                        $('#divAdvancedFields #DataMovto').val(dataMovto);
+                    }
+                 });
             });
 
         });
