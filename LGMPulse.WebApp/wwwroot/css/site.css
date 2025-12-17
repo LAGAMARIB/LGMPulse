@@ -58,6 +58,20 @@
     --overlay-dark: rgba(16,20,28,0.96); /* tela escura opaca (quase preta) */
     --add-bg-start: #f5f3ef; /* botão - claro */
     --add-bg-end: #e5d6a3; /* botão - tom quente */
+    /* ===== Login / Auth ===== */
+    --login-bg: #ffffff;
+    --login-header-bg: var(--overlay-dark);
+    --login-header-text: #ffffff;
+    --login-shadow: var(--shadow-soft);
+    --login-text-primary: var(--text-1);
+    --login-text-muted: var(--text-3);
+    --login-link: var(--color-primary);
+    --login-link-hover: var(--color-secondary);
+    --login-danger: var(--pulse-red);
+    /* Auth / Forms neutros (fora do login) */
+    --auth-title: var(--color-primary);
+    --auth-subtitle: var(--text-2);
+    --auth-link: var(--color-primary);
 }
 
 * {
@@ -72,7 +86,7 @@ html, body {
 }
 
 html {
-    font-size: 14px;
+    font-size: 18px; 
     font-family: 'Segoe UI', Roboto, sans-serif;
     color: var(--text-1);
     line-height: 1.4;

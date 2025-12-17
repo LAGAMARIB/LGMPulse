@@ -2,7 +2,7 @@
 
 public class HealthyDashViewModel
 {
-    public decimal TotalReceitas { get; set; }
-    public decimal TotalDespesas { get; set; }
-    public decimal PercDiferenca { get; set; }
+    public decimal TotalReceitas { get; set; } = 0;
+    public decimal TotalDespesas { get; set; } = 0;
+    public decimal PercDiferenca { get; set; } = 0;
 }

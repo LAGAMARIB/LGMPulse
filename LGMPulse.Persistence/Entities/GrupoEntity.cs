@@ -15,4 +15,6 @@ internal class GrupoEntity : BaseEntity
 
     [LGMSearchField]
     public int? QtdMovtos { get; set; }
+
+    public string? ImagePath { get; set; }
 }

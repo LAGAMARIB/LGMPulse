@@ -1,4 +1,5 @@
 ﻿@using LGMDomains.Common.Helpers
+@using LGMPulse.Domain.Enuns
 @using LGMPulse.WebApp.Models
 @model DigitarValorViewModel
 @{
@@ -187,7 +188,6 @@
                                         .clone(true)
                                         .removeAttr('style')
                                         .show();
-
                  showFormModal({
                     titulo: 'Dados avançados',
                     bodyHtml: clone,
@@ -200,6 +200,42 @@
                  });
             });
 
+            $('#btnConfirm').on('click', function (e) {
+                e.preventDefault();
+
+                let intNumber = parseInt(rawValue || "0");
+                if (intNumber === 0) {
+                    alert('Valor deve ser maior que zero.');
+                    return false;
+                }
+                let returnValue = intNumber / 100;
+
+                $(this).prop('disabled', true);
+
+                var objMovto = {
+                    TipoMovto: parseInt("@((int)Model.TipoMovto)", 10),
+                    IDGrupo: parseInt("@Model.IDGrupo", 10),
+                    DataMovto: dataMovto,
+                    Descricao: descMovto,
+                    ValorMovto: returnValue
+                };
+
+                $.ajax({
+                    url: '/Lancamento/create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(objMovto),
+                    success: function (response) {
+                        window.parent.postMessage({
+                            action: "closeOverlayAndReload"
+                        }, "*");
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro:', error);
+                        alert("Erro ao salvar: " + (xhr.responseText || "Erro interno"));
+                    }
+                });
+            });
         });
     </script>
 }

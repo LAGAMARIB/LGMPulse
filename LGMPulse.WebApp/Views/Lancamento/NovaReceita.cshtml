@@ -1,4 +1,6 @@
-﻿@{
+﻿@using LGMPulse.Domain.Domains
+@model List<Grupo>
+@{
     ViewBag.Title = "Nova Receita";
 }
 
@@ -58,27 +60,13 @@
 }
 
 <div class="category-grid">
-
-    <div class="category-item" data-grupo="4">
-        <img src="/icons/salary.svg" alt="Salário">
-        <span>Salário</span>
-    </div>
-
-    <div class="category-item" data-grupo="1">
-        <img src="/icons/rendimentos.svg" alt="Rendimentos">
-        <span>Rendimentos</span>
-    </div>
-
-    <div class="category-item" data-grupo="2">
-        <img src="/icons/seller.svg" alt="Vendas">
-        <span>Vendas</span>
-    </div>
-
-    <div class="category-item" data-grupo="3">
-        <img src="/icons/open-pocket.svg" alt="Outras receitas">
-        <span>Outras receitas</span>
-    </div>
-
+    @foreach (var grupo in Model)
+    {
+        <div class="category-item" data-idGrupo="@grupo.ID">
+            <img src="@grupo.ImagePath" alt="@grupo.Descricao" />
+            <span>@grupo.Descricao</span>
+        </div>
+    }
 </div>
 
 @section script {

@@ -1,0 +1,202 @@
+﻿@using LGMPulse.WebApp.Models
+@{
+    Layout = "_Layout";
+}
+
+@section style {
+    <style>
+        .pnl-top {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 60px;
+            z-index: 100;
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            height: 3.75em;
+            background-color: var(--login-header-bg);
+            color: var(--login-header-text);
+        }
+
+            .pnl-top #pagelabel {
+                text-align: center;
+                font-size: x-large;
+            }
+
+        .sombra {
+            box-shadow: var(--login-shadow);
+            -moz-box-shadow: var(--login-shadow);
+            -webkit-box-shadow: var(--login-shadow);
+        }
+
+        .flex-container {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100vh;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flex-item {
+            width: 1300px;
+        }
+
+        #div-logo {
+            float: left;
+            margin-left: 200px;
+            margin-right: auto;
+            width: 30%;
+        }
+
+            #div-logo img {
+                width: 100%;
+            }
+
+        #div-logo-min {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        #div-logo-min img {
+            height: 100px;
+        }
+
+        #div-login {
+            position: relative;
+            display: block;
+            width: 400px;
+            height: auto;
+            min-height: 450px;
+            float: right;
+            margin-right: 200px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--login-bg);
+            box-shadow: var(--login-shadow);
+        }
+
+        #frm-footer {
+            position: relative;
+            bottom: 1em;
+            width: 100%;
+            border-top: 1px solid var(--input-border-color);
+            padding: 15px 0;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .frm-field label {
+            font-weight: bold;
+            width: 100%;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        .frm-field input {
+            width: 95%;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        #frm-login button {
+            width: 200px;
+            padding: 12px;
+            font-size: 1.3rem;
+        }
+
+        .criar-conta-bottom {
+            position: absolute;
+            bottom: 15px; /* distância do fundo da div */
+            left: 50%;
+            transform: translateX(-50%); /* centraliza horizontalmente */
+            text-align: center;
+            width: 100%; /* garante alinhamento central */
+        }
+
+        .criar-conta-link {
+            font-size: 18px;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+            .criar-conta-link:hover {
+                color: var(--color-text-default);
+            }
+
+
+        @@media screen and (max-width: 1300px) {
+            #div-logo {
+                display: none;
+            }
+
+            #div-login {
+                float: none;
+                margin: auto;
+                height: 500px;
+            }
+
+            #div-logo-min {
+                display: block;
+            }
+        }
+
+        @@media screen and (max-width: 400px) {
+            #div-login {
+                width: 90%;
+            }
+
+            .frm-field input {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+}
+
+<div class="pnl-top">
+    <div id="pagelabel">
+        <label>LAGAMA Personal Finance</label>
+        <span>@RenderSection("pagelabel", false)</span>
+    </div>
+</div>
+<div class="flex-container">
+    <div class="flex-item">
+        <div id="div-logo">
+            <img src="/img/pulse.svg" alt="login" />
+        </div>
+        <div id="div-login" class="sombra">
+            <div id="div-logo-min">
+                <img src="/img/pulse.svg" alt="login" />
+            </div>
+            <br />
+            @if (TempData["Mensagem"] != null && TempData["Mensagem"] != String.Empty)
+            {
+                <div class="alert alert-danger">
+                    <small>@TempData["Mensagem"]</small>
+                </div>
+            }
+            @RenderBody()
+            <div class="criar-conta-bottom">
+                <a href="/Home/CriarContaUsuario" class="criar-conta-link">
+                    <i class="fas fa-user-plus"></i> Ainda não tem conta? Cadastre-se
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            $('.mainFooter').hide();
+        });
+    </script>
+}
+

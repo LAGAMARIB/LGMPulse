@@ -1,17 +1,24 @@
 using LGMDomains.Common;
+using LGMDomains.Common.Helpers;
+using LGMDomains.Identity;
+using LGMPulse.AppServices.Interfaces;
+using LGMPulse.Connections;
+using LGMPulse.Domain.Domains;
+using LGMPulse.Domain.Enuns;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LGMPulse.WebApp.Controllers 
 {
     public class HomeController : LGMController
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IMovtoService _movtoService;
+        private readonly ILoginService? _loginService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IMovtoService movtoService, ILoginService? loginService)
         {
-            _logger = logger;
+            _movtoService = movtoService;
+            _loginService = loginService;
         }
 
         public async Task<IActionResult> Index()
@@ -21,15 +28,110 @@ namespace LGMPulse.WebApp.Controllers
             );
         }
 
-        private async Task<LGMResult<HealthyDashViewModel>> NewHealthyDashViewModel()
+        private async Task<LGMResult<HealthyDashViewModel>> NewHealthyDashViewModel(int? year=null, int? month=null)
         {
-            HealthyDashViewModel viewModel = new()
+            year ??= DateTimeHelper.Now().Year;
+            month ??= DateTimeHelper.Now().Month;
+            var result = await _movtoService.GetListAsync(year.Value, month.Value);
+            HealthyDashViewModel viewModel = new();
+            foreach (var movto in result.Data!)
             {
-                TotalDespesas = 15360.00m,
-                TotalReceitas = 6897.85m,
-                PercDiferenca = -12.82m
-            };
+                if (movto.TipoMovto == TipoMovtoEnum.Despesa)
+                    viewModel.TotalDespesas += movto.ValorMovto ?? 0;
+                else
+                    viewModel.TotalReceitas += movto.ValorMovto ?? 0;
+            }
+            //viewModel.PercDiferenca = CalcDifLiquidez();
             return LGMResult.Ok(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Login()
+        {
+            LGMSession? lgmSession = SessionHelper.GetLGMSession() ?? SessionHelper.GetLGMRefresh();
+            if (lgmSession != null)
+            {
+                try
+                {
+                    await PostApiLogout(lgmSession);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Sessão já estava expirada — ignora e continua o login normalmente
+                }
+                catch (Exception ex)
+                {
+                    // Loga se quiser, mas não quebra a tela de login
+                    Console.WriteLine($"Erro ao tentar fazer logout: {ex.Message}");
+                }
+            }
+
+            if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_SESSION))
+                Response.Cookies.Delete(ConnectionSettings.Instance.LGM_SESSION);
+            if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_REFRESH))
+                Response.Cookies.Delete(ConnectionSettings.Instance.LGM_REFRESH);
+
+            return View(new LoginViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginAsync(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            LoginModel loginModel = new()
+            {
+                CodAplicacao = "pfinan",
+                CodEmpresa = "",
+                Login = model.Email,
+                Senha = model.Senha
+            };
+            LGMResult<LGMUser> result = await _loginService!.ValidateLoginAsync(loginModel);
+            if (!result.IsSuccess || result.Data == null)
+            {
+                ModelState.AddModelError(string.Empty, result.Message ?? "Falha na autenticação");
+                return View(model);
+            }
+            LGMUser lgmUser = result.Data;
+
+            if (lgmUser.RegisterStatus == UserRegisterStatus.New || lgmUser.RegisterStatus == UserRegisterStatus.Initializing)
+            {
+                ModelState.AddModelError(string.Empty, "Sua conta está sendo preparada. Aguarde email de ativação.");
+                return View(model);
+            }
+
+            if (lgmUser.RegisterStatus != UserRegisterStatus.Ready)
+            {
+                ModelState.AddModelError(string.Empty, "Usuário não habilitado ou conta desativada");
+                return View(model);
+            }
+
+            LGMResult<LocalUser> localUserResult = await _loginService.GetLocalUser(lgmUser);
+            if (!localUserResult.IsSuccess || localUserResult.Data == null)
+            {
+                ModelState.AddModelError(string.Empty, localUserResult.Message ?? "Falha na autenticação");
+                return View(model);
+            }
+
+            LocalUser localUser = localUserResult.Data;  // DBKey n UserEmail assigned
+            localUser.UserLogin = lgmUser.UserLogin;
+            localUser.UserName = lgmUser.UserName;
+            localUser.Token = lgmUser.Token;
+            LGMSession lgmSession = new LGMSession()
+            {
+                User = localUser
+            };
+            ValidateToken(lgmSession, out DateTime expiration);
+            lgmSession.ExpireDateTime = expiration;
+
+            if (!this.GenerateCookie(lgmSession))
+            {
+                ModelState.AddModelError(string.Empty, "Falha na autenticação do usuário");
+                return View(model);
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

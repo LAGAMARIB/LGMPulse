@@ -9,6 +9,8 @@ public static class ServiceCollectionExt
     public static IServiceCollection AddInfraServices(this IServiceCollection services)
     {
         services.AddScoped<IGrupoRepository, GrupoRepository>();
+        services.AddScoped<IMovtoRepository, MovtoRepository>();
+        services.AddScoped<ILocalUserRepository, LocalUserRepository>();
 
         return services;
     }

@@ -6,6 +6,7 @@ using LGMPulse.Connections.Helpers;
 using LGMPulse.Domain.Domains;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Text.Json;
 
 namespace LGMPulse.WebApp.Controllers;
@@ -33,6 +34,16 @@ public class LGMController : Controller
         }
         catch (UnauthorizedAccessException)
         {
+            var controller = RouteData.Values["controller"]?.ToString();
+            var callAction = RouteData.Values["action"]?.ToString();
+
+            if (controller?.Equals("Home", StringComparison.OrdinalIgnoreCase) == true &&
+                callAction?.Equals("Index", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                // Já estamos em Home/Index → evita loop
+                return ViewError("Acesso não autorizado.");
+            }
+
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
@@ -61,6 +72,16 @@ public class LGMController : Controller
         }
         catch (UnauthorizedAccessException)
         {
+            var controller = RouteData.Values["controller"]?.ToString();
+            var action = RouteData.Values["action"]?.ToString();
+
+            if (controller?.Equals("Home", StringComparison.OrdinalIgnoreCase) == true &&
+                action?.Equals("Index", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                // Já estamos em Home/Index → evita loop
+                return ViewError("Acesso não autorizado.");
+            }
+
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
@@ -98,8 +119,6 @@ public class LGMController : Controller
 
     private async Task<IActionResult?> validarSessao()
     {
-        /* TODO: Reativar validação 888888888888888888888
-         
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
         LGMSession? lgmSession = SessionHelper.GetLGMSession();
 
@@ -111,7 +130,6 @@ public class LGMController : Controller
             var refreshResult = await PostApiRefresh(lgmRefresh);
             if (!refreshResult || !GenerateCookie(lgmRefresh))
                 return Redirect("/Home/Login");
-
             return null;
         }
 
@@ -121,21 +139,21 @@ public class LGMController : Controller
             return Redirect("/Home/Login");
 
         ViewBag.Session = lgmSession;
-        */
-        LGMSession session = new()
-        {
-            ExpireDateTime = DateTime.Now.AddDays(1),
-            User = new LocalUser()
-            {
-                DBKey = "lgm",
-                ID = 1,
-                UserEmail = "xanderib@gmail.com",
-                UserLogin = "xanderib@gmail.com",
-                UserName = "Alexandre",
-                Token = "token_mock"
-            }
-        };
-        ViewBag.Session = session;
+        
+        //LGMSession session = new()
+        //{
+        //    ExpireDateTime = DateTime.Now.AddDays(1),
+        //    User = new LocalUser()
+        //    {
+        //        DBKey = "lgm",
+        //        ID = 1,
+        //        UserEmail = "xanderib@gmail.com",
+        //        UserLogin = "xanderib@gmail.com",
+        //        UserName = "Alexandre",
+        //        Token = "token_mock"
+        //    }
+        //};
+        //ViewBag.Session = session;
         return null;
     }
 

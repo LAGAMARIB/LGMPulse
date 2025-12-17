@@ -1,4 +1,4 @@
-﻿namespace LGMPulse.WebApp.Models;
+﻿namespace LGMPulse.Domain.Enuns;
 
 public enum TipoMovtoEnum
 {

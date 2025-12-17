@@ -1,0 +1,108 @@
+﻿@using LGMPulse.WebApp.Models
+@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_login.cshtml";
+}
+
+<style>
+    .text-danger {
+        margin-top: -8px;
+        margin-bottom: 8px;
+        font-size: 0.9em;
+        color: var(--login-danger);
+        display: block;
+    }
+
+    .button-primary {
+        background: var(--btn-success-bg);
+        color: var(--btn-success-color);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-acessar {
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+        font-weight: bold;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .btn-criar-conta {
+        background: var(--color-secondary);
+        color: var(--color-text-on-primary);
+        font-weight: bold;
+        margin-top: 10px;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    .forgot-link {
+        font-size: 0.9em;
+        text-decoration: none;
+    }
+
+    .forgot-link,
+    .criar-conta-link {
+        color: var(--login-link);
+    }
+
+        .forgot-link:hover,
+        .criar-conta-link:hover {
+            color: var(--login-link-hover);
+        }
+
+</style>
+
+<body>
+
+    <form id="frm-login" asp-action="Login" method="post" class="login-form">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="frm-field">
+            <label for="Email">Email:</label>
+            <input asp-for="Email" type="email" id="Login" class="form-control" required />
+            @if (ViewData.ModelState.ContainsKey("Email") && ViewData.ModelState["Email"].Errors.Count > 0)
+            {
+                <span class="text-danger">@ViewData.ModelState["Email"].Errors[0].ErrorMessage</span>
+            }
+        </div>
+        <br />
+        <div class="frm-field">
+            <label for="Senha">Senha:</label>
+            <input asp-for="Senha" type="password" id="Senha" class="form-control" required />
+            <a href="/Home/RecuperarSenha" class="forgot-link">Esqueci a senha</a>
+            @if (ViewData.ModelState.ContainsKey("Senha") && ViewData.ModelState["Senha"].Errors.Count > 0)
+            {
+                <span class="text-danger">@ViewData.ModelState["Senha"].Errors[0].ErrorMessage</span>
+            }
+        </div>
+        <div id="frm-footer">
+            <button type="submit" class="button-primary">Acessar</button>
+        </div>
+    </form>
+
+    <script>
+        $('#frm-login').submit(function () {
+            var empresa = $('#CodEmpresa').val();
+            var loginName = $('#Login').val();
+            localStorage.setItem('CodEmpresa', empresa);
+            localStorage.setItem('LoginName', loginName);
+        });
+
+        $(document).ready(function () {
+            var empresa = localStorage.getItem('CodEmpresa');
+            var loginName = localStorage.getItem('LoginName');
+            if (empresa) {
+                $('#CodEmpresa').val(empresa);
+                $('#Login').val(loginName);
+            }
+        });
+    </script>
+</body>

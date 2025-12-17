@@ -505,6 +505,15 @@
                 goBackOverlay();
             });
 
+            window.addEventListener("message", function (event) {
+                if (!event.data) return;
+
+                if (event.data.action === "closeOverlayAndReload") {
+                    closeOverlay();
+                    window.location.reload();
+                }
+            });
+
             DisableIcon(1);
             RefreshSpheres();
         });

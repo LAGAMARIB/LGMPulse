@@ -1,0 +1,153 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@section style {
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--auth-title);
+        }
+
+        .form-subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: var(--auth-subtitle);
+        }
+
+        .form-footer {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--auth-subtitle);
+        }
+
+            .form-footer a {
+                font-weight: bold;
+                color: var(--auth-link);
+                text-decoration: none;
+            }
+
+                .form-footer a:hover {
+                    text-decoration: underline;
+                }
+
+        .close-icon {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            height: 45px;
+            z-index: 100;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+            filter: brightness(0.7);
+        }
+
+            .close-icon:hover {
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+        .btn-salvar {
+            background: var(--btn-success-bg);
+            color: var(--btn-success-color);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform var(--pulse), box-shadow var(--pulse);
+        }
+
+            .btn-salvar:hover {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-hover);
+            }
+
+
+    </style>
+}
+<div class="form-container">
+    <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
+    <form id="frm-login" autocomplete="new-password">
+        <h2 class="form-title">Alterar Senha</h2>
+        <p class="form-subtitle">Informe a nova senha duas vezes</p>
+
+        <div class="frm-field">
+            <label for="Senha">Nova senha:</label>
+            <input type="password" id="NovaSenha" name="Senha"
+                   class="form-control" required autocomplete="new-password" />
+        </div>
+        <br />
+        <div class="frm-field">
+            <label for="Senha">Confirme a senha:</label>
+            <input type="password" id="ConfirmaSenha"
+                   class="form-control" required autocomplete="new-password" />
+            <span class="text-danger" id="noMatchMsg" style="display: none;">As senhas não coincidem. Redigite a nova senha.</span>
+        </div>
+        <br /><br />
+        <div class="form-buttons">
+            <button type="submit" class="btn-salvar">Confirmar</button>
+        </div>
+    </form>
+</div>
+
+@section script {
+    <script>
+        $(function () {
+            $('#frm-login').submit(function (e) {
+                e.preventDefault();
+                let senha1 = $('#NovaSenha').val();
+                let senha2 = $('#ConfirmaSenha').val();
+                if (senha1 != senha2) {
+                    $('#noMatchMsg').show();
+                    return false;
+                }
+
+                // Envia o formulário
+                $.ajax({
+                    url: '/Home/AlterarSenha',
+                    method: 'POST',
+                    data: $(this).serialize()
+                })
+                .done(function (res) {
+                    if (res.IsSuccess) {
+                        alert('Senha alterada com sucesso!');
+                        window.location.href = res.RedirectUrl ?? "Home/Login";
+                    } else {
+                        alert(res.Message || "Ocorreu um erro ao alterar a senha.");
+                    }
+                })
+                .fail(function (xhr) {
+                    alert("Erro de comunicação: " + (xhr.responseText || xhr.statusText));
+                });
+
+            });
+
+            $('#btnFecharForm').on('click', function () {
+                window.history.back();
+            });
+
+        });
+
+        $(document).ready(function () {
+            var empresa = localStorage.getItem('CodEmpresa');
+            var loginName = localStorage.getItem('LoginName');
+            if (empresa) {
+                $('#CodEmpresa').val(empresa);
+                $('#Login').val(loginName);
+            }
+        });
+    </script>
+
+}

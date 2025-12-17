@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.Title = ViewBag.Title ?? "Criar Conta";
+}
+
+@section style {
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--auth-title);
+        }
+
+        .form-subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: var(--auth-subtitle);
+        }
+
+        .form-footer {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--auth-subtitle);
+        }
+
+            .form-footer a {
+                font-weight: 600;
+                color: var(--auth-link);
+                text-decoration: none;
+            }
+
+                .form-footer a:hover {
+                    text-decoration: underline;
+                }
+
+        .btn-salvar {
+            width: 100%;
+            background: var(--btn-success-bg);
+            color: var(--btn-success-color);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform var(--pulse), box-shadow var(--pulse);
+        }
+
+            .btn-salvar:hover {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-hover);
+            }
+
+    </style>
+}
+
+<div class="form-container">
+    <form id="formCadastro">
+        <h2 class="form-title">Criar Conta</h2>
+        <p class="form-subtitle">Preencha os dados abaixo para começar</p>
+
+        <div class="form-group">
+            <label for="Nome">Nome e Sobrenome</label>
+            <input type="text" id="Nome" name="UserName" class="form-input" placeholder="Ex: João Silva" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Email">E-mail (Login)</label>
+            <input type="email" id="Email" name="UserEmail" class="form-input" placeholder="seuemail@email.com" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Celular">Celular</label>
+            <input type="tel" id="Celular" name="UserPhone" class="form-input" placeholder="(11) 99999-9999" data-mask="(00) 00000-0000" required />
+        </div>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn-salvar">Criar Conta</button>
+        </div>
+
+        <div class="form-footer">
+            <p>Já possui conta? <a href="/Home/Login" class="link-login">Entrar</a></p>
+        </div>
+    </form>
+</div>
+
+@section script {
+<script>
+    $(function () {
+        const $form = $('#formCadastro');
+        const $toLogin = $('#toLogin');
+
+        // Envia ok formulário
+        $form.on('submit', function (e) {
+           e.preventDefault();
+
+           $.ajax({
+             url: '/Home/CriarContaUsuario',
+             method: 'POST',
+             data: $form.serialize()
+           })
+           .done(function (res) {
+             if (res.IsSuccess) {
+                showModalDialog({
+                    titulo: 'Parabéns!',
+                    mensagem: res.Message,
+                    tipo: 'info', //excluir, info, confirmar, alertar, erro
+                    onConfirm: () => {
+                       window.location.href = res.RedirectUrl;
+                    }
+                });    
+             } else {
+                alert(res.Message || "Ocorreu um erro ao criar a conta.");
+             }
+           })
+           .fail(function (xhr) {
+             alert("Erro de comunicação: " + (xhr.responseText || xhr.statusText));
+           });
+         });
+
+
+        // Link para login
+        $toLogin.on('click', function () {
+          window.location.href = '/Home/login'; 
+        });
+     });
+
+    $(document).ready(function () {
+        $('.mainFooter').hide();
+    });
+
+</script>
+}

@@ -8,7 +8,9 @@ public static class ServiceCollectionExt
 {
     public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
+        services.AddScoped<ILoginService, LoginService>();
         services.AddScoped<IGrupoService, GrupoService>();
+        services.AddScoped<IMovtoService, MovtoService>();
 
         return services;
     }

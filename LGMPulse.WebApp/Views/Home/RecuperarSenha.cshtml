@@ -1,0 +1,115 @@
+﻿@{
+    Layout = "~/Views/Shared/_login.cshtml";
+}
+
+<style>
+    .text-danger {
+        margin-top: -8px;
+        margin-bottom: 8px;
+        font-size: 0.9em;
+        color: var(--login-danger);
+        display: block;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-acessar {
+        font-weight: bold;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--btn-success-bg);
+        color: var(--btn-success-color);
+    }
+
+    .btn-criar-conta {
+        font-weight: bold;
+        margin-top: 10px;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+        background: var(--color-secondary);
+        color: #fff;
+    }
+
+    .forgot-link {
+        font-size: 0.9em;
+        color: var(--login-link);
+        text-decoration: none;
+    }
+
+        .forgot-link:hover {
+            color: var(--login-link-hover);
+        }
+
+    .criar-conta-topo {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        z-index: 1;
+    }
+
+        .criar-conta-topo a {
+            color: var(--login-link);
+        }
+
+            .criar-conta-topo a:hover {
+                color: var(--login-link-hover);
+            }
+
+</style>
+
+<body>
+    <form id="frm-login">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <span>Será enviada uma senha temporária para o seu email.</span>
+        <br />
+        <br />
+        <div class="frm-field">
+            <label for="Email">Email:</label>
+            <input type="email" id="Email" name="Email" class="form-control" required />
+            <a href="/Home/Login" class="forgot-link">Lembrei a senha</a>
+        </div>
+        <br />
+        <br />
+        <div id="frm-footer">
+            <button type="submit" class="button-primary">Enviar</button>
+        </div>
+    </form>
+
+    <script>
+        $('#frm-login').on('submit', function (e) {
+            e.preventDefault();
+
+            let url = '/Home/RecuperarSenha';
+            let data = $(this).serialize();
+            $.post(url, data, function (resp) {
+                if (!resp.IsSuccess) {
+                    //alert(resp.Message);
+                    showModalDialog({
+                        titulo: 'Falha Recuperar Senha',
+                        mensagem: resp.Message,
+                        tipo: 'erro' //excluir, info, confirmar, alertar, erro
+                    });
+                } else {
+                    window.location.href = resp.RedirectUrl;
+                }
+            });
+            return false;
+        });
+
+        $(document).ready(function () {
+            var empresa = localStorage.getItem('CodEmpresa');
+            var loginName = localStorage.getItem('LoginName');
+            if (empresa) {
+                //$('#CodEmpresa').val(empresa);
+                $('#Email').val(loginName);
+            }
+        });
+    </script>
+</body>

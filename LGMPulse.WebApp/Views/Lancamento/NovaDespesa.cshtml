@@ -1,4 +1,6 @@
-﻿@{
+﻿@using LGMPulse.Domain.Domains
+@model List<Grupo>
+@{
     ViewBag.Title = "Nova Despesa";
 }
 
@@ -62,40 +64,13 @@
 
 <div class="category-grid">
 
-    <div class="category-item" data-idGrupo="5">
-        <img src="/icons/icon-car.svg" alt="Carro">
-        <span>Carro</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="6">
-        <img src="/icons/home.svg" alt="Moradia">
-        <span>Moradia</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="7">
-        <img src="/icons/aid.svg" alt="Saúde">
-        <span>Saúde</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="8">
-        <img src="/icons/education.svg" alt="Outras">
-        <span>Educação</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="9">
-        <img src="/icons/game.svg" alt="Lazer">
-        <span>Hobies & Lazer</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="10">
-        <img src="/icons/shopping.svg" alt="Mercado">
-        <span>Mercado</span>
-    </div>
-
-    <div class="category-item" data-idGrupo="11">
-        <img src="/icons/misc-buy.svg" alt="Outras">
-        <span>Outras despesas</span>
-    </div>
+    @foreach (var grupo in Model)
+    {
+        <div class="category-item" data-idGrupo="@grupo.ID">
+            <img src="@grupo.ImagePath" alt="@grupo.Descricao" />
+            <span>@grupo.Descricao</span>
+        </div>
+    }
 
 </div>
 

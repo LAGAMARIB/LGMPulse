@@ -1,4 +1,5 @@
-﻿using LGMPulse.AppServices.Interfaces;
+﻿using LGMDomains.Common;
+using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Persistence.Interfaces;
 
@@ -12,6 +13,13 @@ internal class GrupoService : BaseService<Grupo>, IGrupoService
         : base(grupoRepository)
     {
         _grupoRepository = grupoRepository;
+    }
+
+    public override async Task<LGMResult<List<Grupo>>> GetListAsync(Grupo? filterIni = null, Grupo? filterFim = null, string? sortBy = null, List<string>? fields = null)
+    {
+        var lista = await _grupoRepository.GetListAsync(filterIni, filterFim, sortBy, fields);
+        var listaOrdenada = lista.OrderByDescending(x => CalcularScore(x)).ThenBy(x => x.Descricao).ToList();
+        return LGMResult.Ok(listaOrdenada);
     }
 
     private double CalcularScore(Grupo grupo)
