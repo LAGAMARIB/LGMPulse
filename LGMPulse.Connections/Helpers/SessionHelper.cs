@@ -13,7 +13,7 @@ public class SessionHelper
         _accessor = accessor;
     }
 
-    public LGMSession? GetLGMSession()
+    public LGMSession? GetLGMSession_Cookie()
     {
         var cookie = _accessor?.HttpContext?.Request.Cookies[ConnectionSettings.Instance.LGM_SESSION];
         if (string.IsNullOrEmpty(cookie))
@@ -29,7 +29,7 @@ public class SessionHelper
         }
     }
 
-    public LGMSession? GetLGMRefresh()
+    public LGMSession? GetLGMRefresh_Cookie()
     {
         var cookie = _accessor?.HttpContext?.Request.Cookies[ConnectionSettings.Instance.LGM_REFRESH];
         if (string.IsNullOrEmpty(cookie))

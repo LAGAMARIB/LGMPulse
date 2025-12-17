@@ -121,11 +121,11 @@ public class LGMController : Controller
     private async Task<IActionResult?> validarSessao()
     {
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
-        LGMSession? lgmSession = SessionHelper.GetLGMSession();
+        LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie();
 
         if (lgmSession == null)
         {
-            var lgmRefresh = SessionHelper.GetLGMRefresh();
+            var lgmRefresh = SessionHelper.GetLGMRefresh_Cookie();
             if (lgmRefresh == null || lgmRefresh.ExpireDateTime < DateTimeHelper.Now())
                 return Redirect("/Home/Login");
             var refreshResult = await PostApiRefresh(lgmRefresh);

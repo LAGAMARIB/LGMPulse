@@ -48,7 +48,7 @@ namespace LGMPulse.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
-            LGMSession? lgmSession = SessionHelper.GetLGMSession() ?? SessionHelper.GetLGMRefresh();
+            LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie() ?? SessionHelper.GetLGMRefresh_Cookie();
             if (lgmSession != null)
             {
                 try

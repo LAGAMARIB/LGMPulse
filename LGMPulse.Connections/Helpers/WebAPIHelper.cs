@@ -28,7 +28,7 @@ public class WebAPIHelper
 
     public HttpClient CreateHttpClient(string? dbKey = null)
     {
-        var session = _sessionHelper.GetLGMSession();
+        var session = _sessionHelper.GetLGMSession_Cookie();
         if (session == null)
         {
             throw new UnauthorizedAccessException("CreateHttpClient: Sessão expirada. Faça login novamente."); 

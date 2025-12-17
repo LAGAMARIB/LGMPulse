@@ -30,7 +30,7 @@ internal abstract class BaseRepository<TDomain, TEntity> : IBaseRepository<TDoma
     protected DBContext NewDBContext()
     {
         //var _user = SessionHelper.GetLGMSession()?.User ?? throw new UnauthorizedAccessException("BaseRepository: Usuário não autenticado.");
-        var _user = SessionHelper.GetLGMSession()?.User;
+        var _user = SessionHelper.GetLGMSession_Cookie()?.User;
         if (_user == null)
             throw new UnauthorizedAccessException("BaseRepository: Usuário não autenticado.");
 

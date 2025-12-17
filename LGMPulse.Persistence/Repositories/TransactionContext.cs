@@ -16,7 +16,7 @@ public class TransactionContext : IDisposable
 
     public static TransactionContext NewTransaction()
     {
-        var _user = SessionHelperAccessor.Current.GetLGMSession()?.User
+        var _user = SessionHelperAccessor.Current.GetLGMSession_Cookie()?.User
             ?? throw new UnauthorizedAccessException("TransactionContext: Usuário não autenticado.");
         var ctx = new DBContext(ConnectionSettings.Instance.ConnectionName, _user?.DBKey, _user?.UserLogin);
         return new TransactionContext(ctx);
