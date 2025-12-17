@@ -79,7 +79,8 @@ public class LGMController : Controller
                 action?.Equals("Index", StringComparison.OrdinalIgnoreCase) == true)
             {
                 // Já estamos em Home/Index → evita loop
-                return ViewError("Acesso não autorizado.");
+                //return ViewError("Acesso não autorizado.");
+                return RedirectToAction("Login", "Home");
             }
 
             return RedirectToAction("Index", "Home");
@@ -140,20 +141,6 @@ public class LGMController : Controller
 
         ViewBag.Session = lgmSession;
         
-        //LGMSession session = new()
-        //{
-        //    ExpireDateTime = DateTime.Now.AddDays(1),
-        //    User = new LocalUser()
-        //    {
-        //        DBKey = "lgm",
-        //        ID = 1,
-        //        UserEmail = "xanderib@gmail.com",
-        //        UserLogin = "xanderib@gmail.com",
-        //        UserName = "Alexandre",
-        //        Token = "token_mock"
-        //    }
-        //};
-        //ViewBag.Session = session;
         return null;
     }
 

@@ -110,7 +110,7 @@ namespace LGMPulse.WebApp.Controllers
             LGMResult<LocalUser> localUserResult = await _loginService.GetLocalUser(lgmUser);
             if (!localUserResult.IsSuccess || localUserResult.Data == null)
             {
-                ModelState.AddModelError(string.Empty, localUserResult.Message ?? "Falha na autenticação");
+                ModelState.AddModelError(string.Empty, localUserResult.Message ?? "Falha na autenticação - usuário local não ativado");
                 return View(model);
             }
 
@@ -122,7 +122,7 @@ namespace LGMPulse.WebApp.Controllers
             {
                 User = localUser
             };
-            ValidateToken(lgmSession, out DateTime expiration);
+            ValidateToken(lgmSession, out DateTime expiration); // TODO: Falta validar o retorno de ValidateToken aqui
             lgmSession.ExpireDateTime = expiration;
 
             if (!this.GenerateCookie(lgmSession))
