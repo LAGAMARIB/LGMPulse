@@ -22,7 +22,7 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaReceita()
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposReceita())
+                ExecuteViewAsync(() => GetGruposReceita(), "NovaReceita")
         );
     }
 
@@ -35,7 +35,7 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaDespesa()
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposDespesa())
+                ExecuteViewAsync(() => GetGruposDespesa(), "NovaDespesa")
         );
     }
 

@@ -48,31 +48,10 @@ namespace LGMPulse.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
-            LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie() ?? SessionHelper.GetLGMRefresh_Cookie();
-            if (lgmSession != null)
-            {
-                try
-                {
-                    await PostApiLogout(lgmSession);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    // Sessão já estava expirada — ignora e continua o login normalmente
-                }
-                catch (Exception ex)
-                {
-                    // Loga se quiser, mas não quebra a tela de login
-                    Console.WriteLine($"Erro ao tentar fazer logout: {ex.Message}");
-                }
-            }
-
-            if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_SESSION))
-                Response.Cookies.Delete(ConnectionSettings.Instance.LGM_SESSION);
-            if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_REFRESH))
-                Response.Cookies.Delete(ConnectionSettings.Instance.LGM_REFRESH);
-
+            SessionHelper.ClearCookies(Request, Response);
             return View(new LoginViewModel());
         }
+
 
         [HttpPost]
         public async Task<IActionResult> LoginAsync(LoginViewModel model)
@@ -122,10 +101,8 @@ namespace LGMPulse.WebApp.Controllers
             {
                 User = localUser
             };
-            ValidateToken(lgmSession, out DateTime expiration); // TODO: Falta validar o retorno de ValidateToken aqui
-            lgmSession.ExpireDateTime = expiration;
 
-            if (!this.GenerateCookie(lgmSession))
+            if (!this.GenerateCookies(lgmSession))
             {
                 ModelState.AddModelError(string.Empty, "Falha na autenticação do usuário");
                 return View(model);
@@ -133,5 +110,26 @@ namespace LGMPulse.WebApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LogoutAsync()  
+        {
+            LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie() ?? SessionHelper.GetLGMRefresh_Cookie();
+            if (lgmSession != null)
+            {
+                try
+                {
+                    await PostApiLogout(lgmSession);
+                }
+                catch (Exception)
+                {
+                    //ignorar exceção
+                }
+            }
+            SessionHelper.ClearCookies(Request, Response);
+            return View("Login", new LoginViewModel());
+        }
+
+
     }
 }

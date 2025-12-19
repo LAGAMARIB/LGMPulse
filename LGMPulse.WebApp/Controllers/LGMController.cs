@@ -122,16 +122,24 @@ public class LGMController : Controller
     {
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
         LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie();
-
+        
         if (lgmSession == null)
         {
             var lgmRefresh = SessionHelper.GetLGMRefresh_Cookie();
-            if (lgmRefresh == null || lgmRefresh.ExpireDateTime < DateTimeHelper.Now())
+            if (lgmRefresh == null)
                 return Redirect("/Home/Login");
+
             var refreshResult = await PostApiRefresh(lgmRefresh);
-            if (!refreshResult || !GenerateCookie(lgmRefresh))
+            if (!refreshResult)
                 return Redirect("/Home/Login");
-            return null;
+
+            if (!GenerateCookies(lgmRefresh))
+                return Redirect("/Home/Login");
+
+            //ViewBag.Session = lgmRefresh;
+            //return null;
+            var currentPath = HttpContext.Request.Path + HttpContext.Request.QueryString;
+            return Redirect(currentPath);
         }
 
         if (lgmSession.ExpireDateTime < DateTimeHelper.Now() ||
@@ -140,7 +148,8 @@ public class LGMController : Controller
             return Redirect("/Home/Login");
 
         ViewBag.Session = lgmSession;
-        
+        lgmSession = SessionHelper.GetLGMSession_Cookie();
+
         return null;
     }
 
@@ -194,10 +203,9 @@ public class LGMController : Controller
         }
     }
 
-    protected bool GenerateCookie(LGMSession lgmSession)
+    protected bool GenerateCookies(LGMSession lgmSession)
     {
-        if (!ValidateToken(lgmSession, out DateTime expiration))
-            return false;  // Token inválido ou expirado
+        lgmSession.ExpireDateTime = DateTimeHelper.Now().AddMinutes(15); // expiração curta do cookie para forçar validação do Token
 
         var cookieValue = JsonSerializer.Serialize(lgmSession);
         var cookieOptions = new CookieOptions
@@ -205,35 +213,15 @@ public class LGMController : Controller
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None, // SameSiteMode.Lax,
-            Expires = DateTimeHelper.Now().AddMinutes(15)  // expiração curta do cookie para forçar validação do Token
+            Expires = lgmSession.ExpireDateTime  
         };
 
         Response.Cookies.Append(ConnectionSettings.Instance.LGM_SESSION, cookieValue, cookieOptions);
 
         //Cookie LGMRefresh
-        cookieOptions.Expires = expiration;
+        cookieOptions.Expires = DateTimeHelper.Now().AddHours(24);
         Response.Cookies.Append(ConnectionSettings.Instance.LGM_REFRESH, cookieValue, cookieOptions);
-        return true;
-    }
 
-    public bool ValidateToken(LGMSession lgmSession, out DateTime expireDateTime)
-    {
-        expireDateTime = DateTimeHelper.Now();
-        var token = lgmSession.User.Token ?? "";
-        var tokenParts = token.Replace("Bearer ", "").Split('|');
-        if (tokenParts.Length != 5) // userLogin|codCompany|codApp|expiration|signature
-            return false;
-
-        var userLogin = tokenParts[0];
-        var codCompany = tokenParts[1];
-        var codApp = tokenParts[2];
-        var expirationStr = tokenParts[3];
-        string signature = tokenParts[4];
-
-        if (!DateTime.TryParse(expirationStr, out DateTime expiration) || expiration < expireDateTime)
-            return false; // Token expirado
-
-        expireDateTime = expiration;
         return true;
     }
 

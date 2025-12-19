@@ -45,4 +45,11 @@ public class SessionHelper
         }
     }
 
+    public void ClearCookies(HttpRequest Request, HttpResponse Response)
+    {
+        if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_SESSION))
+            Response.Cookies.Delete(ConnectionSettings.Instance.LGM_SESSION);
+        if (Request.Cookies.ContainsKey(ConnectionSettings.Instance.LGM_REFRESH))
+            Response.Cookies.Delete(ConnectionSettings.Instance.LGM_REFRESH);
+    }
 }

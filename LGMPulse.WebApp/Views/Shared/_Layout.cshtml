@@ -70,6 +70,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             border-bottom: 2px solid var(--input-border-color);
+            z-index: 30;
         }
 
             .MainHeader h5 {
@@ -280,35 +281,6 @@
                 color: var(--btn-success-color);
                 flex: 1; /* ocupa todo o espaço restante */
             }
-
-        .lgm-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-            .lgm-dropdown .lgm-dropdown-menu {
-                position: absolute;
-                top: calc(100% + 8px);
-                right: 0;
-                min-width: 150px;
-                background: #fff;
-                border-radius: 8px;
-                box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-                display: none;
-                z-index: 1300;
-                padding: 6px 0;
-            }
-
-                .lgm-dropdown .lgm-dropdown-menu a {
-                    display: block;
-                    padding: 8px 12px;
-                    color: #333;
-                    text-decoration: none;
-                }
-
-                    .lgm-dropdown .lgm-dropdown-menu a:hover {
-                        background: rgba(0,0,0,0.03);
-                    }
 
         .lgm-show {
             display: block !important;
@@ -560,6 +532,100 @@
 
     </style>
     <!-- fim de estilos para formulários -->
+
+    <!-- estilos para Dropdown -->
+    <style>
+        .lgm-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lgm-dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .lgm-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 180px;
+            background: var(--add-bg-end);
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            padding: 6px 0;
+            display: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--add-text);
+            z-index: 1100; /* acima do conteúdo, abaixo de modais */
+        }
+
+            .lgm-dropdown-menu.lgm-show {
+                display: block;
+            }
+
+            .lgm-dropdown-menu a {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                color: #333;
+                text-decoration: none;
+            }
+
+                .lgm-dropdown-menu a:hover {
+                    background: rgba(0,0,0,0.05);
+                }
+    </style>    
+    <!-- fim de estilos para Dropdown -->
+
+    <!-- estilos para Toast -->
+    <style>
+        #toast-container {
+            position: fixed;
+            top: 40px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+        }
+
+        .custom-toast {
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 8px 14px var(--toast-shadow);
+            opacity: 1;
+            transition: opacity 1s ease-out, transform 0.3s ease;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+            .custom-toast.success {
+                color: var(--toast-success-text);
+                background-color: var(--toast-success-bg);
+            }
+
+            .custom-toast.warning {
+                color: var(--toast-warning-text);
+                background-color: var(--toast-warning-bg);
+            }
+
+            .custom-toast.error {
+                color: var(--toast-error-text);
+                background-color: var(--toast-error-bg);
+            }
+
+            .custom-toast.fade-out {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+    </style>
+    <!-- fim de estilos para toast-->
+
     @RenderSection("style", required: false)
 </head>
 
@@ -573,24 +639,15 @@
             @if (!string.IsNullOrEmpty(ViewBag.Session?.User?.UserName))
             {
                 <div class="user-menu">
-                    <div class="lgm-dropdown">
-                        <a class="dropdown-toggle" id="userDropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="lgm-dropdown" id="userMenu">
+                        <a class="lgm-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
                             <div class="avatar-icon"><i class="fas fa-user"></i></div>
                         </a>
-                        <div class="lgm-dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <div class="lgm-dropdown-menu">
                             <div class="dropdown-header">@ViewBag.Session.User.UserName</div>
-
-                            <a class="dropdown-item" id="alterar-senha" href="javascript:void(0);">
-                                <i class="fas fa-key"></i> Alterar senha...
-                            </a>
-
-                            <a class="dropdown-item" id="toggle-theme" href="javascript:void(0);">
-                                <i class="fas fa-moon"></i> Mudar Tema
-                            </a>
-
-                            <a class="dropdown-item" href="@Url.Action("Login", "Home")">
-                                <i class="fas fa-door-open"></i>Sair
-                            </a>
+                            <a id="alterar-senha" href="/Home/AlterarSenha"><i class="fas fa-key"></i> Alterar senha</a>
+                            <a id="toggle-theme" href="javascript:void(0);"><i class="fas fa-moon"></i> Mudar tema</a>
+                            <a href="@Url.Action("Logout", "Home")"><i class="fas fa-door-open"></i> Sair</a>
                         </div>
                     </div>
                 </div>
@@ -776,25 +833,30 @@
 
           window.hideFormModal = hideModal;
 
-          /* Simple dropdown behavior: toggle .lgm-dropdown-menu for .dropdown-toggle */
+          /* Simple dropdown behavior: toggle .lgm-dropdown-menu for .lgm-dropdown-toggle */
           document.addEventListener('click', function(e){
-            const toggle = e.target.closest('.dropdown-toggle');
+            const toggle = e.target.closest('.lgm-dropdown-toggle');
             if (toggle) {
               e.preventDefault();
               const parent = toggle.closest('.lgm-dropdown, .dropdown') || toggle.parentElement;
-              const menu = parent && parent.querySelector('.lgm-dropdown-menu, .dropdown-menu');
+              const menu = parent && parent.querySelector('.lgm-dropdown-menu');
               if (menu) {
                 menu.classList.toggle('lgm-show');
               }
               // close other menus
-              Array.from(document.querySelectorAll('.lgm-dropdown-menu.lgm-show, .dropdown-menu.lgm-show')).forEach(m=>{
+              Array.from(document.querySelectorAll('.lgm-dropdown-menu.lgm-show')).forEach(m=>{
                 if (m !== menu) m.classList.remove('lgm-show');
               });
               return;
             }
+            const clickedLink = e.target.closest('a[href]');
+            if (clickedLink) {
+              return; // deixa o navegador navegar
+            }
+
             // click outside closes menus
             if (!e.target.closest('.lgm-dropdown, .dropdown')) {
-              Array.from(document.querySelectorAll('.lgm-dropdown-menu.lgm-show, .dropdown-menu.lgm-show')).forEach(m=> m.classList.remove('lgm-show'));
+              Array.from( document.querySelectorAll('.lgm-dropdown-menu.lgm-show')).forEach(m=> m.classList.remove('lgm-show'));
             }
           });
 
@@ -819,7 +881,7 @@
 
         window.addEventListener("beforeunload", showLoading);
 
-        document.addEventListener("click", function (e) {
+        document.addEventListener('click', function (e) {
             const link = e.target.closest("a[href]");
             if (link && !link.hasAttribute("target") && !link.getAttribute("href").startsWith("#")) {
                 showLoading();

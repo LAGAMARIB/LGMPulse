@@ -72,6 +72,14 @@
     --auth-title: var(--color-primary);
     --auth-subtitle: var(--text-2);
     --auth-link: var(--color-primary);
+    /* Toast panels*/
+    --toast-shadow: rgba(0, 0, 0, 0.35);
+    --toast-success-bg: #e6f4ea;
+    --toast-success-text: #2e7d32;
+    --toast-warning-bg: #fff8e1;
+    --toast-warning-text: #ff6f00;
+    --toast-error-bg: #fbe9e7;
+    --toast-error-text: #c62828;
 }
 
 * {
