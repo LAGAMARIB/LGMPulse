@@ -292,12 +292,13 @@
     <!-- estilos para formulários -->
     <style>
         .form-container {
+            position: relative;
             display: flex;
             flex-direction: column; /* ← ESTE é o ponto */
             justify-content: center;
             padding: 14px;
             background-color: var(--form-container-bg);
-            height: 100%;
+            height: auto;
         }
 
         .form-container form {
@@ -554,7 +555,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             padding: 6px 0;
             display: none;
-            font-size: 1.2rem;
+            font-size: 18px;
             font-weight: 500;
             color: var(--add-text);
             z-index: 1100; /* acima do conteúdo, abaixo de modais */
@@ -569,8 +570,8 @@
                 align-items: center;
                 gap: 8px;
                 padding: 10px 14px;
-                color: #333;
                 text-decoration: none;
+                color: var(--add-text);
             }
 
                 .lgm-dropdown-menu a:hover {
@@ -646,7 +647,7 @@
                         <div class="lgm-dropdown-menu">
                             <div class="dropdown-header">@ViewBag.Session.User.UserName</div>
                             <a id="alterar-senha" href="/Home/AlterarSenha"><i class="fas fa-key"></i> Alterar senha</a>
-                            <a id="toggle-theme" href="javascript:void(0);"><i class="fas fa-moon"></i> Mudar tema</a>
+                            <a id="toggle-theme" href="javascript:void(0);" data-no-loading><i class="fas fa-moon"></i> Mudar tema</a>
                             <a href="@Url.Action("Logout", "Home")"><i class="fas fa-door-open"></i> Sair</a>
                         </div>
                     </div>
@@ -871,6 +872,7 @@
             });
         });
 
+        // tratamento de modo Loading **********
         $(document).on({
             ajaxStart: function () { $("body").addClass("loading"); },
             ajaxStop: function () { $("body").removeClass("loading"); }
@@ -883,7 +885,9 @@
 
         document.addEventListener('click', function (e) {
             const link = e.target.closest("a[href]");
-            if (link && !link.hasAttribute("target") && !link.getAttribute("href").startsWith("#")) {
+            if (link && !link.hasAttribute("target") 
+                     && !link.getAttribute("href").startsWith("#")
+                     && !link.hasAttribute("data-no-loading")) {
                 showLoading();
             }
         });
@@ -897,6 +901,8 @@
         window.addEventListener("pageshow", hideLoading);
         window.addEventListener("load", hideLoading);
 
+
+        // documento carregado ********************
         $(document).ready(function () {
             $('[data-mask]').each(function () {
                 $(this).mask($(this).attr("data-mask"));

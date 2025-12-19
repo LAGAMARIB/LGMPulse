@@ -130,6 +130,54 @@ namespace LGMPulse.WebApp.Controllers
             return View("Login", new LoginViewModel());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AlterarSenha()
+        {
+            return await ValidateSessionAsync(() => ExecuteViewAsync<object>());
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AlterarSenhaAsync(LoginModel model)
+        {
+            LGMResult<string> result;
+            try
+            {
+                result = await _loginService!.ChangePasswordAsync(model);
+                if (result.IsSuccess)
+                {
+                    result.RedirectUrl = "/home/login";
+                    GravarMensagem(result.Message ?? "Senha alterada com sucesso");
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                var mens = "Sessão expirada. Faça login novamente.";
+                result = LGMResult.Fail<string>(mens, "/home/login");
+                GravarMensagem(mens);
+            }
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult CriarContaUsuarioAsync()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CriarContaUsuarioAsync(RequestRegisterModel model)
+        {
+            LGMResult<LGMUser> result = await _loginService!.CreateUser(model);
+            if (result.IsSuccess)
+            {
+                var user = result.Data;
+                result.RedirectUrl = "/home/login";
+                result.Message = "Cadastro recebido! Você receberá um e-mail quando sua conta for ativada.";
+                GravarMensagem(result.Message);
+            }
+            return Json(result);
+        }
+
 
     }
 }

@@ -82,6 +82,87 @@
     --toast-error-text: #c62828;
 }
 
+/* ------- VARIÁVEIS DO MODO ESCURO ------- */
+body.dark-mode {
+    /* Cores principais */
+    --pulse-green: #58c48b;
+    --pulse-red: #ff6b6b;
+    --pulse-blue: #5a8dff;
+    --color-primary: #4da3ff;
+    --color-secondary: #3dd5f3;
+    --color-accent: #1e3a46;
+    --color-soft-bg: #121417;
+    --color-sand: #2b2a25;
+    --color-amber: #e0b04f;
+    --color-green-soft: #3b6f4a;
+    --btn-danger-bg: #c84545;
+    --btn-danger-color: #ffffff;
+    --btn-success-bg: #6a4cff;
+    --btn-success-color: #ffffff;
+    /* Formulários */
+    --form-container-bg: #1b1e23;
+    --input-border-color: #2f343b;
+    --input-focus-bg: #20242b;
+    --input-focus-border: #4da3ff;
+    --color-input-text: #e6e6e6;
+    --color-input-bg: #181b20;
+    --select-multi-bg: #20242b;
+    --select-multi-color: #e0e0e0;
+    /* Neutros */
+    --bg-1: #0f1115;
+    --bg-2: #15181e;
+    --bg-3: #1d2128;
+    --text-1: #f1f3f5;
+    --text-2: #c7cbd1;
+    --text-3: #8b9098;
+    /* Bordas */
+    --border-soft: rgba(255,255,255,0.08);
+    /* Espaçamentos (inalterados) */
+    --space-1: .25rem;
+    --space-2: .5rem;
+    --space-3: .75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    /* Radius */
+    --radius: 14px;
+    /* Sombras */
+    --shadow-soft: 0 3px 14px rgba(0,0,0,.85);
+    --shadow-hover: 0 6px 24px rgba(0,0,0,.95);
+    /* Transições */
+    --pulse: 0.18s ease;
+    /* Tons diversos */
+    --add-text: #d6e2ff;
+    --overlay-dark: rgba(10,12,16,0.96);
+    --add-bg-start: #2a2f38;
+    --add-bg-end: #3a3f4a;
+    /* ===== Login / Auth ===== */
+    --login-bg: #121417;
+    --login-header-bg: var(--overlay-dark);
+    --login-header-text: #ffffff;
+    --login-shadow: var(--shadow-soft);
+    --login-text-primary: var(--text-1);
+    --login-text-muted: var(--text-3);
+    --login-link: #6fb1ff;
+    --login-link-hover: #9adfff;
+    --login-danger: var(--pulse-red);
+    /* Auth / Forms neutros */
+    --auth-title: #6fb1ff;
+    --auth-subtitle: var(--text-2);
+    --auth-link: #6fb1ff;
+    /* Toast panels */
+    --toast-shadow: rgba(0, 0, 0, 0.6);
+    --toast-success-bg: #1f3d2b;
+    --toast-success-text: #7be495;
+    --toast-warning-bg: #3a2f1b;
+    --toast-warning-text: #ffd166;
+    --toast-error-bg: #3b1f1f;
+    --toast-error-text: #ff8a8a;
+}
+
+
+
 * {
     margin: 0;
     padding: 0;

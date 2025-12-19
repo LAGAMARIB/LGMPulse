@@ -6,7 +6,7 @@
     <style>
         .form-container {
             max-width: 500px;
-            margin: 0 auto;
+            margin: 20px auto;
         }
 
         .form-title {
@@ -47,7 +47,7 @@
             right: 10px;
             cursor: pointer;
             height: 45px;
-            z-index: 100;
+            z-index: 29;
             opacity: 0.6;
             transition: opacity 0.2s ease;
             filter: brightness(0.7);
@@ -57,6 +57,7 @@
                 opacity: 1;
                 filter: brightness(1);
             }
+
 
         .btn-salvar {
             background: var(--btn-success-bg);
@@ -74,6 +75,25 @@
                 box-shadow: var(--shadow-hover);
             }
 
+        .frm-field label {
+            font-weight: bold;
+            width: 100%;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        .frm-field input {
+            width: 95%;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        #frm-login button {
+            width: 200px;
+            padding: 12px;
+            font-size: 1.3rem;
+        }
 
     </style>
 }
