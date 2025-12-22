@@ -18,15 +18,15 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
         _grupoRepository = grupoRepository;
     }
 
-    public override async Task<ILGMResult> CreateAsync(Movto domain)
+    public override async Task<ILGMResult> CreateAsync(Movto movto)
     {
         using (var transCtx = TransactionContext.NewTransaction())
         {
-            await _movtoRepository.CreateTransactionalAsync(transCtx, domain);
-            var grupo = await _grupoRepository.GetByIDContextualAsync(transCtx, domain.ID);
+            await _movtoRepository.CreateTransactionalAsync(transCtx, movto);
+            var grupo = await _grupoRepository.GetByIDContextualAsync(transCtx, movto.IDGrupo);
             if (grupo != null)
             {
-                grupo.QtdMovtos += 1;
+                grupo.QtdMovtos = (grupo.QtdMovtos ?? 0) + 1;
                 grupo.DateUltMovto = DateTimeHelper.Now();
                 await _grupoRepository.UpdateTransactionalAsync(transCtx, grupo);
             }
