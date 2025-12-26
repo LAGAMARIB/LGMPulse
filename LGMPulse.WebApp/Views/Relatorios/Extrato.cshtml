@@ -1,0 +1,172 @@
+﻿@using LGMPulse.Domain.Domains
+@model List<Movto>
+@{
+    Layout = "_Layout";
+}
+
+@section style {
+    <style>
+        /* ===== CONTAINER PRINCIPAL ===== */
+        #ExtratoContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: transparent;
+            overflow: hidden; /* scroll só no miolo */
+        }
+
+        /* ===== BARRA SUPERIOR FIXA ===== */
+        #ExtratoHeader {
+            flex: 0 0 56px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: var(--space-3);
+            background: transparent;
+            z-index: 20;
+        }
+
+        /* ===== BOTÃO FECHAR ===== */
+        #btnFecharForm {
+            width: 44px;
+            height: 44px;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--branco-transparente);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 6px 14px var(--preto-sombra);
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+        }
+
+            #btnFecharForm:hover {
+                background: rgba(255,255,255,0.75);
+                opacity: 0.95;
+            }
+
+            #btnFecharForm:active {
+                transform: scale(0.88) rotate(-6deg);
+                box-shadow: 0 3px 8px var(--preto-sombra);
+            }
+
+        /* ===== ÁREA SCROLLÁVEL ===== */
+        #ExtratoItems {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            padding: var(--space-4);
+            margin-bottom: 10px;
+            background: linear-gradient( 180deg, var(--color-soft-bg), var(--bg-3) );
+        }
+
+        /* ===== LINHA DO MOVIMENTO ===== */
+        .row-movto {
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--branco-transparente);
+            backdrop-filter: blur(3px);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px var(--preto-sombra);
+            transition: background var(--pulse), transform var(--pulse);
+        }
+
+            .row-movto:hover {
+                background: rgba(255,255,255,0.7);
+                transform: translateY(-1px);
+            }
+
+            /* Ícone */
+            .row-movto .col-1 {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .row-movto .col-1 img {
+                    width: 28px;
+                    height: 28px;
+                    object-fit: contain;
+                    opacity: 0.9;
+                }
+
+            /* Data + descrição */
+            .row-movto .col-2 {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                line-height: 1.25;
+            }
+
+                .row-movto .col-2 span:first-child {
+                    font-size: 0.75rem;
+                    color: var(--text-3);
+                }
+
+                .row-movto .col-2 span:last-child {
+                    font-size: 0.95rem;
+                    color: var(--text-1);
+                    font-weight: 500;
+                }
+
+            /* Valor */
+            .row-movto .col-3 {
+                font-size: 1rem;
+                font-weight: 600;
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            .row-movto.receita .col-3 {
+                color: var(--pulse-green);
+            }
+
+            .row-movto.despesa .col-3 {
+                color: var(--pulse-red);
+            }
+
+            .row-movto.receita {
+                border-left: 4px solid var(--border-movto-receita);
+            }
+
+            .row-movto.despesa {
+                border-left: 4px solid var(--border-movto-despesa);
+            }
+    </style>
+}
+
+
+<div id="ExtratoContainer">
+    <div id="ExtratoHeader">
+        <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
+    </div>
+    <div id="ExtratoItems">
+        @foreach (var movto in Model)
+        {
+            var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
+            var classTipo = (movto.TipoMovto == LGMPulse.Domain.Enuns.TipoMovtoEnum.Receita ? "receita" : "despesa");
+            <div class="row-movto @classTipo">
+                <div class="col-1"> <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" /> </div>
+                <div class="col-2">
+                    <span>@movto.DataMovto!.Value.ToShortDateString()</span>
+                    <span><b>@descMovto</b></span>
+                </div>
+                <div class="col-3">
+                    <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section script {
+    <script>
+        $('#btnFecharForm').on('click', function () {
+            window.location.href = `/home/index`;
+        });
+    </script>
+}

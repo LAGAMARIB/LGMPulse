@@ -10,5 +10,10 @@ public class Movto : BaseDomain
     public int? IDGrupo { get; set; }
     public int? IDAgenda { get; set; }
     public string? Descricao { get; set; }     
-    public decimal? ValorMovto { get; set; }   
+    public decimal? ValorMovto { get; set; }
+
+    #region JoinTypes
+    public string? NomeGrupo { get; set; }
+    public string? ImagePathGrupo { get; set; }
+    #endregion
 }

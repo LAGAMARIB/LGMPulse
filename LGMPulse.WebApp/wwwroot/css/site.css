@@ -9,6 +9,10 @@
     --pulse-green: #58c48b;
     --pulse-red: #e45555;
     --pulse-blue: #3c7df0;
+    --branco-transparente: rgba(255,255,255,0.55);
+    --preto-sombra: rgba(0,0,0,0.12);
+    --branco-gelo: #cccccc;
+    --grafite: #292a2e;
     --color-primary: #0077b6;
     --color-secondary: #00b4d8;
     --color-accent: #90e0ef;
@@ -159,6 +163,9 @@ body.dark-mode {
     --toast-warning-text: #ffd166;
     --toast-error-bg: #3b1f1f;
     --toast-error-text: #ff8a8a;
+    /* relatorios */
+    --border-movto-receita: rgba(88,196,139,0.45);
+    --border-movto-despesa: rgba(228,85,85,0.45);
 }
 
 

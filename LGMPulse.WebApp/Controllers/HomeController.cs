@@ -2,11 +2,11 @@ using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
 using LGMPulse.AppServices.Interfaces;
-using LGMPulse.Connections;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace LGMPulse.WebApp.Controllers 
 {
@@ -21,10 +21,10 @@ namespace LGMPulse.WebApp.Controllers
             _loginService = loginService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? mes, int? ano)
         {
             return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => NewHealthyDashViewModel(), "Index")
+                ExecuteViewAsync(() => NewHealthyDashViewModel(ano, mes), "Index")
             );
         }
 
@@ -33,7 +33,14 @@ namespace LGMPulse.WebApp.Controllers
             year ??= DateTimeHelper.Now().Year;
             month ??= DateTimeHelper.Now().Month;
             var result = await _movtoService.GetListAsync(year.Value, month.Value);
-            HealthyDashViewModel viewModel = new();
+            var culture = new CultureInfo("pt-BR");
+            HealthyDashViewModel viewModel = new()
+            {
+                Ano = year.Value,
+                Mes = month.Value,
+                IsMesAtual = (year == DateTimeHelper.Now().Year && month == DateTimeHelper.Now().Month),
+                MesReferencia = culture.DateTimeFormat.GetMonthName(month.Value) + " / " + year.ToString()
+            };
             foreach (var movto in result.Data!)
             {
                 if (movto.TipoMovto == TipoMovtoEnum.Despesa)
