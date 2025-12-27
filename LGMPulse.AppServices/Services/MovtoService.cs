@@ -1,6 +1,7 @@
 ﻿using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMPulse.AppServices.Interfaces;
+using LGMPulse.Domain;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.Persistence.Interfaces;
@@ -39,12 +40,20 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
 
     public async Task<LGMResult<List<Movto>>> GetListAsync(int year, int month, TipoMovtoEnum? tipoMovto = null)
     {
-        var dateIni = new DateTime(year, month, 1);
-        var dataFim = dateIni.AddMonths(1).AddSeconds(-1);
+        var dataIni = new DateTime(year, month, 1);
+        var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
         var lista = await _movtoRepository.GetListAsync(
-                            new Movto { DataMovto = dateIni, TipoMovto = tipoMovto },
+                            new Movto { DataMovto = dataIni, TipoMovto = tipoMovto },
                             new Movto { DataMovto = dataFim, TipoMovto = tipoMovto }
                          );
-        return LGMResult.Ok(lista);
+        return LGMResult.Ok(lista.OrderByDescending(x => x.DataMovto).ToList());
+    }
+
+    public async Task<LGMResult<SumarioMes>> GetSumarioMesAsync(int year, int month)
+    {
+        var dataIni = new DateTime(year, month, 1);
+        var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
+        SumarioMes result = await _movtoRepository.GetSumario(dataIni, dataFim);
+        return LGMResult.Ok(result);
     }
 }

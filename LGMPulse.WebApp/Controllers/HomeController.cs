@@ -2,6 +2,7 @@ using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
 using LGMPulse.AppServices.Interfaces;
+using LGMPulse.Domain;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.WebApp.Models;
@@ -32,7 +33,14 @@ namespace LGMPulse.WebApp.Controllers
         {
             year ??= DateTimeHelper.Now().Year;
             month ??= DateTimeHelper.Now().Month;
-            var result = await _movtoService.GetListAsync(year.Value, month.Value);
+
+            int anoAnterior = month.Value == 1 ? year.Value - 1 : year.Value;
+            int mesAnterior = month.Value == 1 ? 12 : month.Value - 1;
+            LGMResult<SumarioMes> anterior = await _movtoService.GetSumarioMesAsync(anoAnterior, mesAnterior);
+            var sumAnt = anterior.Data;
+            decimal liquidezAnterior = (sumAnt != null ? sumAnt.TotalReceitas - sumAnt.TotalDespesas : 0);
+            
+            LGMResult<SumarioMes> result = await _movtoService.GetSumarioMesAsync(year.Value, month.Value); 
             var culture = new CultureInfo("pt-BR");
             HealthyDashViewModel viewModel = new()
             {
@@ -41,14 +49,20 @@ namespace LGMPulse.WebApp.Controllers
                 IsMesAtual = (year == DateTimeHelper.Now().Year && month == DateTimeHelper.Now().Month),
                 MesReferencia = culture.DateTimeFormat.GetMonthName(month.Value) + " / " + year.ToString()
             };
-            foreach (var movto in result.Data!)
+            var sumario = result.Data;
+            viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;
+            viewModel.TotalDespesas = sumario?.TotalDespesas ?? 0;
+
+            decimal liquidezAtual = viewModel.TotalReceitas - viewModel.TotalDespesas;
+            if (liquidezAnterior == 0)
             {
-                if (movto.TipoMovto == TipoMovtoEnum.Despesa)
-                    viewModel.TotalDespesas += movto.ValorMovto ?? 0;
-                else
-                    viewModel.TotalReceitas += movto.ValorMovto ?? 0;
+                viewModel.PercDiferenca = liquidezAtual == 0 ? 0 : 100;
             }
-            //viewModel.PercDiferenca = CalcDifLiquidez();
+            else
+            {
+                viewModel.PercDiferenca =
+                    ((liquidezAtual - liquidezAnterior) / Math.Abs(liquidezAnterior)) * 100;
+            }
             return LGMResult.Ok(viewModel);
         }
 

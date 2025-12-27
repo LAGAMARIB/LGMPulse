@@ -1,4 +1,5 @@
-﻿using LGMPulse.Domain.Domains;
+﻿using LGMPulse.Domain;
+using LGMPulse.Domain.Domains;
 using LGMPulse.Persistence.Interfaces;
 
 namespace LGMPulse.Persistence.Repositories;
@@ -89,6 +90,11 @@ internal class MovtoRepositoryMock : IMovtoRepository
     }
 
     public Task<List<Movto>> GetListContextualAsync(TransactionContext trctx, Movto? objSelecIni = null, Movto? objSelecFim = null, string? pSort = null, List<string>? fields = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SumarioMes> GetSumario(DateTime dataIni, DateTime dataFim)
     {
         throw new NotImplementedException();
     }
