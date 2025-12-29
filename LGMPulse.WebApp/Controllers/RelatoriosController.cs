@@ -14,9 +14,11 @@ public class RelatoriosController : LGMController
     }
 
     [HttpGet("relatorios")]
-    public IActionResult Relatorios()
+    public async Task<IActionResult> Relatorios()
     {
-        return View();
+        return await ValidateSessionAsync(() =>
+            ExecuteViewAsync()
+        );
     }
 
     [HttpGet("relatorios/extrato/{ano}/{mes}/{tipoMovto=null}")]
@@ -26,4 +28,23 @@ public class RelatoriosController : LGMController
             ExecuteViewAsync(() => _movtoService.GetListAsync(ano, mes, tipoMovto ) )
         );
     }
+
+    [HttpGet("/relatorios/grupos/{ano=0}/{mes=0}")]
+    public async Task<IActionResult> RelatorioGrupos(int ano=0, int mes=0)
+    {
+        return PartialView();
+    }
+
+    [HttpGet("/relatorios/evolucao/{ano=0}/{mes=0}")]
+    public async Task<IActionResult> RelatorioEvolucao(int ano=0, int mes=0)
+    {
+        return PartialView();
+    }
+
+    [HttpGet("/relatorios/mapafinanceiro/{ano=0}/{mes=0}")]
+    public async Task<IActionResult> MapaFinanceiro(int ano = 0, int mes = 0)
+    {
+        return PartialView();
+    }
+
 }

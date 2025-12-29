@@ -53,7 +53,7 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
     {
         var dataIni = new DateTime(year, month, 1);
         var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
-        SumarioMes result = await _movtoRepository.GetSumario(dataIni, dataFim);
+        SumarioMes? result = await _movtoRepository.GetSumario(dataIni, dataFim);
         return LGMResult.Ok(result);
     }
 }
