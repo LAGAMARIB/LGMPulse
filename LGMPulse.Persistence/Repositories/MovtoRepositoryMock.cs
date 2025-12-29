@@ -1,5 +1,5 @@
-﻿using LGMPulse.Domain;
-using LGMPulse.Domain.Domains;
+﻿using LGMPulse.Domain.Domains;
+using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Interfaces;
 
 namespace LGMPulse.Persistence.Repositories;
@@ -94,7 +94,7 @@ internal class MovtoRepositoryMock : IMovtoRepository
         throw new NotImplementedException();
     }
 
-    public Task<SumarioMes> GetSumario(DateTime dataIni, DateTime dataFim)
+    public Task<List<SumarioMes>> GetSumario(DateTime dataIni, DateTime dataFim)
     {
         throw new NotImplementedException();
     }

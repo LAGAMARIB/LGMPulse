@@ -1,9 +1,9 @@
 ﻿using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMPulse.AppServices.Interfaces;
-using LGMPulse.Domain;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
+using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Interfaces;
 using LGMPulse.Persistence.Repositories;
 
@@ -53,7 +53,8 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
     {
         var dataIni = new DateTime(year, month, 1);
         var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
-        SumarioMes? result = await _movtoRepository.GetSumario(dataIni, dataFim);
-        return LGMResult.Ok(result);
+        var result = await _movtoRepository.GetSumario(dataIni, dataFim);
+        SumarioMes? sumario = result.FirstOrDefault();
+        return LGMResult.Ok(sumario);
     }
 }

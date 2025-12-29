@@ -32,6 +32,7 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/grupos/{ano=0}/{mes=0}")]
     public async Task<IActionResult> RelatorioGrupos(int ano=0, int mes=0)
     {
+
         return PartialView();
     }
 

@@ -1,6 +1,10 @@
-﻿@{
+﻿@using LGMDomains.Common.Helpers;
+@{
     Layout = "_Layout";
     ViewBag.Title = "PULSE Relatórios";
+    var today = DateTimeHelper.Now().Date;
+    int month = today.Month;
+    int year = today.Year;
 }
 
 @section style {
@@ -77,8 +81,11 @@
 
 @section script {
     <script>
+        let month = parseInt("@month", 1);
+        let year = parseInt("@year", 2025);
+
         function carregarRelatorio(nome) {
-            $.get(`/relatorios/${nome}`, function (resp) {
+            $.get(`/relatorios/${nome}/${year}/${month}`, function (resp) {
                 if (resp) {
                     $('#relatoriosFrame').html(resp);
                     localStorage.setItem('ultimoRelatorio', nome);
@@ -102,6 +109,8 @@
             if (ultimo) {
                 carregarRelatorio(ultimo);
             }
+
+            DisableIcon(3);
         });
     </script>
 }

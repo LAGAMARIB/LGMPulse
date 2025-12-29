@@ -1,7 +1,7 @@
 ﻿using LGMDomains.Common;
-using LGMPulse.Domain;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
+using LGMPulse.Domain.ViewModels;
 
 namespace LGMPulse.AppServices.Interfaces;
 
