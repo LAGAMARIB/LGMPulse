@@ -1,5 +1,6 @@
 ﻿using LGMDAL;
 using LGMPulse.Domain.Domains;
+using LGMPulse.Domain.Enuns;
 using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Entities;
 using LGMPulse.Persistence.Interfaces;
@@ -8,8 +9,9 @@ namespace LGMPulse.Persistence.Repositories;
 
 internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepository
 {
-    public async Task<List<SumarioMes>> GetSumario(DateTime dataIni, DateTime dataFim)
+    public async Task<SumarioMes?> GetSumario(DateTime dataIni, DateTime dataFim)
     {
+        dataFim = dataFim.AddDays(1).Date;
         using (var ctx = NewDBContext())
         {
             string sql = @$"SELECT 
@@ -17,28 +19,49 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
                             IFNULL(SUM(CASE WHEN TipoMovto = 1 THEN ValorMovto ELSE 0 END), 0) AS TotalDespesas 
                             FROM {ctx.DBKey}_movto 
                             WHERE DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}' 
-                              AND DataMovto <= '{dataFim.ToString("yyyy-MM-dd")}'";
+                              AND DataMovto < '{dataFim.ToString("yyyy-MM-dd")}'";
             var result = await ctx.GetListAsync<SumarioMes>(sql, reader => new()
             {
                 TotalReceitas = reader.GetDecimal("TotalReceitas"),
                 TotalDespesas = reader.GetDecimal("TotalDespesas")
             });
-            return result;
+            SumarioMes? sumario = result.FirstOrDefault();
+            return sumario;
         }
+    }
 
-        //using (var ctx = NewDBContext())
-        //{
-        //    DBStoredProcedure sp = ctx.GetStoredProcedure("sp_GetTotaisMovto");
-        //    sp.AddParameter("p_dbKey", ctx.DBKey);
-        //    sp.AddParameter("p_DataInicial", dataIni.ToString("yyyy-MM-dd"));
-        //    sp.AddParameter("p_DataFinal", dataFim.ToString("yyyy-MM-dd"));
-        //    var result = await sp.ExecuteReaderAsync(reader => new SumarioMes
-        //    {
-        //        TotalReceitas = reader.GetDecimal("TotalReceitas"),
-        //        TotalDespesas = reader.GetDecimal("TotalDespesas")
-        //    });
-        //    return result;
-        //}
+    public async Task<List<GrupoSumary>> GetListGrupoSumary(DateTime dataIni, DateTime dataFim)
+    {
+        dataFim = dataFim.AddDays(1).Date;
+        using (var ctx = NewDBContext())
+        {
+            string sql = $@"SELECT
+                                g.ID            AS IDGrupo,
+                                g.Descricao     AS DescGrupo,
+                                g.TipoMovto     AS TipoMovto,
+                                SUM(m.ValorMovto) AS ValorGrupo
+                            FROM {ctx.DBKey}_movto m
+                            INNER JOIN lgm_grupo g
+                                    ON g.ID = m.IDGrupo
+                            WHERE m.DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
+                              AND m.DataMovto <  '{dataFim.ToString("yyyy-MM-dd")}'
+                            GROUP BY
+                                g.ID,
+                                g.Descricao,
+                                g.TipoMovto
+                            ORDER BY
+                                g.TipoMovto,
+                                ValorGrupo DESC;";
+
+            var grupos = await ctx.GetListAsync<GrupoSumary>(sql, reader => new GrupoSumary
+            {
+                IDGrupo = reader.GetInt32("IDGrupo"),
+                DescGrupo = reader.GetString("DescGrupo"),
+                TipoMovto = (TipoMovtoEnum)reader.GetInt32("TipoMovto"),
+                ValorGrupo = reader.GetDecimal("ValorGrupo")
+            });
+            return grupos;
+        }
     }
 
 }

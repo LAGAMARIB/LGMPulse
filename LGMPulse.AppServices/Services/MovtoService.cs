@@ -6,6 +6,7 @@ using LGMPulse.Domain.Enuns;
 using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Interfaces;
 using LGMPulse.Persistence.Repositories;
+using System.Globalization;
 
 namespace LGMPulse.AppServices.Services;
 
@@ -49,12 +50,29 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
         return LGMResult.Ok(lista.OrderByDescending(x => x.DataMovto).ToList());
     }
 
+    public async Task<LGMResult<RelatGrupoViewModel>> GetRelatGrupoViewModelAsync(int year, int month)
+    {
+        if (year == 0) { year = DateTimeHelper.Now().Year; }
+        if (month == 0) { month = DateTimeHelper.Now().Month; }
+        var dataIni = new DateTime(year, month, 1);
+        var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
+        var sumarioGrupos = await _movtoRepository.GetListGrupoSumary(dataIni, dataFim);
+        var culture = new CultureInfo("pt-BR");
+        RelatGrupoViewModel relatViewModel = new()
+        {
+            Year = year,
+            Month = month,
+            MesReferencia = culture.DateTimeFormat.GetMonthName(month).ToUpperInvariant() + " / " + year.ToString(),
+            Grupos = sumarioGrupos
+        };
+        return LGMResult.Ok(relatViewModel);
+    }
+
     public async Task<LGMResult<SumarioMes>> GetSumarioMesAsync(int year, int month)
     {
         var dataIni = new DateTime(year, month, 1);
         var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
         var result = await _movtoRepository.GetSumario(dataIni, dataFim);
-        SumarioMes? sumario = result.FirstOrDefault();
-        return LGMResult.Ok(sumario);
+        return LGMResult.Ok(result);
     }
 }

@@ -1,6 +1,12 @@
-﻿using LGMPulse.AppServices.Interfaces;
+﻿using LGMDomains.Common;
+using LGMDomains.Common.Helpers;
+using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Enuns;
+using LGMPulse.Domain.ViewModels;
+using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace LGMPulse.WebApp.Controllers;
 
@@ -13,12 +19,31 @@ public class RelatoriosController : LGMController
         _movtoService = movtoService;
     }
 
-    [HttpGet("relatorios")]
-    public async Task<IActionResult> Relatorios()
+    [HttpGet("relatorios/{ano=null}/{mes=null}")]
+    public async Task<IActionResult> Relatorios(int? ano=null, int? mes=null )
     {
         return await ValidateSessionAsync(() =>
-            ExecuteViewAsync()
+            ExecuteViewAsync(() => NewRelatoriosViewModel(ano, mes) )
         );
+    }
+
+    private Task<LGMResult<RelatoriosViewModel>> NewRelatoriosViewModel(int? ano, int? mes)
+    {
+        var hoje = DateTimeHelper.Now();
+
+        int y = ano ?? hoje.Year;
+        int m = mes ?? hoje.Month;
+        var culture = new CultureInfo("pt-BR");
+
+        var vm = new RelatoriosViewModel
+        {
+            Year = y,
+            Month = m,
+            IsMesAtual = (y == hoje.Year && m == hoje.Month),
+            MesReferencia = culture.DateTimeFormat.GetMonthName(m).ToUpperInvariant() + " / " + y.ToString(),
+        };
+
+        return Task.FromResult( LGMResult.Ok(vm) );
     }
 
     [HttpGet("relatorios/extrato/{ano}/{mes}/{tipoMovto=null}")]
@@ -32,8 +57,9 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/grupos/{ano=0}/{mes=0}")]
     public async Task<IActionResult> RelatorioGrupos(int ano=0, int mes=0)
     {
-
-        return PartialView();
+        var result = await _movtoService.GetRelatGrupoViewModelAsync(ano, mes);
+        RelatGrupoViewModel viewModel = result.Data ?? new();
+        return PartialView(viewModel);
     }
 
     [HttpGet("/relatorios/evolucao/{ano=0}/{mes=0}")]

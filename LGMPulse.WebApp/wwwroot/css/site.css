@@ -27,6 +27,8 @@
     --btn-danger-color: #ffffff;
     --btn-success-bg: #5200FF;
     --btn-success-color: #ffffff;
+    --section-begin: antiquewhite;
+    --section-end: wheat;
     /* Formularios */
     --form-container-bg: #f7f7f7;
     --input-border-color: #cccccc;
