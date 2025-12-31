@@ -23,9 +23,9 @@
     --color-sand: #f6e8c3;
     --color-amber: #efc359;
     --color-green-soft: #a3d9a5;
-    --btn-danger-bg: #dc3545;
+    --btn-danger-back: #dc3545;
     --btn-danger-color: #ffffff;
-    --btn-success-bg: #5200FF;
+    --btn-success-back: #5200FF;
     --btn-success-color: #ffffff;
     --section-begin: antiquewhite;
     --section-end: wheat;
@@ -111,9 +111,9 @@ body.dark-mode {
     --color-sand: #2b2a25;
     --color-amber: #e0b04f;
     --color-green-soft: #3b6f4a;
-    --btn-danger-bg: #c84545;
+    --btn-danger-back: #c84545;
     --btn-danger-color: #ffffff;
-    --btn-success-bg: #6a4cff;
+    --btn-success-back: #6a4cff;
     --btn-success-color: #ffffff;
     /* Formulários */
     --form-container-bg: #1b1e23;

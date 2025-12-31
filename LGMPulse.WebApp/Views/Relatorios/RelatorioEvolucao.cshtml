@@ -1,8 +1,78 @@
-﻿@{
+﻿@using LGMPulse.Domain.ViewModels
+@model RelatEvolucaoViewModel;
+@{
     Layout = null;
 }
 
-<h2>Relatório de Evolução</h2>
+<style>
+    :root {
+        --chart-bg: #fafafa;
+        --axis-color: rgba(0,0,0,.18);
+        --line-receita: var(--pulse-green);
+        --line-despesa: var(--pulse-red);
+        --line-liquidez-pos: var(--btn-success-back);
+        --line-liquidez-neg: var(--btn-danger-back);
+        --point-radius: 4;
+    }
+
+    #relatorioEvolucao {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem 0;
+        background: none;
+    }
+
+    .chart-block {
+        padding: 0.7rem 1.2rem;
+        border-radius: 14px;
+        background: linear-gradient(145deg, var(--section-begin), var(--section-end));
+    }
+
+    .chart-title {
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: .5rem;
+        opacity: .75;
+    }
+
+    svg {
+        width: 100%;
+        height: 140px;
+        overflow: visible;
+    }
+
+    .axis {
+        stroke: var(--axis-color);
+        stroke-width: 1;
+    }
+
+    .line {
+        fill: none;
+        stroke-width: 2.2;
+    }
+
+    .point {
+        fill: revert-layer;
+        stroke-width: 2;
+    }
+
+    .months {
+        display: flex;
+        justify-content: space-between;
+        font-size: .7rem;
+        opacity: .45;
+        margin-top: .25rem;
+        color: var(--grafite);
+    }
+</style>
+
+<div id="relatorioEvolucao">
+
+    @await Html.PartialAsync("_GraficoReceitas", Model)
+    @await Html.PartialAsync("_GraficoDespesas", Model)
+    @await Html.PartialAsync("_GraficoLiquidez", Model)
+
+</div>
 
 <script>
     $(document).ready(function () {

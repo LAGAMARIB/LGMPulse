@@ -4,9 +4,8 @@
 @{
     Layout = "_Layout";
     ViewBag.Title = "PULSE Relatórios";
-    var today = DateTimeHelper.Now().Date;
-    int month = today.Month;
-    int year = today.Year;
+    int month = Model.Month;
+    int year = Model.Year;
 }
 
 @section style {
@@ -106,6 +105,7 @@
         <i class="fas fa-bars"></i>
     </button>
     <span class="title">Relatórios</span>
+    <span class="subtitle" id="subTitle"></span>
 </div>
 
 <div id="relatoriosMenu" class="collapsed">
@@ -133,7 +133,6 @@
     <script>
         let currentYear = @Model.Year;
         let currentMonth = @Model.Month;
-        let currentName = "";
 
         $("#prevMonth").click(() => navigateMonth(-1));
         $("#nextMonth").click(() => navigateMonth(1));
@@ -151,15 +150,19 @@
                 currentYear++;
             }
 
-            carregarRelatorio(currentName);
+            window.location.href = `/relatorios/${currentYear}/${currentMonth}`;
         }
 
-        function carregarRelatorio(nome) {
-            currentName = nome;
-            $.get(`/relatorios/${nome}/${currentYear}/${currentMonth}`, function (resp) {
+        function carregarRelatorio(nome, subtitle) {
+            const url = `/relatorios/${nome}/${currentYear}/${currentMonth}`;
+            $.get(url, function (resp) {
                 if (resp) {
                     $('#relatoriosFrame').html(resp);
+                    if (subtitle) {
+                        $('#subTitle').html(` - ${subtitle}`)
+                    }
                     localStorage.setItem('ultimoRelatorio', nome);
+                    localStorage.setItem('ultimoRelatorioLabel', subtitle);
                 }
             });
         }
@@ -170,17 +173,19 @@
 
         $('.relat-option').on('click', function () {
             const rel = $(this).data('rel');
-            carregarRelatorio(rel);
+            const subtitle = $(this).text().trim();
+            carregarRelatorio(rel, subtitle);
             $('#relatoriosMenu').addClass('collapsed');
         });
 
         $(document).ready(function () {
             const ultimo = localStorage.getItem('ultimoRelatorio');
+            const label = localStorage.getItem('ultimoRelatorioLabel');
 
             if (ultimo) {
-                carregarRelatorio(ultimo);
+                carregarRelatorio(ultimo, label);
             } else {
-                carregarRelatorio('grupos');
+                carregarRelatorio('grupos', 'Visão por Grupo');
             }
 
             DisableIcon(3);

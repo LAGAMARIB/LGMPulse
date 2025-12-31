@@ -1,0 +1,65 @@
+﻿@using LGMPulse.Domain.ViewModels
+@using System.Globalization
+@model RelatEvolucaoViewModel
+
+@{
+    var inv = CultureInfo.InvariantCulture;
+    var max = Model.ValMaxRecDesp;
+    var stepX = Model.Receitas.Count > 1
+        ? 600.0 / (Model.Receitas.Count - 1)
+        : 0;
+}
+
+<div class="chart-block">
+    <div class="chart-title">Receitas</div>
+
+    <svg viewBox="0 0 600 120" preserveAspectRatio="none">
+
+        <!-- eixo horizontal -->
+        <line x1="0" y1="100" x2="600" y2="100" class="axis" />
+
+        <!-- linha -->
+        <polygon class="area"
+                 fill="var(--line-receita)"
+                 opacity="0.20"
+                 points="@string.Join(" ",
+                              Model.Receitas.Select((r, i) =>
+                                  $"{(i * stepX).ToString(inv)}," +
+                                  $"{(100 - (double)(r.ValorTotal / max * 90)).ToString(inv)}"
+                              )
+                              .Concat(new[]{
+                                  $"600,100",
+                                  $"0,100"
+                              })
+                          )" />
+
+        <polyline class="line"
+                  stroke="var(--line-receita)"
+                  fill="none"
+                  points="@string.Join(" ", Model.Receitas.Select((r, i) =>
+                                        $"{(i * stepX).ToString(inv)}," +
+                                        $"{(100 - (double)(r.ValorTotal / max * 90)).ToString(inv)}"
+                                    ))" />
+
+        <!-- pontos -->
+        @for (int i = 0; i < Model.Receitas.Count; i++)
+        {
+            var x = i * stepX;
+            var y = 100 - (double)(Model.Receitas[i].ValorTotal / max * 90);
+
+            <circle cx="@x.ToString(inv)"
+                    cy="@y.ToString(inv)"
+                    r="4"
+                    stroke="var(--line-receita)"
+                    fill="var(--line-receita)"
+                    class="point" />
+        }
+    </svg>
+
+    <div class="months">
+        @foreach (var m in Model.Receitas)
+        {
+            <span>@m.MesReferencia</span>
+        }
+    </div>
+</div>

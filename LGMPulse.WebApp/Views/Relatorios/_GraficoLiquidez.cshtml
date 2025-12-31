@@ -1,0 +1,108 @@
+﻿@using LGMPulse.Domain.ViewModels
+@using System.Globalization
+@model RelatEvolucaoViewModel
+
+@{
+    var inv = CultureInfo.InvariantCulture;
+    var absMax = (double)Model.Liquidez.Max(x => Math.Abs(x.ValorTotal)) * 1.2d;
+    var stepX = Model.Liquidez.Count > 1
+        ? 600.0 / (Model.Liquidez.Count - 1)
+        : 0;
+
+    double Y(double v) => 70 - (double)(v / absMax * 60);
+
+    var areaPos = new List<string>();
+    var areaNeg = new List<string>();
+
+    for (int i = 0; i < Model.Liquidez.Count; i++)
+    {
+        var curr = Model.Liquidez[i];
+        var x = i * stepX;
+        var y = Y((double)curr.ValorTotal);
+
+        if (i > 0)
+        {
+            var prev = Model.Liquidez[i - 1];
+            if ((prev.ValorTotal >= 0 && curr.ValorTotal < 0) ||
+                (prev.ValorTotal < 0 && curr.ValorTotal >= 0))
+            {
+                var xPrev = (i - 1) * stepX;
+                var yPrev = Y((double)prev.ValorTotal);
+
+                var t = (double)(prev.ValorTotal /
+                        (prev.ValorTotal - curr.ValorTotal));
+
+                var xZero = xPrev + t * (x - xPrev);
+
+                areaPos.Add($"{xZero.ToString(inv)},70");
+                areaNeg.Add($"{xZero.ToString(inv)},70");
+            }
+        }
+
+        if (curr.ValorTotal >= 0)
+        {
+            areaPos.Add($"{x.ToString(inv)},{y.ToString(inv)}");
+            areaNeg.Add($"{x.ToString(inv)},70");
+        }
+        else
+        {
+            areaNeg.Add($"{x.ToString(inv)},{y.ToString(inv)}");
+            areaPos.Add($"{x.ToString(inv)},70");
+        }
+    }
+
+    areaPos.Add("600,70");
+    areaPos.Add("0,70");
+
+    areaNeg.Add("600,70");
+    areaNeg.Add("0,70");
+}
+
+<div class="chart-block">
+    <div class="chart-title">Liquidez</div>
+
+    <svg viewBox="0 0 600 140" preserveAspectRatio="none">
+
+        <line x1="0" y1="70" x2="600" y2="70" class="axis" />
+
+        <!-- área positiva -->
+        <polygon fill="var(--pulse-green)"
+                 opacity="0.20"
+                 points="@string.Join(" ", areaPos)" />
+
+        <!-- área negativa -->
+        <polygon fill="var(--pulse-red)"
+                 opacity="0.20"
+                 points="@string.Join(" ", areaNeg)" />
+
+        <!-- linha -->
+        <polyline fill="none"
+                  stroke="var(--line-liquidez-pos)"
+                  points="@string.Join(" ",
+                                        Model.Liquidez.Select((r, i) =>
+                                            $"{(i * stepX).ToString(inv)},{Y((double)r.ValorTotal).ToString(inv)}"
+                                        ))" />
+
+        <!-- pontos -->
+        @for (int i = 0; i < Model.Liquidez.Count; i++)
+        {
+            var v = (double)Model.Liquidez[i].ValorTotal;
+            var x = i * stepX;
+            var y = Y(v);
+            var color = v >= 0 ? "var(--pulse-green)" : "var(--pulse-red)";
+
+            <circle cx="@x.ToString(inv)"
+                    cy="@y.ToString(inv)"
+                    r="4"
+                    fill="@color"
+                    stroke="@color" />
+        }
+    </svg>
+
+    <div class="months">
+        @foreach (var m in Model.Liquidez)
+        {
+            <span>@m.MesReferencia</span>
+        }
+    </div>
+</div>
