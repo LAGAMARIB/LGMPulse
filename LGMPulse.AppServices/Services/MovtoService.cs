@@ -72,7 +72,28 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
     {
         var dataIni = new DateTime(year, month, 1);
         var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
-        var result = await _movtoRepository.GetSumario(dataIni, dataFim);
+        var result = await _movtoRepository.GetSumarioMes(dataIni, dataFim);
         return LGMResult.Ok(result);
+    }
+
+    public async Task<LGMResult<RelatEvolucaoViewModel>> GetSumarioPeriodoAsync(DateTime dataIni, DateTime dataFim)
+    {
+        List<SumarioPeriodo> sumario = await _movtoRepository.GetSumarioPeriodo(dataIni, dataFim);
+        
+        RelatEvolucaoViewModel viewModel = new();
+        var culture = new CultureInfo("pt-BR");
+        foreach (var item in sumario)
+        {
+            string mesRef = culture.DateTimeFormat.GetMonthName(item.Mes).Substring(0, 3).ToUpperInvariant();
+            viewModel.Receitas.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = item.TotalReceitas });
+            viewModel.Despesas.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = item.TotalDespesas });
+            viewModel.Liquidez.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = (item.TotalReceitas - item.TotalDespesas) });
+        }
+
+        var maxRec = viewModel.Receitas.Max(x => x.ValorTotal) * 1.2m;
+        var maxDesp = viewModel.Despesas.Max(x => x.ValorTotal) * 1.2m;
+        viewModel.ValMaxRecDesp = Math.Max(maxRec, maxDesp);
+
+        return LGMResult.Ok(viewModel);
     }
 }

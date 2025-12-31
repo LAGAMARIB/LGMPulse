@@ -9,7 +9,7 @@ namespace LGMPulse.Persistence.Repositories;
 
 internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepository
 {
-    public async Task<SumarioMes?> GetSumario(DateTime dataIni, DateTime dataFim)
+    public async Task<SumarioMes?> GetSumarioMes(DateTime dataIni, DateTime dataFim)
     {
         dataFim = dataFim.AddDays(1).Date;
         using (var ctx = NewDBContext())
@@ -27,6 +27,48 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
             });
             SumarioMes? sumario = result.FirstOrDefault();
             return sumario;
+        }
+    }
+
+    public async Task<List<SumarioPeriodo>> GetSumarioPeriodo(DateTime dataIni, DateTime dataFim)
+    {
+        dataFim = dataFim.AddDays(1).Date;
+        using (var ctx = NewDBContext())
+        {
+            string sql = $@"SELECT
+                                YEAR(DataMovto)  AS Ano,
+                                MONTH(DataMovto) AS Mes,
+
+                                IFNULL(SUM(CASE 
+                                    WHEN TipoMovto = 0 THEN ValorMovto 
+                                    ELSE 0 
+                                END), 0) AS TotalReceitas,
+
+                                IFNULL(SUM(CASE 
+                                    WHEN TipoMovto = 1 THEN ValorMovto 
+                                    ELSE 0 
+                                END), 0) AS TotalDespesas
+
+                            FROM lgm_movto
+                            WHERE DataMovto IS NOT NULL
+                              AND DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
+                              AND DataMovto < '{dataFim.ToString("yyyy-MM-dd")}'
+                            GROUP BY
+                                YEAR(DataMovto),
+                                MONTH(DataMovto)
+                            ORDER BY
+                                Ano,
+                                Mes;
+                            ";
+
+            var sumarios = await ctx.GetListAsync<SumarioPeriodo>(sql, reader => new SumarioPeriodo
+            {
+                Ano = reader.GetInt32("Ano"),
+                Mes = reader.GetInt32("Mes"),
+                TotalReceitas = reader.GetDecimal("TotalReceitas"),
+                TotalDespesas = reader.GetDecimal("TotalDespesas")
+            });
+            return sumarios;
         }
     }
 

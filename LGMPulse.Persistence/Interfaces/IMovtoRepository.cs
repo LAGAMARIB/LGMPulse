@@ -5,6 +5,7 @@ namespace LGMPulse.Persistence.Interfaces;
 
 public interface IMovtoRepository : IBaseRepository<Movto>
 {
-    Task<SumarioMes?> GetSumario(DateTime dataIni, DateTime dataFim);
+    Task<SumarioMes?> GetSumarioMes(DateTime dataIni, DateTime dataFim);
     Task<List<GrupoSumary>> GetListGrupoSumary(DateTime dataIni, DateTime dataFim);
+    Task<List<SumarioPeriodo>> GetSumarioPeriodo(DateTime dataIni, DateTime dataFim);
 }

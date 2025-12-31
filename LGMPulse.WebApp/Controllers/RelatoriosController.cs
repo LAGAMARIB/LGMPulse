@@ -65,38 +65,12 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/evolucao/{ano=0}/{mes=0}")]
     public async Task<IActionResult> RelatorioEvolucao(int ano=0, int mes=0)
     {
-        RelatEvolucaoViewModel viewModel = new();
-        viewModel.Receitas = [
-            new EvolucaoSumary() { Year = 2025, Month = 12, MesReferencia = "DEZ", ValorTotal= 150m },
-            new EvolucaoSumary() { Year = 2025, Month = 11, MesReferencia = "NOV", ValorTotal= 170m },
-            new EvolucaoSumary() { Year = 2025, Month = 10, MesReferencia = "OUT", ValorTotal= 140m },
-            new EvolucaoSumary() { Year = 2025, Month = 09, MesReferencia = "SET", ValorTotal= 156m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "AGO", ValorTotal= 159m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "JUL", ValorTotal= 190m },
-        ];
-
-        viewModel.Despesas = [
-            new EvolucaoSumary() { Year = 2025, Month = 12, MesReferencia = "DEZ", ValorTotal= 1150m },
-            new EvolucaoSumary() { Year = 2025, Month = 11, MesReferencia = "NOV", ValorTotal= 1170m },
-            new EvolucaoSumary() { Year = 2025, Month = 10, MesReferencia = "OUT", ValorTotal= 1140m },
-            new EvolucaoSumary() { Year = 2025, Month = 09, MesReferencia = "SET", ValorTotal= 1156m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "AGO", ValorTotal= 1159m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "JUL", ValorTotal= 1190m },
-        ];
-
-        viewModel.Liquidez = [
-            new EvolucaoSumary() { Year = 2025, Month = 12, MesReferencia = "DEZ", ValorTotal= 50m },
-            new EvolucaoSumary() { Year = 2025, Month = 11, MesReferencia = "NOV", ValorTotal= 30m },
-            new EvolucaoSumary() { Year = 2025, Month = 10, MesReferencia = "OUT", ValorTotal= 20m },
-            new EvolucaoSumary() { Year = 2025, Month = 09, MesReferencia = "SET", ValorTotal= -15m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "AGO", ValorTotal= -5m },
-            new EvolucaoSumary() { Year = 2025, Month = 08, MesReferencia = "JUL", ValorTotal= 40m },
-        ];
-
-        var maxRec = viewModel.Receitas.Max(x => x.ValorTotal) * 1.2m;
-        var maxDesp = viewModel.Despesas.Max(x => x.ValorTotal) * 1.2m;
-        viewModel.ValMaxRecDesp = Math.Max(maxRec, maxDesp);
-
+        DateTime dataBase = new DateTime(ano, mes, 01);
+        DateTime dataIni = dataBase.AddMonths(-5);
+        DateTime dataFim = dataBase.AddMonths(1).AddSeconds(-1);
+        
+        var result = await _movtoService.GetSumarioPeriodoAsync(dataIni, dataFim);
+        RelatEvolucaoViewModel viewModel = result.Data ?? new();
         return PartialView(viewModel);
     }
 
