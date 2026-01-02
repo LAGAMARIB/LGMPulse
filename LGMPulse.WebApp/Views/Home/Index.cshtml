@@ -274,14 +274,14 @@
             top: 0;
             width: 100%;
             height: 100%;
-            transform: translateY(100%); /* inicio: fora da tela (embaixo) */
-            background: var(--overlay-dark); /* opaco, sem blur */
+            transform: translateY(100%);
+            background: var(--overlay-dark);
             transition: transform 360ms cubic-bezier(.22,.9,.32,1);
-            z-index: 30; /* acima do botão */
+            z-index: 30;
             display: flex;
-            align-items: flex-start; /* conteúdo começa no topo */
-            justify-content: center;
-            overflow: auto;
+            flex-direction: column; /* 🔑 */
+            align-items: stretch; /* 🔑 */
+            overflow: hidden;
         }
 
             /* quando ativo */
@@ -304,11 +304,36 @@
                 height: 100%;
             }
 
+        .overlay-topbar {
+            position: relative;
+            width: 100%; /* 🔑 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            padding: 0 16px;
+            flex-shrink: 0;
+        }
+
+        #mesReferencia {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--branco-neve);
+            font-weight: 700;
+            font-size: 1.5rem;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         /* botão fechar */
         #closeOverlayButton {
-            position: absolute;
-            top: 16px;
-            right: 16px;
+            position: absolute; 
+            right: 16px; 
+            top: 50%;
+            transform: translateY(-50%);
             width: 44px;
             height: 44px;
             background: linear-gradient(135deg, #ffb5b5, #ff6e6e);
@@ -318,9 +343,9 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            transition: transform .18s ease, opacity .2s ease;
+            z-index: 2;
         }
+
 
             #closeOverlayButton:hover {
                 transform: scale(1.06);
@@ -366,25 +391,22 @@
         #overlayFrame {
             display: none;
             width: 100%;
-            height: calc(100% - 70px);
+            height: 100%;
             border: none;
-            margin-top: 70px;
         }
 
         #backOverlayButton {
-            position: absolute;
-            top: 18px;
-            left: 18px;
+            width: 40px;
+            height: 40px;
             background: var(--footer-bg);
             border-radius: 50%;
-            height: 40px;
-            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.4rem;
-            text-align: center;
-            padding: 8px;
-            z-index: 5;
+            cursor: pointer;
+            z-index: 2;
         }
-
         #btnReceita {
             background: linear-gradient(145deg, var(--sphere-income-start), var(--sphere-income-end));
         }
@@ -455,15 +477,19 @@
 </div>
 
 <div id="addOverlay">
-    <div class="overlay-content">
-        <!-- Botão fechar -->
+    <div class="overlay-topbar">
+        <i id="backOverlayButton"
+           class="fas fa-arrow-left back-icon"
+           title="Voltar"></i>
+
+        <span id="mesReferencia">@Model.MesReferencia</span>
+
         <button id="closeOverlayButton" onclick="closeOverlay()">
             <img class="close-icon" src="/icons/xmark.svg" />
         </button>
+    </div>
 
-        <!-- Botão voltar (escondido por padrão) -->
-        <i id="backOverlayButton" class="fas fa-arrow-left back-icon" title="Voltar"></i>
-
+    <div class="overlay-content">
         <!-- Tela inicial -->
         <div id="overlayHome">
             <button class="overlay-option" id="btnReceita" data-type="receita">Nova Receita</button>
@@ -624,8 +650,8 @@
             $(".overlay-option").on("click", function () {
                 const tipo = $(this).data("type");
                 const url = tipo === "receita"
-                    ? "/lancamento/novareceita"
-                    : "/lancamento/novadespesa";
+                    ? `/lancamento/novareceita/${currentYear}/${currentMonth}`
+                    : `/lancamento/novadespesa/${currentYear}/${currentMonth}`;
 
                 pushOverlay(url);
 

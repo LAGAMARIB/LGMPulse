@@ -33,14 +33,13 @@ public class RelatoriosController : LGMController
 
         int y = ano ?? hoje.Year;
         int m = mes ?? hoje.Month;
-        var culture = new CultureInfo("pt-BR");
 
         var vm = new RelatoriosViewModel
         {
             Year = y,
             Month = m,
             IsMesAtual = (y == hoje.Year && m == hoje.Month),
-            MesReferencia = culture.DateTimeFormat.GetMonthName(m).ToUpperInvariant() + " / " + y.ToString(),
+            MesReferencia = DateTimeHelper.MesReferencia(y, m),
         };
 
         return Task.FromResult( LGMResult.Ok(vm) );

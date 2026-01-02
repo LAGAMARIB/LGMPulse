@@ -1,5 +1,5 @@
-﻿@using LGMPulse.Domain.Domains
-@model List<Grupo>
+﻿@using LGMPulse.WebApp.Models
+@model NovoLancamentoModel
 @{
     ViewBag.Title = "Nova Receita";
 }
@@ -60,7 +60,7 @@
 }
 
 <div class="category-grid">
-    @foreach (var grupo in Model)
+    @foreach (var grupo in Model.Grupos)
     {
         <div class="category-item" data-grupo="@grupo.ID">
             <img src="@grupo.ImagePath" alt="@grupo.Descricao" />
@@ -78,8 +78,10 @@
 
                 const idGrupo = $(this).data('grupo');
                 const descGrupo = $(this).find("span").html();
+                const ano = parseInt('@Model.Year', 0);
+                const mes = parseInt('@Model.Month', 0);
                 const RECEITA = 0;
-                const URL = `/Lancamento/DigitarValor/${RECEITA}/${idGrupo}/${descGrupo}`;
+                const URL = `/Lancamento/DigitarValor/${RECEITA}/${idGrupo}/${descGrupo}/${ano}/${mes}`;
                 $(window.parent.document).find("#overlayFrame").each(function () {
                     $(this)
                         .attr("src", URL)

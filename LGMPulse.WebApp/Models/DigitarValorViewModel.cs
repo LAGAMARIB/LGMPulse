@@ -10,4 +10,5 @@ public class DigitarValorViewModel
     public DateTime DataMovto { get; set; }
     public string? Descricao { get; set; }
     public decimal ValorMovto { get; set; }
+    public string MesReferencia { get; set; }
 }

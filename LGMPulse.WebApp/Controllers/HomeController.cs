@@ -40,13 +40,13 @@ namespace LGMPulse.WebApp.Controllers
             decimal liquidezAnterior = (sumAnt != null ? sumAnt.TotalReceitas - sumAnt.TotalDespesas : 0);
             
             LGMResult<SumarioMes> result = await _movtoService.GetSumarioMesAsync(year.Value, month.Value); 
-            var culture = new CultureInfo("pt-BR");
+            DateTime hoje = DateTimeHelper.Now();
             HealthyDashViewModel viewModel = new()
             {
                 Ano = year.Value,
                 Mes = month.Value,
-                IsMesAtual = (year == DateTimeHelper.Now().Year && month == DateTimeHelper.Now().Month),
-                MesReferencia = culture.DateTimeFormat.GetMonthName(month.Value) + " / " + year.ToString()
+                IsMesAtual = (year == hoje.Year && month == hoje.Month),
+                MesReferencia = DateTimeHelper.MesReferencia(year.Value, month.Value)
             };
             var sumario = result.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;

@@ -57,12 +57,11 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
         var dataIni = new DateTime(year, month, 1);
         var dataFim = dataIni.AddMonths(1).AddSeconds(-1);
         var sumarioGrupos = await _movtoRepository.GetListGrupoSumary(dataIni, dataFim);
-        var culture = new CultureInfo("pt-BR");
         RelatGrupoViewModel relatViewModel = new()
         {
             Year = year,
             Month = month,
-            MesReferencia = culture.DateTimeFormat.GetMonthName(month).ToUpperInvariant() + " / " + year.ToString(),
+            MesReferencia = DateTimeHelper.MesReferencia(year, month),
             Grupos = sumarioGrupos
         };
         return LGMResult.Ok(relatViewModel);
@@ -81,10 +80,9 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
         List<SumarioPeriodo> sumario = await _movtoRepository.GetSumarioPeriodo(dataIni, dataFim);
         
         RelatEvolucaoViewModel viewModel = new();
-        var culture = new CultureInfo("pt-BR");
         foreach (var item in sumario)
         {
-            string mesRef = culture.DateTimeFormat.GetMonthName(item.Mes).Substring(0, 3).ToUpperInvariant();
+            string mesRef = DateTimeHelper.MesReferencia(item.Ano, item.Mes).Substring(0, 3);
             viewModel.Receitas.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = item.TotalReceitas });
             viewModel.Despesas.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = item.TotalDespesas });
             viewModel.Liquidez.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = (item.TotalReceitas - item.TotalDespesas) });

@@ -19,42 +19,69 @@ public class LancamentoController : LGMController
         _movtoService = movtoService;
     }
 
-    public async Task<IActionResult> NovaReceita()
+    [HttpGet("lancamento/novareceita/{ano=null}/{mes=null}")]
+    public async Task<IActionResult> NovaReceita(int? ano=null, int? mes=null)
     {
         return await ValidateSessionAsync(() =>
                 ExecuteViewAsync(() => GetGruposReceita(), "NovaReceita")
         );
     }
 
-    private async Task<LGMResult<List<Grupo>>> GetGruposReceita()
+    private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(int? ano = null, int? mes = null)
     {
         var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
-        return lista;
+        DateTime hoje = DateTimeHelper.Now();
+        NovoLancamentoModel model = new()
+        {
+            Grupos = lista.Data ?? new(),
+            Month = mes ?? hoje.Month,
+            Year = ano ?? hoje.Year,
+        };
+        return LGMResult.Ok(model);
     }
 
-    public async Task<IActionResult> NovaDespesa()
+    [HttpGet("lancamento/novadespesa/{ano=null}/{mes=null}")]
+    public async Task<IActionResult> NovaDespesa(int? ano = null, int? mes = null)
     {
         return await ValidateSessionAsync(() =>
                 ExecuteViewAsync(() => GetGruposDespesa(), "NovaDespesa")
         );
     }
 
-    private async Task<LGMResult<List<Grupo>>> GetGruposDespesa()
+    private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(int? ano = null, int? mes = null)
     {
         var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
-        return lista;
+        DateTime hoje = DateTimeHelper.Now();
+        mes = mes ?? hoje.Month;
+        ano = ano ?? hoje.Year;
+        NovoLancamentoModel model = new()
+        {
+            Grupos = lista.Data ?? new(),
+            Month = mes.Value,
+            Year = ano.Value,
+            MesReferencia = DateTimeHelper.MesReferencia(ano.Value, mes.Value),
+        };
+        return LGMResult.Ok(model);
     }
 
 
-    [HttpGet("Lancamento/digitarvalor/{tipo}/{idGrupo}/{descricao=null}")]
-    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao)
+    [HttpGet("Lancamento/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{ano=null}/{mes=null}")]
+    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao, int? ano = null, int? mes = null)
     {
+        DateTime dataMovto = DateTimeHelper.Now();
+        if (ano != null && mes != null && (ano != dataMovto.Year || mes != dataMovto.Month))
+        {
+            dataMovto = new DateTime(ano.Value, mes.Value, 1);
+            dataMovto = dataMovto.AddMonths(1).AddDays(-1); // se mes anterior, lançar no último dia do mês
+        }
+
         DigitarValorViewModel model = new()
         {
             TipoMovto = tipo,
             IDGrupo = idGrupo,
             DescGrupo = descricao ?? "",
-            DataMovto = DateTimeHelper.Now(),
+            DataMovto = dataMovto,
+            MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
             ValorMovto = 0
         };
         return View(model);
