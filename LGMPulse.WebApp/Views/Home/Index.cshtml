@@ -165,7 +165,20 @@
         }
 
         /* ===== MÊS ===== */
-
+        .period-badge {
+            margin-left: 10px;
+            padding: 0;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--badge-text-color);
+            background: var(--badge-back-color);
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px var(--preto-sombra-2);
+            user-select: none;
+            white-space: nowrap;
+        }
         .month-nav {
             position: relative;
             display: flex;
@@ -238,28 +251,28 @@
             }
 
         /* Botão-aba flutuante */
+
         #addButton {
             position: fixed;
-            bottom: 59px; 
+            bottom: 59px;
             left: 50%;
             transform: translateX(-50%);
-            width: 140px;
-            height: 64px;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
+            width: 160px;
+            height: 86px; 
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
             background: linear-gradient(145deg, var(--add-bg-start), var(--add-bg-end));
             color: var(--add-text);
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start;
             font-size: 2.4rem;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-            z-index: 40; /* acima do overlay enquanto “embarca” */
-            transition: 
-                transform 360ms cubic-bezier(.22,.9,.32,1), 
-                opacity 240ms ease;
+            z-index: 40;
+            transition: transform 360ms cubic-bezier(.22,.9,.32,1), opacity 240ms ease;
         }
 
             /* toque */
@@ -501,10 +514,16 @@
     </div>
 </div>
 
-@if (Model.IsMesAtual)
-{
-    <div id="addButton">+</div>
-}
+<div id="addButton">
+    <div class="add-plus">+</div>
+
+    @if (!Model.IsMesAtual)
+    {
+        <div class="period-badge">
+            Período anterior
+        </div>
+    }
+</div>
 
 @section script {
     <script>
@@ -526,7 +545,7 @@
             }
 
             // versão simples: reload com querystring
-            window.location.href = `/Home/Index?mes=${currentMonth}&ano=${currentYear}`;
+            window.location.href = `/Home/Index?ano=${currentYear}&mes=${currentMonth}`;
         }
 
         function RefreshSpheres() {
@@ -624,7 +643,7 @@
                 currentYear++;
             }
 
-            window.location.href = `/Home/Index?mes=${currentMonth}&ano=${currentYear}`;
+            window.location.href = `/Home/Index?ano=${currentYear}&mes=${currentMonth}`;
         }
 
         $(document).ready(function () {
@@ -652,7 +671,7 @@
                 const url = tipo === "receita"
                     ? `/lancamento/novareceita/${currentYear}/${currentMonth}`
                     : `/lancamento/novadespesa/${currentYear}/${currentMonth}`;
-
+                
                 pushOverlay(url);
 
                 $("#overlayFrame").attr("src", url).show();

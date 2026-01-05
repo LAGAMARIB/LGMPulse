@@ -6,6 +6,7 @@ using LGMPulse.Domain.ViewModels;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using System.IO.Pipes;
 using System.Text.RegularExpressions;
 
 namespace LGMPulse.WebApp.Controllers;
@@ -49,8 +50,21 @@ public class RelatoriosController : LGMController
     public async Task<IActionResult> ExtratoAsync(int ano, int mes, TipoMovtoEnum? tipoMovto=null)
     {
         return await ValidateSessionAsync(() =>
-            ExecuteViewAsync(() => _movtoService.GetListAsync(ano, mes, tipoMovto ) )
+            ExecuteViewAsync(() => GetExtratoViewModelAsync(ano, mes, tipoMovto ) )
         );
+    }
+
+    private async Task<LGMResult<ExtratoViewModel>> GetExtratoViewModelAsync(int ano, int mes, TipoMovtoEnum? tipoMovto)
+    {
+        var result = await _movtoService.GetListAsync(ano, mes, tipoMovto );
+        ExtratoViewModel viewModel = new()
+        {
+            Year = ano,
+            Month = mes,
+            Movtos = result.Data ?? new(),
+            MovtoReferencia = tipoMovto == null ? "EXTRATO" : tipoMovto == TipoMovtoEnum.Receita ? "RECEITAS" : "DESPESAS"
+        };
+        return LGMResult.Ok( viewModel );
     }
 
     [HttpGet("/relatorios/grupos/{ano=0}/{mes=0}")]

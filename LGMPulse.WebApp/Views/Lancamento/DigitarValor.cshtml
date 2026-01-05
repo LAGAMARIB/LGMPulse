@@ -7,7 +7,7 @@
     ViewBag.SubTitle = $"{Model.TipoMovto} - {Model.DescGrupo}";
 
     string subTitleClass = Model.TipoMovto == TipoMovtoEnum.Despesa ? "despesa" : "receita";
-    DateTime dataLancto = DateTimeHelper.Now().Date;
+    DateTime dataLancto = Model.DataMovto;
 }
 
 @section style {

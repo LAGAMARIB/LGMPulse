@@ -1,7 +1,12 @@
-﻿@using LGMPulse.Domain.Domains
-@model List<Movto>
+﻿@using LGMDomains.Common.Helpers
+@using LGMPulse.Domain.Enuns
+@using LGMPulse.WebApp.Models
+@model ExtratoViewModel
 @{
     Layout = "_Layout";
+    DateTime hoje = DateTimeHelper.Now();
+    bool IsMesAtual = Model.Year == hoje.Year && Model.Month == hoje.Month;
+    string MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
 }
 
 @section style {
@@ -19,7 +24,7 @@
         #ExtratoHeader {
             flex: 0 0 56px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             padding: var(--space-3);
             background: transparent;
@@ -142,13 +147,14 @@
 
 <div id="ExtratoContainer">
     <div id="ExtratoHeader">
+        <strong>@string.Format("{0} - {1}", Model.MovtoReferencia, MesReferencia)</strong>
         <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
     </div>
     <div id="ExtratoItems">
-        @foreach (var movto in Model)
+        @foreach (var movto in Model.Movtos)
         {
             var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
-            var classTipo = (movto.TipoMovto == LGMPulse.Domain.Enuns.TipoMovtoEnum.Receita ? "receita" : "despesa");
+            var classTipo = (movto.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
             <div class="row-movto @classTipo">
                 <div class="col-1"> <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" /> </div>
                 <div class="col-2">
@@ -165,8 +171,10 @@
 
 @section script {
     <script>
+        const year = parseInt('@Model.Year', null);
+        const month = parseInt('@Model.Month', null);
         $('#btnFecharForm').on('click', function () {
-            window.location.href = `/home/index`;
+            window.location.href = `/Home/Index?ano=${year}&mes=${month}`;
         });
     </script>
 }

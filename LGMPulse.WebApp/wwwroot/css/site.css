@@ -11,6 +11,7 @@
     --pulse-blue: #3c7df0;
     --branco-transparente: rgba(255,255,255,0.55);
     --preto-sombra: rgba(0,0,0,0.12);
+    --preto-sombra-2: rgba(122, 90, 0, 0.25);
     --branco-neve: #fff;
     --branco-gelo: #cccccc;
     --grafite: #292a2e;
@@ -92,6 +93,9 @@
     /* relatorios */
     --border-movto-receita: rgba(88,196,139,0.45);
     --border-movto-despesa: rgba(228,85,85,0.45);
+    /* badges */
+    --badge-text-color: #5a4300;
+    --badge-back-color: linear-gradient(145deg, #fff1c2, #e7d18a);
 }
 
 /* ------- VARIÁVEIS DO MODO ESCURO ------- */

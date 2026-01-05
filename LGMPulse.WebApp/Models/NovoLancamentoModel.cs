@@ -9,4 +9,5 @@ public class NovoLancamentoModel
 
     public List<Grupo> Grupos { get; set; } = new();
     public string MesReferencia { get; set; }
+    public bool IsMesAtual { get; set; }
 }

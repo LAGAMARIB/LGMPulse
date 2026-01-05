@@ -23,7 +23,7 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaReceita(int? ano=null, int? mes=null)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposReceita(), "NovaReceita")
+                ExecuteViewAsync(() => GetGruposReceita(ano, mes), "NovaReceita")
         );
     }
 
@@ -31,11 +31,15 @@ public class LancamentoController : LGMController
     {
         var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
         DateTime hoje = DateTimeHelper.Now();
+        mes = mes ?? hoje.Month;
+        ano = ano ?? hoje.Year;
         NovoLancamentoModel model = new()
         {
             Grupos = lista.Data ?? new(),
             Month = mes ?? hoje.Month,
             Year = ano ?? hoje.Year,
+            MesReferencia = DateTimeHelper.MesReferencia(ano!.Value, mes!.Value),
+            IsMesAtual = (ano == hoje.Year && mes == hoje.Month),
         };
         return LGMResult.Ok(model);
     }
@@ -44,7 +48,7 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaDespesa(int? ano = null, int? mes = null)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposDespesa(), "NovaDespesa")
+                ExecuteViewAsync(() => GetGruposDespesa(ano, mes), "NovaDespesa")
         );
     }
 
@@ -60,6 +64,7 @@ public class LancamentoController : LGMController
             Month = mes.Value,
             Year = ano.Value,
             MesReferencia = DateTimeHelper.MesReferencia(ano.Value, mes.Value),
+            IsMesAtual = (ano == hoje.Year && mes == hoje.Month),
         };
         return LGMResult.Ok(model);
     }

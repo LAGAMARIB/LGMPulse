@@ -20,8 +20,8 @@ namespace LGMPulse.WebApp.Controllers
             _movtoService = movtoService;
             _loginService = loginService;
         }
-
-        public async Task<IActionResult> Index(int? mes, int? ano)
+                
+        public async Task<IActionResult> Index(int? ano, int? mes)
         {
             return await ValidateSessionAsync(() =>
                 ExecuteViewAsync(() => NewHealthyDashViewModel(ano, mes), "Index")
