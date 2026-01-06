@@ -87,29 +87,60 @@ public class LancamentoController : LGMController
             DescGrupo = descricao ?? "",
             DataMovto = dataMovto,
             MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
-            ValorMovto = 0
+            ValorMovto = 0,
+            IsNew = true
         };
         return View(model);
     }
 
-    [HttpPost("Lancamento/create")]
-    public async Task<JsonResult> Create([FromBody] DigitarValorViewModel model)
+    [HttpGet("lancamento/alterarvalor/{IDMovto}/{UrlRetorno=null}")]
+    public async Task<IActionResult?> AlterarValorAsync(int IDMovto, string? UrlRetorno=null)
+    {
+        var result = await _movtoService.GetByIdAsync(IDMovto);
+        if (!result.IsSuccess || result.Data == null) return null;
+
+        var movto = result.Data;
+        DigitarValorViewModel model = new()
+        {
+            ID = IDMovto,
+            TipoMovto = movto.TipoMovto!.Value,
+            IDGrupo = movto.IDGrupo!.Value,
+            DescGrupo = movto.NomeGrupo!,
+            Descricao = movto.Descricao!,
+            DataMovto = movto.DataMovto!.Value,
+            MesReferencia = DateTimeHelper.MesReferencia(movto.DataMovto!.Value),
+            ValorMovto = movto.ValorMovto!.Value,
+            IsNew = false,
+            URLRetorno = UrlRetorno
+        };
+        return View("DigitarValor", model);
+    }
+
+    [HttpPost("Lancamento/save")]
+    public async Task<JsonResult> Save([FromBody] DigitarValorViewModel model)
     {
         Movto movto = new()
         {
+            ID = model.ID,
             DataMovto = model.DataMovto,
             TipoMovto = model.TipoMovto,
             IDGrupo = model.IDGrupo,
             Descricao = model.Descricao,
             ValorMovto= model.ValorMovto
         };
-        var result = await _movtoService.CreateAsync(movto);
+        ILGMResult result;
+        if (model.IsNew)
+            result = await _movtoService.CreateAsync(movto);
+        else
+            result = await _movtoService.UpdateAsync(movto);
         if (result.IsSuccess)
         {
             if (!string.IsNullOrEmpty(result.Message))
                 GravarAviso(result.Message);
             else
                 GravarMensagem("Registro salvo com sucesso");
+            if (!string.IsNullOrWhiteSpace(model.URLRetorno))
+                result.RedirectUrl = model.URLRetorno.Replace('_','/');
         }
         return Json(result);
     }

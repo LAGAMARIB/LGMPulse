@@ -68,7 +68,9 @@
 
         /* ===== LINHA DO MOVIMENTO ===== */
         .row-movto {
-            display: grid;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             grid-template-columns: 44px 1fr auto;
             align-items: center;
             gap: var(--space-3);
@@ -77,7 +79,8 @@
             backdrop-filter: blur(3px);
             border-radius: var(--radius);
             box-shadow: 0 4px 12px var(--preto-sombra);
-            transition: background var(--pulse), transform var(--pulse);
+            max-height: 57px;
+            transition: max-height 0.75s ease;
         }
 
             .row-movto:hover {
@@ -141,6 +144,70 @@
             .row-movto.despesa {
                 border-left: 4px solid var(--border-movto-despesa);
             }
+
+        /* conteúdo principal */
+        .row-content {
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            align-items: center;
+            gap: var(--space-3);
+            width: 100%;
+        }
+
+        /* toolbar (rodapé oculto) */
+        .row-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 90px;
+            padding: 14px 8px 0px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-soft);
+            opacity: 0;
+            max-height: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, max-height 0.75s ease;
+        }
+
+        /* estado expandido */
+        .row-movto.expanded {
+            padding-bottom: var(--space-5);
+            box-shadow: var(--shadow-hover);
+            transform: scale(1.015);
+            max-height: 160px;
+        }
+            .row-movto.expanded .row-toolbar {
+                opacity: 1;
+                max-height: 80px;
+                pointer-events: auto;
+            }
+
+        /* ícones */
+        .row-toolbar i {
+            font-size: 1.6rem;
+            cursor: pointer;
+            opacity: 0.9;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+            .row-toolbar i:active {
+                transform: scale(0.95);
+            }
+
+            .row-toolbar i:hover {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+
+        /* editar */
+        .row-toolbar .btn-edit {
+            color: var(--pulse-blue);
+        }
+
+        /* excluir */
+        .row-toolbar .btn-delete {
+            color: var(--pulse-red);
+        }
     </style>
 }
 
@@ -156,13 +223,22 @@
             var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
             var classTipo = (movto.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
             <div class="row-movto @classTipo">
-                <div class="col-1"> <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" /> </div>
-                <div class="col-2">
-                    <span>@movto.DataMovto!.Value.ToShortDateString()</span>
-                    <span><b>@descMovto</b></span>
+                <div class="row-content">
+                    <div class="col-1">
+                        <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" />
+                    </div>
+                    <div class="col-2">
+                        <span>@movto.DataMovto!.Value.ToShortDateString()</span>
+                        <span><b>@descMovto</b></span>
+                    </div>
+                    <div class="col-3">
+                        <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
+
+                <div class="row-toolbar">
+                    <i class="fas fa-keyboard btn-edit" data-movto="@movto.ID" title="Editar valor"></i>
+                    <i class="fas fa-trash btn-delete" data-movto="@movto.ID" title="Excluir"></i>
                 </div>
             </div>
         }
@@ -176,5 +252,33 @@
         $('#btnFecharForm').on('click', function () {
             window.location.href = `/Home/Index?ano=${year}&mes=${month}`;
         });
+
+
+        $(document).ready(function () {
+
+             $(".row-movto").on("click", function (e) {
+
+                 // evita conflito se clicar direto nos ícones depois
+                 if ($(e.target).closest(".row-toolbar").length) return;
+
+                 const $current = $(this);
+
+                 // colapsa todos os outros
+                 $(".row-movto").not($current).removeClass("expanded");
+
+                 // alterna o atual
+                 $current.toggleClass("expanded");
+             });
+
+             $('.btn-edit').on("click", function (e) {
+                 const IDMovto = $(this).data('movto');
+                 const ano = parseInt('@Model.Year', null);
+                 const mes = parseInt('@Model.Month', null);
+                 const URL = `_relatorios_extrato_${ano}_${mes}`;
+                 window.location.href = `/lancamento/alterarvalor/${IDMovto}/${URL}`;
+             });
+
+         });
+
     </script>
 }

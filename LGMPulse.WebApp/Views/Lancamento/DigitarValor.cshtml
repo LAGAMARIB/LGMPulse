@@ -8,6 +8,8 @@
 
     string subTitleClass = Model.TipoMovto == TipoMovtoEnum.Despesa ? "despesa" : "receita";
     DateTime dataLancto = Model.DataMovto;
+    string? urlRetorno = Model.URLRetorno?.Replace('_', '/');
+    int valorInicial = Convert.ToInt32( Model.ValorMovto * 100 );
 }
 
 @section style {
@@ -55,6 +57,41 @@
         .action-key {
             background: var(--color-sand);
         }
+
+        /* ===== BARRA SUPERIOR FIXA ===== */
+        #DigitarHeader {
+            flex: 0 0 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            background: transparent;
+            z-index: 20;
+        }
+
+        /* ===== BOTÃO FECHAR ===== */
+        #btnFecharForm {
+            width: 44px;
+            height: 44px;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--btn-danger-back);
+            color: var(--btn-danger-color);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 6px 14px var(--preto-sombra);
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+        }
+
+            #btnFecharForm:hover {
+                opacity: 0.95;
+            }
+
+            #btnFecharForm:active {
+                transform: scale(0.88) rotate(-6deg);
+                box-shadow: 0 3px 8px var(--preto-sombra);
+            }
+
 
         #subTitle {
             text-align: center;
@@ -110,7 +147,13 @@
     </style>
 }
 
-<div id="subTitle" class="@subTitleClass">@ViewBag.SubTitle</div>
+<div id="DigitarHeader">
+    <div id="subTitle" class="@subTitleClass">@ViewBag.SubTitle</div>
+    @if (!string.IsNullOrEmpty(urlRetorno))
+    {
+        <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
+    }
+</div>
 
 <div class="value-container">
     <div id="displayValue" class="display-value">0,00</div>
@@ -146,15 +189,18 @@
     </div>
     <div class="form-group">
         <label for="Descricao">Descrição:</label>
-        <input type="text" id="Descricao" name="Descricao" class="form-input"/>
+        <input type="text" id="Descricao" 
+            name="Descricao" 
+            class="form-input"
+            value="@Model.Descricao" />
     </div>
 </div>
 
 @section script {
     <script>
         $(document).ready(function () {
-            let rawValue = "";
-            let descMovto = "";
+            let rawValue = "@valorInicial";
+            let descMovto = "@Model.Descricao";
             let dataMovto = "@dataLancto.Date.ToString("yyyy-MM-dd")";
 
             function updateDisplay() {
@@ -200,6 +246,10 @@
                  });
             });
 
+            $('#btnFecharForm').on('click', function () {
+                window.location.href = `@urlRetorno`;
+            });
+
             $('#btnConfirm').on('click', function (e) {
                 e.preventDefault();
 
@@ -213,19 +263,27 @@
                 $(this).prop('disabled', true);
 
                 var objMovto = {
+                    ID: parseInt("@Model.ID", null),
                     TipoMovto: parseInt("@((int)Model.TipoMovto)", 10),
                     IDGrupo: parseInt("@Model.IDGrupo", 10),
                     DataMovto: dataMovto,
                     Descricao: descMovto,
-                    ValorMovto: returnValue
+                    ValorMovto: returnValue,
+                    IsNew: ("@Model.IsNew" == "True"),
+                    URLRetorno: "@Model.URLRetorno"
                 };
 
+                console.log(objMovto);
+
                 $.ajax({
-                    url: '/Lancamento/create',
+                    url: '/Lancamento/save',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(objMovto),
                     success: function (response) {
+                        if (response.RedirectUrl) {
+                            window.location.href = response.RedirectUrl;
+                        }
                         window.parent.postMessage({
                             action: "closeOverlayAndReload"
                         }, "*");
@@ -236,6 +294,8 @@
                     }
                 });
             });
+
+            updateDisplay();
         });
     </script>
 }
