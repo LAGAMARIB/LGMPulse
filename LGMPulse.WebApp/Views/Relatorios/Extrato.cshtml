@@ -253,6 +253,18 @@
             window.location.href = `/Home/Index?ano=${year}&mes=${month}`;
         });
 
+        function ExcluirRegistro(id) {
+            $.post(`/lancamento/delete/${id}`, null, function(result) {
+                if (result.IsSuccess) {
+                    window.location.reload();
+                } else {
+                    alert(result.Message);
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                alert('Erro ao tentar remover o registro: ' + errorThrown);
+            });
+        }
 
         $(document).ready(function () {
 
@@ -278,6 +290,18 @@
                  window.location.href = `/lancamento/alterarvalor/${IDMovto}/${URL}`;
              });
 
+             $('.btn-delete').on("click", function (e) {
+                 const id = $(this).data('movto');
+                 showModalDialog({
+                    titulo: 'Excluir',
+                    mensagem: "Confirma excluir este lançamento?",
+                    tipo: 'excluir', //excluir, info, confirmar, alertar
+                    onConfirm: () => {
+                        ExcluirRegistro(id);
+                    }
+                 });
+
+             });
          });
 
     </script>

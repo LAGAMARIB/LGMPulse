@@ -145,4 +145,11 @@ public class LancamentoController : LGMController
         return Json(result);
     }
 
+    [HttpPost("lancamento/delete/{IDMovto}")]
+    public async Task<JsonResult> Delete(int IDMovto)
+    {
+        var result = await _movtoService.DeleteAsync(IDMovto);
+        GravarMensagem("Movimento excluído com sucesso");
+        return Json(result);
+    }
 }

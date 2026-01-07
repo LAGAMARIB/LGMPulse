@@ -200,7 +200,9 @@
     <script>
         $(document).ready(function () {
             let rawValue = "@valorInicial";
-            let descMovto = "@Model.Descricao";
+            let descMovto = @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(Model.Descricao)
+            );
             let dataMovto = "@dataLancto.Date.ToString("yyyy-MM-dd")";
 
             function updateDisplay() {
