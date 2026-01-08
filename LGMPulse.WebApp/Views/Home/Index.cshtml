@@ -1,8 +1,13 @@
-﻿@using LGMPulse.WebApp.Models
+﻿@using LGMDomains.Common.Helpers
+@using LGMPulse.WebApp.Models
 @model HealthyDashViewModel;
 @{
+    Layout = "_overview";
     ViewBag.Title = ViewBag.Title ?? "LAGAMA Pulse";
-    
+    DateTime hoje = DateTimeHelper.Now();
+    bool IsMesAtual = Model.Year == hoje.Year && Model.Month == hoje.Month;
+    string MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
+
     var perc = Math.Round(Model.PercDiferenca);
     var isNegative = perc < 0;
     var absPerc = Math.Abs(perc);
@@ -15,19 +20,6 @@
     <style>
 
         :root {
-            --sphere-income-start: #b8f0c6;
-            --sphere-income-end: #4f7a46;
-            --sphere-expense-start: #ffcfcf;
-            --sphere-expense-end: #9b463f;
-            --sphere-yellow-start: #fff2c8;
-            --sphere-yellow-end: #C89A3A;
-            --sphere-blue-start: #8ac7e8;
-            --sphere-blue-end: #3a6a86;
-            --sphere-shadow: rgba(0,0,0,0.18);
-            --sphere-highlight: rgba(255,255,255,0.65);
-            --insight-bg-start: #faf1d7;
-            --insight-bg-end: #f4e4b6;
-            --insight-text: #4c3a00;
             --sphere-bigger: 160px;
             --sphere-smaller: 140px;
         }
@@ -165,20 +157,6 @@
         }
 
         /* ===== MÊS ===== */
-        .period-badge {
-            margin-left: 10px;
-            padding: 0;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--badge-text-color);
-            background: var(--badge-back-color);
-            border-radius: 999px;
-            box-shadow: inset 0 0 0 1px var(--preto-sombra-2);
-            user-select: none;
-            white-space: nowrap;
-        }
         .month-nav {
             position: relative;
             display: flex;
@@ -227,207 +205,6 @@
             font-weight: 500;
         }
 
-        /* Botão flutuante */
-        .pulse-fab {
-            position: fixed;
-            bottom: var(--space-6);
-            right: var(--space-6);
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            background: var(--pulse-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2.2rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-hover);
-            transition: var(--pulse);
-        }
-
-            .pulse-fab:active {
-                transform: scale(0.92);
-            }
-
-        /* Botão-aba flutuante */
-
-        #addButton {
-            position: fixed;
-            bottom: 59px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 160px;
-            height: 86px; 
-            border-top-left-radius: 28px;
-            border-top-right-radius: 28px;
-            background: linear-gradient(145deg, var(--add-bg-start), var(--add-bg-end));
-            color: var(--add-text);
-            display: flex;
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start;
-            font-size: 2.4rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-            z-index: 40;
-            transition: transform 360ms cubic-bezier(.22,.9,.32,1), opacity 240ms ease;
-        }
-
-            /* toque */
-            #addButton:active {
-                transform: translateX(-50%) scale(0.96);
-            }
-
-        /* Overlay */
-        #addOverlay {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            transform: translateY(100%);
-            background: var(--overlay-dark);
-            transition: transform 360ms cubic-bezier(.22,.9,.32,1);
-            z-index: 30;
-            display: flex;
-            flex-direction: column; /* 🔑 */
-            align-items: stretch; /* 🔑 */
-            overflow: hidden;
-        }
-
-            /* quando ativo */
-            #addOverlay.active {
-                transform: translateY(0);
-            }
-
-                /* esconder o botão (suavemente) enquanto overlay sobe */
-                #addOverlay.active + #addButton {
-                    transform: translateX(-50%) translateY(-400px);
-                    opacity: 0; /* some depois de subir */
-                    pointer-events: none;
-                }
-
-
-            /* container interno do overlay */
-            #addOverlay .overlay-content {
-                position: relative;
-                width: 100%;
-                height: 100%;
-            }
-
-        .overlay-topbar {
-            position: relative;
-            width: 100%; /* 🔑 */
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 70px;
-            padding: 0 16px;
-            flex-shrink: 0;
-        }
-
-        #mesReferencia {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--branco-neve);
-            font-weight: 700;
-            font-size: 1.5rem;
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* botão fechar */
-        #closeOverlayButton {
-            position: absolute; 
-            right: 16px; 
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #ffb5b5, #ff6e6e);
-            border: none;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-
-            #closeOverlayButton:hover {
-                transform: scale(1.06);
-            }
-
-            #closeOverlayButton:active {
-                transform: scale(0.92);
-            }
-
-            #closeOverlayButton img.close-icon {
-                width: 22px;
-                height: 22px;
-                filter: brightness(0) invert(1); /* deixa o ícone branco automaticamente */
-            }
-
-
-        #overlayHome {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .overlay-option {
-            width: 80%;
-            padding: 2rem;
-            font-size: 2rem;
-            border-radius: 18px;
-            border: none;
-            cursor: pointer;
-            background: var(--footer-bg);
-            color: var(--add-text);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            transition: transform .18s ease;
-        }
-
-            .overlay-option:active {
-                transform: scale(0.97);
-            }
-
-        #overlayFrame {
-            display: none;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #backOverlayButton {
-            width: 40px;
-            height: 40px;
-            background: var(--footer-bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-        #btnReceita {
-            background: linear-gradient(145deg, var(--sphere-income-start), var(--sphere-income-end));
-        }
-
-        #btnDespesa {
-            background: linear-gradient(145deg, var(--sphere-expense-start), var(--sphere-expense-end));
-        }
-
         @@media screen and (min-width: 800px) {
             .area-esferas {
                 flex-direction: row;
@@ -474,8 +251,8 @@
         <div id="healthyPanel">
             <div class="month-nav">
                 <i class="fas fa-chevron-left month-btn prev" id="prevMonth"></i>
-                <span id="currentMonthLabel">@Model.MesReferencia</span>
-                @if (!Model.IsMesAtual)
+                <span id="currentMonthLabel">@MesReferencia</span>
+                @if (!IsMesAtual)
                 {
                     <i class="fas fa-chevron-right month-btn next" id="nextMonth"></i>
                 }
@@ -489,47 +266,11 @@
 
 </div>
 
-<div id="addOverlay">
-    <div class="overlay-topbar">
-        <i id="backOverlayButton"
-           class="fas fa-arrow-left back-icon"
-           title="Voltar"></i>
-
-        <span id="mesReferencia">@Model.MesReferencia</span>
-
-        <button id="closeOverlayButton" onclick="closeOverlay()">
-            <img class="close-icon" src="/icons/xmark.svg" />
-        </button>
-    </div>
-
-    <div class="overlay-content">
-        <!-- Tela inicial -->
-        <div id="overlayHome">
-            <button class="overlay-option" id="btnReceita" data-type="receita">Nova Receita</button>
-            <button class="overlay-option" id="btnDespesa" data-type="despesa">Nova Despesa</button>
-        </div>
-
-        <!-- Tela do formulário (via MVC) -->
-        <iframe id="overlayFrame"></iframe>
-    </div>
-</div>
-
-<div id="addButton">
-    <div class="add-plus">+</div>
-
-    @if (!Model.IsMesAtual)
-    {
-        <div class="period-badge">
-            Período anterior
-        </div>
-    }
-</div>
 
 @section script {
     <script>
-        let overlayHistory = [];
-        let currentYear = @Model.Ano;
-        let currentMonth = @Model.Mes; // 1–12
+        let currentYear = @Model.Year;
+        let currentMonth = @Model.Month; // 1–12
 
         function navigateMonth(offset) {
             currentMonth += offset;
@@ -595,41 +336,6 @@
             });
         }
 
-        function openOverlayView(htmlContent) {
-            $("#addOverlay").html(htmlContent);
-        }
-
-        function closeOverlay() {
-            $("#addOverlay").removeClass("active");
-            $("#addButton").removeClass("hidden");
-        }
-
-        function pushOverlay(url) {
-            if (overlayHistory[overlayHistory.length - 1] === url) return;
-            overlayHistory.push(url);
-        }
-
-        function goBackOverlay() {
-            const $frame = $("#overlayFrame");
-
-            // tira a view atual do topo
-            overlayHistory.pop();
-
-            const previous = overlayHistory[overlayHistory.length - 1];
-
-            if (!previous) {
-                // histórico vazio → volta ao início
-                $frame.attr("src", "").hide();
-                $("#overlayHome").show();
-                $("#backOverlayButton").hide();
-                return;
-            }
-
-            // carrega view anterior
-            $frame.attr("src", previous).show();
-            $("#backOverlayButton").toggle(overlayHistory.length > 0);
-        }
-
         function navigateMonth(offset) {
             currentMonth += offset;
 
@@ -650,39 +356,6 @@
             $("#prevMonth").click(() => navigateMonth(-1));
             $("#nextMonth").click(() => navigateMonth(1));
 
-            // abrir overlay no modo HOME
-            $("#addButton").on("click", function () {
-                $("#addOverlay").addClass("active");
-                $("#overlayHome").show();
-                $("#overlayFrame").hide();
-                $("#backOverlayButton").hide();
-                $("#overlayFrame").attr("src", "");
-                overlayHistory = [];   // limpa histórico ao abrir
-            });
-
-            // fechar overlay
-            $("#closeOverlayButton").on("click", function () {
-                $("#addOverlay").removeClass("active");
-            });
-
-            // escolher entre RECEITA e DESPESA
-            $(".overlay-option").on("click", function () {
-                const tipo = $(this).data("type");
-                const url = tipo === "receita"
-                    ? `/lancamento/novareceita/${currentYear}/${currentMonth}`
-                    : `/lancamento/novadespesa/${currentYear}/${currentMonth}`;
-                
-                pushOverlay(url);
-
-                $("#overlayFrame").attr("src", url).show();
-                $("#overlayHome").hide();
-                $("#backOverlayButton").show();
-            });
-
-            $("#backOverlayButton").on("click", function () {
-                goBackOverlay();
-            });
-
             $("#incomeCircle").on("click", function () {
                 window.location.href = `/relatorios/extrato/${currentYear}/${currentMonth}/0`;
             });
@@ -693,15 +366,6 @@
 
             $("#liquidCircle").on("click", function() {
                 window.location.href = `/relatorios/extrato/${currentYear}/${currentMonth}`;
-            });
-
-            window.addEventListener("message", function (event) {
-                if (!event.data) return;
-
-                if (event.data.action === "closeOverlayAndReload") {
-                    closeOverlay();
-                    window.location.reload();
-                }
             });
 
             DisableIcon(1);

@@ -30,6 +30,20 @@
     --btn-success-color: #ffffff;
     --section-begin: antiquewhite;
     --section-end: wheat;
+    /* Esferas */
+    --sphere-income-start: #b8f0c6;
+    --sphere-income-end: #4f7a46;
+    --sphere-expense-start: #ffcfcf;
+    --sphere-expense-end: #9b463f;
+    --sphere-yellow-start: #fff2c8;
+    --sphere-yellow-end: #C89A3A;
+    --sphere-blue-start: #8ac7e8;
+    --sphere-blue-end: #3a6a86;
+    --sphere-shadow: rgba(0,0,0,0.18);
+    --sphere-highlight: rgba(255,255,255,0.65);
+    --insight-bg-start: #faf1d7;
+    --insight-bg-end: #f4e4b6;
+    --insight-text: #4c3a00;
     /* Formularios */
     --form-container-bg: #f7f7f7;
     --input-border-color: #cccccc;

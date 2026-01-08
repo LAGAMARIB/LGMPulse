@@ -43,10 +43,8 @@ namespace LGMPulse.WebApp.Controllers
             DateTime hoje = DateTimeHelper.Now();
             HealthyDashViewModel viewModel = new()
             {
-                Ano = year.Value,
-                Mes = month.Value,
-                IsMesAtual = (year == hoje.Year && month == hoje.Month),
-                MesReferencia = DateTimeHelper.MesReferencia(year.Value, month.Value)
+                Year = year.Value,
+                Month = month.Value,
             };
             var sumario = result.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;
