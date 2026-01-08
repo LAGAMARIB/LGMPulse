@@ -30,6 +30,7 @@
     --btn-success-color: #ffffff;
     --section-begin: antiquewhite;
     --section-end: wheat;
+    --cor-sombra-box: rgba(0, 123, 255, 0.35);
     /* Esferas */
     --sphere-income-start: #b8f0c6;
     --sphere-income-end: #4f7a46;
@@ -82,6 +83,7 @@
     --overlay-dark: rgba(16,20,28,0.96); /* tela escura opaca (quase preta) */
     --add-bg-start: #f5f3ef; /* botão - claro */
     --add-bg-end: #e5d6a3; /* botão - tom quente */
+    --gradient-dark: #3d2f00;
     /* ===== Login / Auth ===== */
     --login-bg: #ffffff;
     --login-header-bg: var(--overlay-dark);
@@ -110,6 +112,30 @@
     /* badges */
     --badge-text-color: #5a4300;
     --badge-back-color: linear-gradient(145deg, #fff1c2, #e7d18a);
+    /* ===== Aliases para Agenda / Calendar ===== */
+    /* Backgrounds */
+    --background-body: var(--bg-1);
+    --background-light: #f5f3ef;
+    --background-border: var(--border-soft);
+    --surface-container: var(--background-light);
+    --surface-border: var(--background-body);
+    /* Texto */
+    --color-text-body: var(--text-1);
+    --dropdown-item-color: var(--text-2);
+    /* Cores funcionais */
+    --cor-receita: var(--pulse-green);
+    --cor-despesa: var(--pulse-red);
+    /* Estados de parcelas */
+    --bill-open-color: var(--color-amber);
+    --bill-late-color: var(--pulse-red);
+    /* Links / seleção */
+    --color-link: var(--color-primary);
+    --cor-texto-botao: var(--branco-neve);
+    /* Botões (corrigindo nomes inconsistentes) */
+    --btn-success-bg: var(--btn-success-back);
+    --btn-danger-bg: var(--btn-danger-back);
+    /* Acessibilidade / foco */
+    --cor-icone-acao-hover: var(--color-secondary);
 }
 
 /* ------- VARIÁVEIS DO MODO ESCURO ------- */
@@ -234,12 +260,6 @@ body {
         font-size: 15px; /* aumenta fonte base */
         line-height: 1.5;
         padding-bottom: 60px; /* espaço extra pro teclado */
-    }
-    /* Ajusta tabelas para scroll horizontal */
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
     }
     /* Evita sumir atrás do teclado */
     input:focus, textarea:focus, select:focus {

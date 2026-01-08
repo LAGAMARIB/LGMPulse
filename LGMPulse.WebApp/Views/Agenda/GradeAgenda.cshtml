@@ -1,10 +1,17 @@
-﻿@using LGMDomains.Common.Helpers
+﻿@model AgendaViewModel
+@using System.Text.Json
+@using System.Globalization
+@using LGMDomains.Common.Helpers
 @using LGMPulse.Domain.Enuns
 @using LGMPulse.WebApp.Models
-@model ExtratoViewModel
 @{
     Layout = "_overview";
-    string MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
+    ViewBag.Title = ViewBag.Title ?? "Agendamento";
+    decimal? valorTotalDespesas = 0;
+    decimal? valorTotalReceitas = 0;
+    string MesReferencia = Model.IsOnlyOneDay ?
+                            Model.Date.ToShortDateString() :
+                            DateTimeHelper.MesReferencia(Model.Year, Model.Month);
 }
 
 @section style {
@@ -178,6 +185,7 @@
             transform: scale(1.015);
             max-height: 160px;
         }
+
             .row-movto.expanded .row-toolbar {
                 opacity: 1;
                 max-height: 80px;
@@ -210,53 +218,135 @@
         .row-toolbar .btn-delete {
             color: var(--pulse-red);
         }
+
+        .divSumary {
+            width: 100%;
+            max-width: 360px;
+            margin: 14px auto;
+            background: var(--background-light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            padding: var(--space-2);
+        }
+
+        .itemTotal {
+            display: grid;
+            grid-template-columns: 50px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px dashed var(--background-border);
+            margin-bottom: 6px;
+        }
+
+            .itemTotal:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+            }
+
+            .itemTotal i {
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .itemTotal span {
+                font-size: 1.05rem;
+            }
+
+                .itemTotal span:nth-child(2) {
+                    font-weight: bold;
+                }
+
+                .itemTotal span:last-child {
+                    font-size: 1.15rem;
+                    font-weight: bold;
+                    text-align: right;
+                }
+
+        .valReceita {
+            color: var(--cor-receita);
+        }
+
+        .valDespesa {
+            color: var(--cor-despesa);
+        }
+
     </style>
 }
 
-
 <div id="ExtratoContainer">
     <div id="ExtratoHeader">
-        <strong>@string.Format("{0} - {1}", Model.MovtoReferencia, MesReferencia)</strong>
+        <strong>@string.Format("{0} - {1}", "AGENDAMENTO", MesReferencia)</strong>
         <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
     </div>
     <div id="ExtratoItems">
-        @foreach (var movto in Model.Movtos)
+        @if (Model.Agendas.Count == 0)
         {
-            var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
-            var classTipo = (movto.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
-            <div class="row-movto @classTipo">
-                <div class="row-content">
-                    <div class="col-1">
-                        <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" />
-                    </div>
-                    <div class="col-2">
-                        <span>@movto.DataMovto!.Value.ToShortDateString()</span>
-                        <span><b>@descMovto</b></span>
-                    </div>
-                    <div class="col-3">
-                        <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
-                    </div>
-                </div>
-
-                <div class="row-toolbar">
-                    <i class="fas fa-keyboard btn-edit" data-movto="@movto.ID" title="Editar valor"></i>
-                    <i class="fas fa-trash btn-delete" data-movto="@movto.ID" title="Excluir"></i>
-                </div>
+            <div class="empty-message">
+                <i class="fas fa-box-open"></i>
+                <h5>Nenhum registro encontrado</h5>
             </div>
         }
+        else
+        {
+            @foreach (var agenda in Model.Agendas)
+            {
+                var descMovto = (string.IsNullOrEmpty(agenda.Descricao) ? agenda.NomeGrupo : agenda.Descricao) +
+                                (agenda.QtdParcelas > 1 ?
+                                " (" + agenda.Parcela + "/" + agenda.QtdParcelas + ")" : "");
+                var classTipo = (agenda.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
+                if (agenda.TipoMovto == TipoMovtoEnum.Despesa)
+                    valorTotalDespesas += agenda.ValorParcela;
+                else
+                    valorTotalReceitas += agenda.ValorParcela;
+
+                <div class="row-movto @classTipo">
+                    <div class="row-content">
+                        <div class="col-1">
+                            <img src="@agenda.ImagePathGrupo" alt="@agenda.NomeGrupo" />
+                        </div>
+                        <div class="col-2">
+                            <span>@agenda.DataMovto!.Value.ToShortDateString()</span>
+                            <span><b>@descMovto</b></span>
+                        </div>
+                        <div class="col-3">
+                            <span>@string.Format("{0:C2}", agenda.ValorParcela)</span>
+                        </div>
+                    </div>
+
+                    <div class="row-toolbar">
+                        <i class="fas fa-keyboard btn-edit" data-movto="@agenda.ID" title="Editar"></i>
+                        <i class="fas fa-trash btn-delete" data-movto="@agenda.ID" title="Excluir"></i>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="divSumary">
+        <div class="itemTotal valReceita">
+            <i class="fas fa-money-bill-alt"></i>
+            <span>Receitas</span>
+            <span>@(string.Format("{0:C2}", valorTotalReceitas))</span>
+        </div>
+        <div class="itemTotal valDespesa">
+            <i class="fas fa-money-bill-alt"></i>
+            <span>Despesas</span>
+            <span>@(string.Format("{0:C2}", valorTotalDespesas))</span>
+        </div>
     </div>
 </div>
 
+
 @section script {
     <script>
-        const year = parseInt('@Model.Year', null);
-        const month = parseInt('@Model.Month', null);
-        $('#btnFecharForm').on('click', function () {
-            window.location.href = `/Home/Index?ano=${year}&mes=${month}`;
-        });
+        const year = Number('@Model.Year');
+        const month = Number('@Model.Month');
+        const isOnlyOneDay = @Model.IsOnlyOneDay.ToString().ToLower();
 
         function ExcluirRegistro(id) {
-            $.post(`/lancamento/delete/${id}`, null, function(result) {
+            $.post(`/agenda/delete/${id}`, null, function(result) {
                 if (result.IsSuccess) {
                     window.location.reload();
                 } else {
@@ -269,42 +359,47 @@
         }
 
         $(document).ready(function () {
+            $('#btnFecharForm').on('click', function () {
+                window.location.href = `/agenda/${year}/${month}`;
+            });
 
-             $(".row-movto").on("click", function (e) {
+            $(".row-movto").on("click", function (e) {
 
-                 // evita conflito se clicar direto nos ícones depois
-                 if ($(e.target).closest(".row-toolbar").length) return;
+                // evita conflito se clicar direto nos ícones depois
+                if ($(e.target).closest(".row-toolbar").length) return;
 
-                 const $current = $(this);
+                const $current = $(this);
 
-                 // colapsa todos os outros
-                 $(".row-movto").not($current).removeClass("expanded");
+                // colapsa todos os outros
+                $(".row-movto").not($current).removeClass("expanded");
 
-                 // alterna o atual
-                 $current.toggleClass("expanded");
-             });
+                // alterna o atual
+                $current.toggleClass("expanded");
+            });
 
-             $('.btn-edit').on("click", function (e) {
-                 const IDMovto = $(this).data('movto');
-                 const ano = parseInt('@Model.Year', null);
-                 const mes = parseInt('@Model.Month', null);
-                 const URL = `_relatorios_extrato_${ano}_${mes}`;
-                 window.location.href = `/lancamento/alterarvalor/${IDMovto}/${URL}`;
-             });
+            $('.btn-edit').on("click", function (e) {
+                const IDMovto = $(this).data('movto');
+                const URL = `_agenda_gradeagenda_mes_${year}_${month}`;
+                window.location.href = `/agenda/editar/${IDMovto}/${URL}`;
+            });
 
-             $('.btn-delete').on("click", function (e) {
-                 const id = $(this).data('movto');
-                 showModalDialog({
-                    titulo: 'Excluir',
-                    mensagem: "Confirma excluir este lançamento?",
-                    tipo: 'excluir', //excluir, info, confirmar, alertar
-                    onConfirm: () => {
-                        ExcluirRegistro(id);
-                    }
-                 });
+            $('.btn-delete').on("click", function (e) {
+                const id = $(this).data('movto');
+                showModalDialog({
+                titulo: 'Excluir',
+                mensagem: "Confirma excluir este agendamento?",
+                tipo: 'excluir', //excluir, info, confirmar, alertar
+                onConfirm: () => {
+                    ExcluirRegistro(id);
+                }
+                });
 
-             });
-         });
+            });
 
+             if (!isOnlyOneDay) {
+                 $('#addButton').hide();
+             }
+            DisableIcon(2);
+        });
     </script>
 }
