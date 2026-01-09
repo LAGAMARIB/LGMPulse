@@ -13,4 +13,8 @@
     <ProjectReference Include="..\LGMPulse.Connections\LGMPulse.Connections.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Lancamento\" />
+  </ItemGroup>
+
 </Project>

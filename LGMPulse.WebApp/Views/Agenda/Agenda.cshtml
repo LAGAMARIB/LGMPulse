@@ -59,6 +59,12 @@
                 padding: 10px 18px;
                 font-weight: 700;
                 box-shadow: 0 4px 12px rgba(0,0,0,.2);
+                height: 50px;
+            }
+
+            #navCalendar span {
+                font-size: 1.5rem;
+                font-weight: 700;
             }
 
         #divToolCalendar {
@@ -254,9 +260,9 @@
     <div id="divCalendar">
         <nav id="navCalendar">
             <button type="button" id="prevMonth" class="btn btn-primary btn-sm">&lt;</button>
-            <button type="button" id="gradeMes" class="btn btn-primary">
-                @DateTimeHelper.MesReferencia(Model.Year, Model.Month)
-            </button>
+            <!-- <button type="button" id="gradeMes" class="btn btn-primary"> -->
+            <span>@DateTimeHelper.MesReferencia(Model.Year, Model.Month)</span>
+            <!--</button>-->
             <button type="button" id="nextMonth" class="btn btn-primary btn-sm">&gt;</button>
         </nav>
         <table id="tableCalendar">
@@ -357,13 +363,13 @@
             });
 
             $('td.hasContent').on('click', function() {
-                const id = $(this).data('value');  //$(this).attr("data-value");
+                const id = $(this).data('value');  
                 window.location.href = `/agenda/gradeagenda/dia/${id}`;
             });
 
-            $('#gradeMes').on('click', function() {
-                window.location.href = `/agenda/gradeagenda/mes/${@Model.Month}/${@Model.Year}`;
-            });
+            // $('#gradeMes').on('click', function() {
+            //     window.location.href = `/agenda/gradeagenda/mes/${@Model.Month}/${@Model.Year}`;
+            // });
         });
 
         $(document).ready(function () {

@@ -2,8 +2,11 @@
 @{
     Layout = "_Layout";
     DateTime hoje = DateTimeHelper.Now();
-    bool _overview_IsMesAtual = Model.Year == hoje.Year && Model.Month == hoje.Month;
-    string _overview_MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
+    DateTime _overview_dataLancto = ViewBag.DataLancto != null ? ViewBag.DataLancto : hoje;
+    bool _overview_IsMesAtual = _overview_dataLancto.Year == hoje.Year && _overview_dataLancto.Month == hoje.Month;
+    bool isAgenda = (ViewBag.IsAgenda != null && ViewBag.IsAgenda);
+    string urlBase = isAgenda ? "agenda" : "lancamento";
+    string acao = isAgenda ? "Agendar" : "Nova";
 }
 
 @section style {
@@ -214,7 +217,7 @@
            class="fas fa-arrow-left back-icon"
            title="Voltar"></i>
 
-        <span id="mesReferencia">@_overview_MesReferencia</span>
+        <span id="mesReferencia">@_overview_dataLancto.ToShortDateString()</span>
 
         <button id="closeOverlayButton" onclick="closeOverlay()">
             <img class="close-icon" src="/icons/xmark.svg" />
@@ -224,8 +227,8 @@
     <div class="overlay-content">
         <!-- Tela inicial -->
         <div id="overlayHome">
-            <button class="overlay-option" id="btnReceita" data-type="receita">Nova Receita</button>
-            <button class="overlay-option" id="btnDespesa" data-type="despesa">Nova Despesa</button>
+            <button class="overlay-option" id="btnReceita" data-type="receita">@string.Format("{0} Receita", acao)</button>
+            <button class="overlay-option" id="btnDespesa" data-type="despesa">@string.Format("{0} Despesa", acao)</button>
         </div>
 
         <!-- Tela do formulário (via MVC) -->
@@ -247,9 +250,8 @@
 @section script {
     <script>
         let overlayHistory = [];
-        let overviewYear = @Model.Year;
-        let overviewMOnth = @Model.Month; // 1–12
-
+        const dateFormated = "@_overview_dataLancto.Year" + "-" + "@_overview_dataLancto.Month" + "-" + "@_overview_dataLancto.Day";
+        const urlBase = "@urlBase";
 
         function openOverlayView(htmlContent) {
             $("#addOverlay").html(htmlContent);
@@ -305,9 +307,9 @@
             // escolher entre RECEITA e DESPESA
             $(".overlay-option").on("click", function () {
                 const tipo = $(this).data("type");
-                const url = tipo === "receita"
-                    ? `/lancamento/novareceita/${overviewYear}/${overviewMOnth}`
-                    : `/lancamento/novadespesa/${overviewYear}/${overviewMOnth}`;
+                let url = tipo === "receita" ? 
+                          `/${urlBase}/novareceita/${dateFormated}` :
+                          `/${urlBase}/novadespesa/${dateFormated}`;
 
                 pushOverlay(url);
 

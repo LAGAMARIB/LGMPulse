@@ -19,66 +19,58 @@ public class LancamentoController : LGMController
         _movtoService = movtoService;
     }
 
-    [HttpGet("lancamento/novareceita/{ano=null}/{mes=null}")]
-    public async Task<IActionResult> NovaReceita(int? ano=null, int? mes=null)
+    [HttpGet("lancamento/novareceita/{dataLancto}")]
+    public async Task<IActionResult> NovaReceita(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposReceita(ano, mes), "NovaReceita")
+                ExecuteViewAsync(() => GetGruposReceita(dataLancto), "NovaReceita")
         );
     }
 
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(int? ano = null, int? mes = null)
+    private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(DateTime dataLancto)
     {
         var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
-        DateTime hoje = DateTimeHelper.Now();
-        mes = mes ?? hoje.Month;
-        ano = ano ?? hoje.Year;
+        var hoje = DateTimeHelper.Now();
         NovoLancamentoModel model = new()
         {
+            IsAgenda = false,
             Grupos = lista.Data ?? new(),
-            Month = mes ?? hoje.Month,
-            Year = ano ?? hoje.Year,
-            MesReferencia = DateTimeHelper.MesReferencia(ano!.Value, mes!.Value),
-            IsMesAtual = (ano == hoje.Year && mes == hoje.Month),
+            DateLancto = dataLancto,
+            MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
+            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
         };
         return LGMResult.Ok(model);
     }
 
-    [HttpGet("lancamento/novadespesa/{ano=null}/{mes=null}")]
-    public async Task<IActionResult> NovaDespesa(int? ano = null, int? mes = null)
+    [HttpGet("lancamento/novadespesa/{dataLancto}")]
+    public async Task<IActionResult> NovaDespesa(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposDespesa(ano, mes), "NovaDespesa")
+                ExecuteViewAsync(() => GetGruposDespesa(dataLancto), "NovaDespesa")
         );
     }
 
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(int? ano = null, int? mes = null)
+    private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(DateTime dataLancto)
     {
         var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
         DateTime hoje = DateTimeHelper.Now();
-        mes = mes ?? hoje.Month;
-        ano = ano ?? hoje.Year;
         NovoLancamentoModel model = new()
         {
+            IsAgenda = false,
             Grupos = lista.Data ?? new(),
-            Month = mes.Value,
-            Year = ano.Value,
-            MesReferencia = DateTimeHelper.MesReferencia(ano.Value, mes.Value),
-            IsMesAtual = (ano == hoje.Year && mes == hoje.Month),
+            DateLancto = dataLancto,
+            MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
+            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
         };
         return LGMResult.Ok(model);
     }
 
 
-    [HttpGet("Lancamento/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{ano=null}/{mes=null}")]
-    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao, int? ano = null, int? mes = null)
+    [HttpGet("Lancamento/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{dataLancto=null}")]
+    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao=null, DateTime? dataLancto = null)
     {
-        DateTime dataMovto = DateTimeHelper.Now();
-        if (ano != null && mes != null && (ano != dataMovto.Year || mes != dataMovto.Month))
-        {
-            dataMovto = new DateTime(ano.Value, mes.Value, 1);
-            dataMovto = dataMovto.AddMonths(1).AddDays(-1); // se mes anterior, lançar no último dia do mês
-        }
+        DateTime hoje = DateTimeHelper.Now();
+        DateTime dataMovto = dataLancto ?? hoje;
 
         DigitarValorViewModel model = new()
         {

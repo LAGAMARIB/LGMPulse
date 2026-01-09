@@ -5,6 +5,11 @@
 @{
     Layout = "_overview";
     string MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
+    DateTime hoje = DateTimeHelper.Now();
+    bool IsMesAtual = Model.Year == hoje.Year && Model.Month == hoje.Month;
+    int dia = IsMesAtual ? hoje.Day : 1;
+    ViewBag.DataLancto = new DateTime(Model.Year, Model.Month, dia); // gerar mes referencia para _overview
+
 }
 
 @section style {

@@ -2,6 +2,8 @@
 @model NovoLancamentoModel
 @{
     ViewBag.Title = "Nova Despesa";
+    string tipoLancto = Model.IsAgenda ? "AGENDA" : "DESPESA";
+    string urlBase = Model.IsAgenda ? "agenda" : "lancamento";
 }
 
 @section style {
@@ -82,7 +84,7 @@
 @if (!Model.IsMesAtual)
 {
     <div class="period-warning">
-        Você está lançando uma despesa em
+        @($"Você está lançando uma {tipoLancto} em")
         <strong>@Model.MesReferencia</strong>
     </div>
 }
@@ -100,16 +102,16 @@
 @section script {
     <script>
         $(document).ready(function () {
+            const urlBase = '@urlBase';
             $(".category-item").on("click", function () {
 
-                window.parent.pushOverlay("/Lancamento/DigitarValor");
+                window.parent.pushOverlay(`/${urlBase}/DigitarValor`);
 
                 const idGrupo = $(this).data('grupo');
                 const descGrupo = $(this).find("span").text();
-                const ano = parseInt('@Model.Year', 0);
-                const mes = parseInt('@Model.Month', 0);
+                const dataLancto = "@Model.Year" + "-" + "@Model.Month" + "-" + "@Model.Day";
                 const DESPESA = 1;
-                const URL = `/Lancamento/DigitarValor/${DESPESA}/${idGrupo}/${descGrupo}/${ano}/${mes}`;
+                const URL = `/${urlBase}/DigitarValor/${DESPESA}/${idGrupo}/${descGrupo}/${dataLancto}`;
                 $(window.parent.document).find("#overlayFrame").each(function () {
                     $(this)
                         .attr("src", URL)

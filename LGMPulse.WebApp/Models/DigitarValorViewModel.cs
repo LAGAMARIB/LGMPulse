@@ -14,4 +14,5 @@ public class DigitarValorViewModel
     public string MesReferencia { get; set; }
     public bool IsNew { get; set; } = true;
     public string? URLRetorno { get; set; }
+    public bool IsAgenda { get; set; }
 }

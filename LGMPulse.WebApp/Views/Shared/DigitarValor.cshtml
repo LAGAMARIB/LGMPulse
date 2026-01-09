@@ -4,7 +4,10 @@
 @model DigitarValorViewModel
 @{
     ViewBag.Title = "Digite o valor";
-    ViewBag.SubTitle = $"{Model.TipoMovto} - {Model.DescGrupo}";
+    string tipoLancto = Model.IsAgenda ? "AGENDAR " : "";
+    string urlBase = Model.IsAgenda ? "agenda" : "lancamento";
+
+    ViewBag.SubTitle = $"{tipoLancto}{Model.TipoMovto} - {Model.DescGrupo}";
 
     string subTitleClass = Model.TipoMovto == TipoMovtoEnum.Despesa ? "despesa" : "receita";
     DateTime dataLancto = Model.DataMovto;
@@ -199,6 +202,7 @@
 @section script {
     <script>
         $(document).ready(function () {
+            const urlBase = '@urlBase';
             let rawValue = "@valorInicial";
             let descMovto = @Html.Raw(
                     System.Text.Json.JsonSerializer.Serialize(Model.Descricao)
@@ -276,7 +280,7 @@
                 };
 
                 $.ajax({
-                    url: '/Lancamento/save',
+                    url: `/${urlBase}/save`,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(objMovto),

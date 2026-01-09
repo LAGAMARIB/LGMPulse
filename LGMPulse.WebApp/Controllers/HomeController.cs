@@ -44,7 +44,7 @@ namespace LGMPulse.WebApp.Controllers
             HealthyDashViewModel viewModel = new()
             {
                 Year = year.Value,
-                Month = month.Value,
+                Month = month.Value
             };
             var sumario = result.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;

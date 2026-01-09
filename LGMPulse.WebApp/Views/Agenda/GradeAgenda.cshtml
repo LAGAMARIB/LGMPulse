@@ -7,6 +7,8 @@
 @{
     Layout = "_overview";
     ViewBag.Title = ViewBag.Title ?? "Agendamento";
+    ViewBag.IsAgenda = true;
+    ViewBag.DataLancto = Model.Date;
     decimal? valorTotalDespesas = 0;
     decimal? valorTotalReceitas = 0;
     string MesReferencia = Model.IsOnlyOneDay ?
@@ -273,6 +275,11 @@
             color: var(--cor-despesa);
         }
 
+        .empty-message {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
     </style>
 }
 
@@ -343,6 +350,7 @@
     <script>
         const year = Number('@Model.Year');
         const month = Number('@Model.Month');
+        const day = Number('@Model.Day');
         const isOnlyOneDay = @Model.IsOnlyOneDay.ToString().ToLower();
 
         function ExcluirRegistro(id) {
@@ -379,7 +387,7 @@
 
             $('.btn-edit').on("click", function (e) {
                 const IDMovto = $(this).data('movto');
-                const URL = `_agenda_gradeagenda_mes_${year}_${month}`;
+                const URL = `_agenda_gradeagenda_dia_${year}-${month}-${day}`;
                 window.location.href = `/agenda/editar/${IDMovto}/${URL}`;
             });
 

@@ -9,6 +9,7 @@ internal class AgendaViewModel
     public bool HasDelayed { get; set; }
     public int Month => Date.Month;
     public int Year => Date.Year;
+    public int Day => Date.Day;
 
     public List<Agenda> Agendas { get; set; } = new();
 }
