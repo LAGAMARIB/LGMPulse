@@ -15,4 +15,8 @@ public class DigitarValorViewModel
     public bool IsNew { get; set; } = true;
     public string? URLRetorno { get; set; }
     public bool IsAgenda { get; set; }
+    public int QtdParcelas { get; set; } = 1;
+    public int Parcela { get; set; } = 1;
+    public ParcelaStatusEnum StatusParcela { get; set; } = ParcelaStatusEnum.Pendente;
+    public bool Recorrente { get; set; }
 }

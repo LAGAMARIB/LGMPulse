@@ -11,6 +11,7 @@ public static class ServiceCollectionExt
         services.AddScoped<ILoginService, LoginService>();
         services.AddScoped<IGrupoService, GrupoService>();
         services.AddScoped<IMovtoService, MovtoService>();
+        services.AddScoped<IAgendaService, AgendaService>();
 
         return services;
     }

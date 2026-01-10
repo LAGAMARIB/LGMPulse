@@ -5,53 +5,50 @@ using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LGMPulse.WebApp.Controllers;
 
 public class AgendaController : LGMController
 {
     private readonly IGrupoService _grupoService;
+    private readonly IAgendaService _agendaService;
 
-    public AgendaController(IGrupoService grupoService)
+    public AgendaController(IGrupoService grupoService, IAgendaService agendaService)
     {
         _grupoService = grupoService;
+        _agendaService = agendaService;
     }
 
     [HttpGet("agenda/{ano=null}/{mes=null}")]
-    public async Task<IActionResult> Agenda(int? ano = null, int? mes = null)
+    public async Task<IActionResult> Agenda(int? ano=null, int? mes=null)
     {
+        var hoje = DateTimeHelper.Now();
+        ano ??= hoje.Year;
+        mes ??= hoje.Month;
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => getAgendaViewModelAsync(ano, mes))
+                ExecuteViewAsync(() => getAgendaViewModelAsync(ano!.Value, mes!.Value))
         );
     }
 
-    private async Task<LGMResult<AgendaViewModel>> getAgendaViewModelAsync(int? ano=null, int? mes=null, int? dia=null)
+    private async Task<LGMResult<AgendaViewModel>> getAgendaViewModelAsync(int ano, int mes, int? dia=null)
     {
-        var startDate = DateTimeHelper.Now().Date;
-        if (ano != null && mes != null)
-            startDate = new DateTime(ano!.Value, mes!.Value, 01);
-        else
-            startDate = new DateTime(startDate.Year, startDate.Month, 01);
+        var hoje = DateTimeHelper.Now().Date;
+        var startDate = new DateTime(ano, mes, 1);
         var endDate = startDate.AddMonths(1).AddSeconds(-1);
 
         AgendaViewModel viewModel = new();
-        viewModel.Date = startDate;
         viewModel.IsOnlyOneDay = (dia != null);
         if (viewModel.IsOnlyOneDay)
         {
-            viewModel.Date = new DateTime(ano!.Value, mes!.Value, dia!.Value);
-            endDate = endDate.Date.AddDays(1).AddSeconds(-1);
+            startDate = new DateTime(ano, mes, dia!.Value);
+            endDate = startDate.AddDays(1).AddSeconds(-1);
         }
+        viewModel.Date = startDate;
 
         // pegar vencidos de meses anteriores
         DateTime deteDelay = (viewModel.IsOnlyOneDay ? startDate : startDate.AddYears(-1));
 
-        //LGMResult<List<Agenda>> result = await _agendaService.GetListAsync(
-        //                new Agenda { DataVencto = deteDelay, StatusParcela = ParcelaStatusEnum.Pendente },
-        //                new Agenda { DataVencto = endDate, StatusParcela = ParcelaStatusEnum.Pendente });
-
-        LGMResult<List<Agenda>> result = GetListMock(
+        LGMResult<List<Agenda>> result = await _agendaService.GetListAsync(
                         new Agenda { DataVencto = deteDelay, StatusParcela = ParcelaStatusEnum.Pendente },
                         new Agenda { DataVencto = endDate, StatusParcela = ParcelaStatusEnum.Pendente });
 
@@ -62,8 +59,7 @@ public class AgendaController : LGMController
 
         // marcar atrasados mas enviar apenas os agendamentos do periodo selecionado
         viewModel.HasDelayed = listAgenda.Any((x) => x.DataVencto!.Value < startDate);
-        viewModel.Agendas = listAgenda.Where(x => x.DataVencto!.Value >= startDate).ToList() ?? new();
-
+        viewModel.Agendas = listAgenda.Where(x => x.DataVencto!.Value >= startDate).OrderBy(x => x.DataVencto).ToList() ?? new();
 
         return  LGMResult.Ok(viewModel);
     }
@@ -131,36 +127,74 @@ public class AgendaController : LGMController
         return LGMResult.Ok(model);
     }
 
-    [HttpGet("agenda/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{dataLancto=null}")]
-    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao = null, DateTime? dataLancto = null)
+    [HttpGet("agenda/editar/{IDMovto}/{UrlRetorno=null}")]
+    public async Task<IActionResult?> EditarAsync(int IDMovto, string? UrlRetorno = null)
     {
-        DateTime hoje = DateTimeHelper.Now();
-        DateTime dataMovto = dataLancto ?? hoje;
+        var result = await _agendaService.GetByIdAsync(IDMovto);
+        if (!result.IsSuccess || result.Data == null) return null;
 
+        var agenda = result.Data;
         DigitarValorViewModel model = new()
         {
             IsAgenda = true,
-            TipoMovto = tipo,
-            IDGrupo = idGrupo,
-            DescGrupo = descricao ?? "",
-            DataMovto = dataMovto,
-            MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
-            ValorMovto = 0,
-            IsNew = true
+            ID = IDMovto,
+            TipoMovto = agenda.TipoMovto!.Value,
+            IDGrupo = agenda.IDGrupo!.Value,
+            DescGrupo = agenda.NomeGrupo!,
+            Descricao = agenda.Descricao!,
+            DataMovto = agenda.DataVencto!.Value,
+            MesReferencia = DateTimeHelper.MesReferencia(agenda.DataVencto!.Value),
+            ValorMovto = agenda.ValorParcela!.Value,
+            QtdParcelas = agenda.QtdParcelas!.Value,
+            Parcela = agenda.Parcela!.Value,
+            StatusParcela = agenda.StatusParcela!.Value,
+            Recorrente = agenda.Recorrente!.Value,
+            IsNew = false,
+            URLRetorno = UrlRetorno
         };
-        return View(model);
+        return View("DigitarValor", model);
     }
 
-
-    private LGMResult<List<Agenda>> GetListMock(Agenda filterIni, Agenda filterFim)
+    [HttpPost("agenda/save")]
+    public async Task<JsonResult> Save([FromBody] DigitarValorViewModel model)
     {
-        List<Agenda> lista = new();
-        var agora = DateTimeHelper.Now();
-        lista.Add(new Agenda() { ID=1, DataMovto=agora, DataVencto=agora.AddDays(-3), TipoMovto=TipoMovtoEnum.Despesa, IDGrupo=5, NomeGrupo="Carro", Parcela=1, ValorParcela=100.00m });
-        lista.Add(new Agenda() { ID=1, DataMovto=agora, DataVencto=agora, TipoMovto=TipoMovtoEnum.Despesa, IDGrupo=6, NomeGrupo="Moradia", Parcela=1, ValorParcela=800.00m });
-        lista.Add(new Agenda() { ID=1, DataMovto=agora, DataVencto=agora.AddDays(1), TipoMovto=TipoMovtoEnum.Despesa, IDGrupo=7, NomeGrupo="Saúde", Parcela=1, ValorParcela=333.67m });
-        lista.Add(new Agenda() { ID=1, DataMovto=agora, DataVencto=agora.AddDays(2), TipoMovto= TipoMovtoEnum.Despesa, IDGrupo=7, NomeGrupo="Saúde", Parcela=1, ValorParcela=450.00m });
-        lista.Add(new Agenda() { ID=1, DataMovto=agora, DataVencto=agora.AddDays(5), TipoMovto=TipoMovtoEnum.Despesa, IDGrupo=8, NomeGrupo="Educação", Parcela =1, ValorParcela=240.55m });
-        return LGMResult.Ok(lista);
+        Agenda agenda = new()
+        {
+            ID = model.ID,
+            DataMovto = DateTimeHelper.Now(),
+            DataVencto = model.DataMovto,
+            TipoMovto = model.TipoMovto,
+            IDGrupo = model.IDGrupo,
+            Descricao = model.Descricao,
+            ValorParcela = model.ValorMovto,
+            QtdParcelas = model.QtdParcelas,
+            Parcela = model.Parcela,
+            StatusParcela = model.StatusParcela,
+            Recorrente = model.Recorrente
+        };
+        ILGMResult result;
+        if (model.IsNew)
+            result = await _agendaService.CreateAsync(agenda);
+        else
+            result = await _agendaService.UpdateAsync(agenda, [nameof(agenda.DataMovto), nameof(agenda.Descricao), nameof(agenda.ValorParcela)]);
+        if (result.IsSuccess)
+        {
+            if (!string.IsNullOrEmpty(result.Message))
+                GravarAviso(result.Message);
+            else
+                GravarMensagem("Registro salvo com sucesso");
+            if (!string.IsNullOrWhiteSpace(model.URLRetorno))
+                result.RedirectUrl = model.URLRetorno.Replace('_', '/');
+        }
+        return Json(result);
     }
+
+    [HttpPost("agenda/delete/{IDMovto}")]
+    public async Task<JsonResult> Delete(int IDMovto)
+    {
+        var result = await _agendaService.DeleteAsync(IDMovto);
+        GravarMensagem("Movimento excluído com sucesso");
+        return Json(result);
+    }
+
 }

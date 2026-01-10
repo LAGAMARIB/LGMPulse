@@ -127,7 +127,7 @@
     --cor-despesa: var(--pulse-red);
     /* Estados de parcelas */
     --bill-open-color: var(--color-amber);
-    --bill-late-color: var(--pulse-red);
+    --bill-late-color: var(--cor-despesa);
     /* Links / seleção */
     --color-link: var(--color-primary);
     --cor-texto-botao: var(--branco-neve);

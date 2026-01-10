@@ -179,17 +179,17 @@
                 border: 2px solid var(--cor-despesa);
             }
 
-            #tableCalendar td.hasOpen span {
-                background-color: var(--bill-open-color);
-            }
-
-            #tableCalendar td.hasLate span {
-                background-color: var(--bill-late-color);
-            }
-
             #tableCalendar td.hasContent span.selected {
                 background-color: var(--color-link);
                 color: var(--cor-texto-botao);
+            }
+
+            #tableCalendar td.hasOpen span {
+                background-color: var(--bill-late-color);
+            }
+
+            #tableCalendar td.hasIncome span {
+                background-color: var(--cor-receita);
             }
 
         .containerCalendar {
@@ -288,9 +288,9 @@
                                 var isToday = (dateCell == today) ? "isToday" : "";
                                 var hasOpen = Model.Agendas.Exists(x => x.DataVencto?.Date == dateCell.Date);
                                 var hasOpenClass = hasOpen ? "hasOpen" : "";
-                                var hasLateClass = hasOpen && dateCell < today ? "hasLate" : "";
+                                var hasIncomeClass = Model.Agendas.Exists(x => x.DataVencto?.Date == dateCell.Date && x.TipoMovto == TipoMovtoEnum.Receita) ? "hasIncome" : "";
                                 <td class="hasContent
-                                                @isToday @hasOpenClass @hasLateClass"
+                                    @isToday @hasOpenClass @hasIncomeClass"
                                     data-value="@dateCell.ToString("yyyy-MM-dd")">
                                     <span>@day</span>
                                 </td>
@@ -363,7 +363,7 @@
             });
 
             $('td.hasContent').on('click', function() {
-                const id = $(this).data('value');  
+                const id = $(this).data('value');
                 window.location.href = `/agenda/gradeagenda/dia/${id}`;
             });
 
