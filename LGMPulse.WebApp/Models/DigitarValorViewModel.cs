@@ -12,7 +12,7 @@ public class DigitarValorViewModel
     public string? Descricao { get; set; }
     public decimal ValorMovto { get; set; }
     public string MesReferencia { get; set; }
-    public bool IsNew { get; set; } = true;
+    public bool IsNew => (ID == null || ID == 0);
     public string? URLRetorno { get; set; }
     public bool IsAgenda { get; set; }
     public int QtdParcelas { get; set; } = 1;

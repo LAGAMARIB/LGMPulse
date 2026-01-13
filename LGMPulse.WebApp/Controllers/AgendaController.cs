@@ -127,6 +127,29 @@ public class AgendaController : LGMController
         return LGMResult.Ok(model);
     }
 
+    [HttpGet("agenda/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{dataLancto=null}")]
+    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao = null, DateTime? dataLancto = null)
+    {
+        DateTime hoje = DateTimeHelper.Now();
+        DateTime dataMovto = dataLancto ?? hoje;
+
+        DigitarValorViewModel model = new()
+        {
+            IsAgenda = true,
+            TipoMovto = tipo,
+            IDGrupo = idGrupo,
+            DescGrupo = descricao ?? "",
+            DataMovto = dataMovto,
+            MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
+            ValorMovto = 0,
+            QtdParcelas = 1,
+            Parcela = 1,
+            StatusParcela = ParcelaStatusEnum.Pendente,
+            Recorrente = false
+        };
+        return View(model);
+    }
+
     [HttpGet("agenda/editar/{IDMovto}/{UrlRetorno=null}")]
     public async Task<IActionResult?> EditarAsync(int IDMovto, string? UrlRetorno = null)
     {
@@ -149,7 +172,6 @@ public class AgendaController : LGMController
             Parcela = agenda.Parcela!.Value,
             StatusParcela = agenda.StatusParcela!.Value,
             Recorrente = agenda.Recorrente!.Value,
-            IsNew = false,
             URLRetorno = UrlRetorno
         };
         return View("DigitarValor", model);

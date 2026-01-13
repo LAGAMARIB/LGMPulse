@@ -74,13 +74,13 @@ public class LancamentoController : LGMController
 
         DigitarValorViewModel model = new()
         {
+            ID = null,
             TipoMovto = tipo,
             IDGrupo = idGrupo,
             DescGrupo = descricao ?? "",
             DataMovto = dataMovto,
             MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
-            ValorMovto = 0,
-            IsNew = true
+            ValorMovto = 0
         };
         return View(model);
     }
@@ -102,7 +102,6 @@ public class LancamentoController : LGMController
             DataMovto = movto.DataMovto!.Value,
             MesReferencia = DateTimeHelper.MesReferencia(movto.DataMovto!.Value),
             ValorMovto = movto.ValorMovto!.Value,
-            IsNew = false,
             URLRetorno = UrlRetorno
         };
         return View("DigitarValor", model);
