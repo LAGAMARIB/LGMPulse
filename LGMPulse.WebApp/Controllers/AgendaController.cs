@@ -133,7 +133,7 @@ public class AgendaController : LGMController
         DateTime hoje = DateTimeHelper.Now();
         DateTime dataMovto = dataLancto ?? hoje;
 
-        DigitarValorViewModel model = new()
+        LancamentoModel model = new()
         {
             IsAgenda = true,
             TipoMovto = tipo,
@@ -157,7 +157,7 @@ public class AgendaController : LGMController
         if (!result.IsSuccess || result.Data == null) return null;
 
         var agenda = result.Data;
-        DigitarValorViewModel model = new()
+        LancamentoModel model = new()
         {
             IsAgenda = true,
             ID = IDMovto,
@@ -178,7 +178,7 @@ public class AgendaController : LGMController
     }
 
     [HttpPost("agenda/save")]
-    public async Task<JsonResult> Save([FromBody] DigitarValorViewModel model)
+    public async Task<JsonResult> Save([FromBody] LancamentoModel model)
     {
         Agenda agenda = new()
         {

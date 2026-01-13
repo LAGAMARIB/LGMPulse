@@ -231,8 +231,8 @@
             <button class="overlay-option" id="btnDespesa" data-type="despesa">@string.Format("{0} Despesa", acao)</button>
         </div>
 
-        <!-- Tela do formulário (via MVC) -->
-        <iframe id="overlayFrame"></iframe>
+        <!-- Tela do formulário -->
+        <div id="overlayFrame"></div>
     </div>
 </div>
 
@@ -249,9 +249,19 @@
 
 @section script {
     <script>
+        let objMovto = null;
         let overlayHistory = [];
         const dateFormated = "@_overview_dataLancto.Year" + "-" + "@_overview_dataLancto.Month" + "-" + "@_overview_dataLancto.Day";
         const urlBase = "@urlBase";
+
+        function loadComponent(url) {
+            pushOverlay(url);
+            $.get(url, function (html) {
+                $("#overlayFrame").html(html).show();
+                $("#overlayHome").hide();
+                $("#backOverlayButton").show();
+            });
+        }
 
         function openOverlayView(htmlContent) {
             $("#addOverlay").html(htmlContent);
@@ -268,8 +278,6 @@
         }
 
         function goBackOverlay() {
-            const $frame = $("#overlayFrame");
-
             // tira a view atual do topo
             overlayHistory.pop();
 
@@ -277,14 +285,14 @@
 
             if (!previous) {
                 // histórico vazio → volta ao início
-                $frame.attr("src", "").hide();
+                $("#overlayFrame").html("").hide();
                 $("#overlayHome").show();
                 $("#backOverlayButton").hide();
                 return;
             }
 
             // carrega view anterior
-            $frame.attr("src", previous).show();
+            loadComponent(previous);
             $("#backOverlayButton").toggle(overlayHistory.length > 0);
         }
 
@@ -310,26 +318,52 @@
                 let url = tipo === "receita" ? 
                           `/${urlBase}/novareceita/${dateFormated}` :
                           `/${urlBase}/novadespesa/${dateFormated}`;
-
-                pushOverlay(url);
-
-                $("#overlayFrame").attr("src", url).show();
-                $("#overlayHome").hide();
-                $("#backOverlayButton").show();
+                objMovto = {
+                    DataMovto: new Date(dateFormated).toISOString(),
+                    TipoMovto: (tipo === "receita" ? 0 : 1),
+                    IsAgenda: (urlBase === "agenda")
+                };
+                loadComponent(url);
             });
 
             $("#backOverlayButton").on("click", function () {
                 goBackOverlay();
             });
 
-            window.addEventListener("message", function (event) {
-                if (!event.data) return;
+            function closeOverlayAndReload() {
+                closeOverlay();
+                window.location.reload();
+            }
 
-                if (event.data.action === "closeOverlayAndReload") {
-                    closeOverlay();
-                    window.location.reload();
+            window.overlayComponentDone = function (payload) {
+                if (!objMovto) return;
+
+                if (payload.Step === "grupo") {
+                    objMovto.IDGrupo = payload.IDGrupo;
+                    loadComponent(`/${urlBase}/DigitarValor/${payload.DescGrupo}`);
                 }
-            });
+                
+                else if (payload.Step === "valor") {
+                    objMovto.ValorMovto = payload.ValorMovto;
+                    console.log(objMovto);
+                    $.ajax({
+                        url: `/${urlBase}/save`,
+                        method: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(objMovto),
+                        success: function (response) {
+                            if (response.RedirectUrl) {
+                                window.location.href = response.RedirectUrl;
+                            }
+                            closeOverlayAndReload();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Erro:', error);
+                            alert("Erro ao salvar: " + (xhr.responseText || "Erro interno"));
+                        }
+                    });
+                }
+            }
 
         });
     </script>

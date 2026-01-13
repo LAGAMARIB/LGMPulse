@@ -1,161 +1,152 @@
 ﻿@using LGMDomains.Common.Helpers
 @using LGMPulse.Domain.Enuns
 @using LGMPulse.WebApp.Models
-@model DigitarValorViewModel
+@model DigitarValorModel
 @{
+    Layout = null;
     ViewBag.Title = "Digite o valor";
-    string tipoLancto = Model.IsAgenda ? "AGENDAR " : "";
-    string urlBase = Model.IsAgenda ? "agenda" : "lancamento";
 
-    ViewBag.SubTitle = $"{tipoLancto}{Model.TipoMovto} - {Model.DescGrupo}";
-
-    string subTitleClass = Model.TipoMovto == TipoMovtoEnum.Despesa ? "despesa" : "receita";
-    DateTime dataLancto = Model.DataMovto;
-    string? urlRetorno = Model.URLRetorno?.Replace('_', '/');
-    int valorInicial = Convert.ToInt32( Model.ValorMovto * 100 );
+    ViewBag.SubTitle = Model.Descricao;
+    int valorInicial = Convert.ToInt32( Model.ValorInicial * 100 );
 }
 
-@section style {
-    <style>
-        .value-container {
-            text-align: center;
-            margin-top: 20px;
+<style>
+    .value-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .display-value {
+        font-family: 'Digital-7', monospace, sans-serif;
+        font-size: 3rem;
+        background: #111;
+        color: #28f028;
+        padding: 12px;
+        border-radius: 8px;
+        letter-spacing: 2px;
+        text-align: right;
+        text-shadow: 0 0 4px #0f0;
+        transition: all .1s ease-out;
+    }
+
+    .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        padding: 10px;
+    }
+
+    .key {
+        font-size: 28px;
+        padding: 20px;
+        background: #f0f0f0;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        transition: transform 0.12s, background 0.12s;
+    }
+
+        .key:active {
+            transform: scale(0.92);
+            background: #e2e2e2;
         }
 
-        .display-value {
-            font-family: 'Digital-7', monospace, sans-serif;
-            font-size: 3rem;
-            background: #111;
-            color: #28f028;
-            padding: 12px;
-            border-radius: 8px;
-            letter-spacing: 2px;
-            text-align: right;
-            text-shadow: 0 0 4px #0f0;
-            transition: all .1s ease-out;
+    .action-key {
+        background: var(--color-sand);
+    }
+
+    /* ===== BARRA SUPERIOR FIXA ===== */
+    #DigitarHeader {
+        flex: 0 0 56px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-3);
+        background: transparent;
+        z-index: 20;
+    }
+
+    /* ===== BOTÃO FECHAR ===== */
+    #btnFecharForm {
+        width: 44px;
+        height: 44px;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        background: var(--btn-danger-back);
+        color: var(--btn-danger-color);
+        backdrop-filter: blur(3px);
+        box-shadow: 0 6px 14px var(--preto-sombra);
+        transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+        #btnFecharForm:hover {
+            opacity: 0.95;
         }
 
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            padding: 10px;
+        #btnFecharForm:active {
+            transform: scale(0.88) rotate(-6deg);
+            box-shadow: 0 3px 8px var(--preto-sombra);
         }
 
-        .key {
-            font-size: 28px;
-            padding: 20px;
-            background: #f0f0f0;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            transition: transform 0.12s, background 0.12s;
+
+    #subTitle {
+        text-align: center;
+        font-size: 2.0rem;
+        font-weight: 400;
+        margin: 12px 0;
+        color: #28f028;
+        text-shadow: 1px 2px 3px rgba(0, 0, 0, 1);
+    }
+
+        #subTitle.despesa {
+            color: var(--pulse-red);
         }
 
-            .key:active {
-                transform: scale(0.92);
-                background: #e2e2e2;
-            }
-
-        .action-key {
-            background: var(--color-sand);
+        #subTitle.receita {
+            color: var(--pulse-green);
         }
 
-        /* ===== BARRA SUPERIOR FIXA ===== */
-        #DigitarHeader {
-            flex: 0 0 56px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-3);
-            background: transparent;
-            z-index: 20;
+    #btnConfirm {
+        width: 80%;
+        background: linear-gradient(145deg, var(--color-green-soft), var(--pulse-green));
+        margin-top: 20px;
+    }
+
+    #btnAdvancedFields {
+        position: absolute;
+        bottom: 85px;
+        right: 15px;
+        width: 53px;
+        height: 53px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.20);
+        backdrop-filter: blur(2px);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.6rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+        #btnAdvancedFields:active {
+            transform: scale(0.92);
+            background: #e2e2e2;
         }
 
-        /* ===== BOTÃO FECHAR ===== */
-        #btnFecharForm {
-            width: 44px;
-            height: 44px;
-            padding: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            background: var(--btn-danger-back);
-            color: var(--btn-danger-color);
-            backdrop-filter: blur(3px);
-            box-shadow: 0 6px 14px var(--preto-sombra);
-            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
-        }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 1;
+    }
 
-            #btnFecharForm:hover {
-                opacity: 0.95;
-            }
+</style>
 
-            #btnFecharForm:active {
-                transform: scale(0.88) rotate(-6deg);
-                box-shadow: 0 3px 8px var(--preto-sombra);
-            }
-
-
-        #subTitle {
-            text-align: center;
-            font-size: 2.0rem;
-            font-weight: 400;
-            margin: 12px 0;
-            text-shadow: 1px 2px 3px rgba(0, 0, 0, 1);
-        }
-
-            #subTitle.despesa {
-                color: var(--pulse-red);
-            }
-
-            #subTitle.receita {
-                color: var(--pulse-green);
-            }
-
-        #btnConfirm {
-            width: 80%;
-            background: linear-gradient(145deg, var(--color-green-soft), var(--pulse-green));
-            margin-top: 20px;
-        }
-
-        #btnAdvancedFields {
-            position: absolute;
-            bottom: 85px;
-            right: 15px;
-            width: 53px;
-            height: 53px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0,0,0,0.20);
-            backdrop-filter: blur(2px);
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-size: 1.6rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-        }
-
-            #btnAdvancedFields:active {
-                transform: scale(0.92);
-                background: #e2e2e2;
-            }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 1;
-        }
-
-    </style>
-}
 
 <div id="DigitarHeader">
-    <div id="subTitle" class="@subTitleClass">@ViewBag.SubTitle</div>
-    @if (!string.IsNullOrEmpty(urlRetorno))
-    {
-        <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
-    }
+    <div id="subTitle">@ViewBag.SubTitle</div>
 </div>
 
 <div class="value-container">
@@ -187,7 +178,6 @@
     <div class="form-group">
         <label for="DataMovto">Data:</label>
         <input type="date" id="DataMovto" name="DataMovto"
-            value="@dataLancto.Date.ToString("yyyy-MM-dd")" 
             required class="form-input" />
     </div>
     <div class="form-group">
@@ -199,111 +189,108 @@
     </div>
 </div>
 
-@section script {
-    <script>
-        $(document).ready(function () {
-            const urlBase = '@urlBase';
-            let rawValue = "@valorInicial";
-            let descMovto = @Html.Raw(
-                    System.Text.Json.JsonSerializer.Serialize(Model.Descricao)
-            );
-            let dataMovto = "@dataLancto.Date.ToString("yyyy-MM-dd")";
+<script>
+    $(document).ready(function () {
+        let rawValue = "@valorInicial";
+        let descMovto = @Html.Raw(
+                System.Text.Json.JsonSerializer.Serialize(Model.Descricao)
+        );
 
-            function updateDisplay() {
-                let number = parseInt(rawValue || "0"); // sempre inteiro
-                let formatted = (number / 100).toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                });
-
-                $("#displayValue")
-                    .text(formatted);
-            }
-
-            $(".key[data-digit]").on("click", function () {
-                const digit = $(this).data("digit");
-                rawValue += digit;
-                updateDisplay();
+        function updateDisplay() {
+            let number = parseInt(rawValue || "0"); // sempre inteiro
+            let formatted = (number / 100).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
             });
 
-            $(".key[data-action='clear']").on("click", function () {
-                rawValue = "";
-                updateDisplay();
-            });
+            $("#displayValue")
+                .text(formatted);
+        }
 
-            $(".key[data-action='back']").on("click", function () {
-                rawValue = rawValue.slice(0, -1);
-                updateDisplay();
-            });
-
-            $('#btnAdvancedFields').on('click', function () {
-                 const clone = $('#divAdvancedFields')
-                                        .clone(true)
-                                        .removeAttr('style')
-                                        .show();
-                 showFormModal({
-                    titulo: 'Dados avançados',
-                    bodyHtml: clone,
-                    onSubmit: (formData) => {
-                        descMovto = formData.Descricao;
-                        dataMovto = formData.DataMovto;
-                        $('#divAdvancedFields #Descricao').val(descMovto);
-                        $('#divAdvancedFields #DataMovto').val(dataMovto);
-                    }
-                 });
-            });
-
-            $('#btnFecharForm').on('click', function () {
-                window.location.href = `@urlRetorno`;
-            });
-
-            $('#btnConfirm').on('click', function (e) {
-                e.preventDefault();
-
-                let intNumber = parseInt(rawValue || "0");
-                if (intNumber === 0) {
-                    alert('Valor deve ser maior que zero.');
-                    return false;
-                }
-                let returnValue = intNumber / 100;
-
-                $(this).prop('disabled', true);
-
-                var objMovto = {
-                    ID: parseInt("@Model.ID", null),
-                    TipoMovto: parseInt("@((int)Model.TipoMovto)", 10),
-                    IDGrupo: parseInt("@Model.IDGrupo", 10),
-                    DataMovto: dataMovto,
-                    Descricao: descMovto,
-                    ValorMovto: returnValue,
-                    IsNew: ("@Model.IsNew" == "True"),
-                    URLRetorno: "@Model.URLRetorno"
-                };
-
-                alert(`/${urlBase}/save`);
-
-                $.ajax({
-                    url: `/${urlBase}/save`,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(objMovto),
-                    success: function (response) {
-                        if (response.RedirectUrl) {
-                            window.location.href = response.RedirectUrl;
-                        }
-                        window.parent.postMessage({
-                            action: "closeOverlayAndReload"
-                        }, "*");
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Erro:', error);
-                        alert("Erro ao salvar: " + (xhr.responseText || "Erro interno"));
-                    }
-                });
-            });
-
+        $(".key[data-digit]").on("click", function () {
+            const digit = $(this).data("digit");
+            rawValue += digit;
             updateDisplay();
         });
-    </script>
-}
+
+        $(".key[data-action='clear']").on("click", function () {
+            rawValue = "";
+            updateDisplay();
+        });
+
+        $(".key[data-action='back']").on("click", function () {
+            rawValue = rawValue.slice(0, -1);
+            updateDisplay();
+        });
+
+        $('#btnAdvancedFields').on('click', function () {
+                const clone = $('#divAdvancedFields')
+                                    .clone(true)
+                                    .removeAttr('style')
+                                    .show();
+                showFormModal({
+                titulo: 'Dados avançados',
+                bodyHtml: clone,
+                onSubmit: (formData) => {
+                    descMovto = formData.Descricao;
+                    dataMovto = formData.DataMovto;
+                    $('#divAdvancedFields #Descricao').val(descMovto);
+                    $('#divAdvancedFields #DataMovto').val(dataMovto);
+                }
+                });
+        });
+
+        $('#btnConfirm').on('click', function (e) {
+            e.preventDefault();
+
+            let intNumber = parseInt(rawValue || "0");
+            if (intNumber === 0) {
+                alert('Valor deve ser maior que zero.');
+                return false;
+            }
+            let returnValue = intNumber / 100;
+
+            window.overlayComponentDone({
+                Step: "valor",
+                ValorMovto: returnValue
+            });
+
+
+            // $(this).prop('disabled', true);
+
+            // var objMovto = {
+            //     ID: parseInt("@@Model.ID", null),
+            //     TipoMovto: parseInt("@@((int)Model.TipoMovto)", 10),
+            //     IDGrupo: parseInt("@@Model.IDGrupo", 10),
+            //     DataMovto: dataMovto,
+            //     Descricao: descMovto,
+            //     ValorMovto: returnValue,
+            //     IsNew: ("@@Model.IsNew" == "True"),
+            //     URLRetorno: "@@Model.URLRetorno"
+            // };
+
+            // $.ajax({
+            //     url: `/${urlBase}/save`,
+            //     type: 'POST',
+            //     contentType: 'application/json',
+            //     data: JSON.stringify(objMovto),
+            //     success: function (response) {
+            //         if (response.RedirectUrl) {
+            //             window.location.href = response.RedirectUrl;
+            //         }
+            //         window.parent.postMessage({
+            //             action: "closeOverlayAndReload"
+            //         }, "*");
+            //     },
+            //     error: function (xhr, status, error) {
+            //         console.error('Erro:', error);
+            //         alert("Erro ao salvar: " + (xhr.responseText || "Erro interno"));
+            //     }
+            // });
+        });
+
+        updateDisplay();
+    });
+</script>
+
 
 

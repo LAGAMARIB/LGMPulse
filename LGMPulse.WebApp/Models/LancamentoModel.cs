@@ -2,7 +2,7 @@
 
 namespace LGMPulse.WebApp.Models;
 
-public class DigitarValorViewModel
+public class LancamentoModel
 {
     public int? ID { get; set; }
     public TipoMovtoEnum TipoMovto { get; set; }

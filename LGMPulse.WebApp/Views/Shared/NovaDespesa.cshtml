@@ -1,85 +1,84 @@
 ﻿@using LGMPulse.WebApp.Models
 @model NovoLancamentoModel
 @{
+    Layout = null;
     ViewBag.Title = "Nova Despesa";
     string tipoLancto = Model.IsAgenda ? "AGENDA" : "DESPESA";
     string urlBase = Model.IsAgenda ? "agenda" : "lancamento";
 }
 
-@section style {
-    <style>
-        body > div.mainContainer > div.MainHeader  {
-           background-color: var(--pulse-red);
+<style>
+    body > div.mainContainer > div.MainHeader  {
+        background-color: var(--pulse-red);
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 18px;
+        padding: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 150px); /* Para o mobile com header */
+    }
+
+    .category-item {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 16px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
+    }
+
+        .category-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.14);
         }
 
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 18px;
-            padding: 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 150px); /* Para o mobile com header */
+        .category-item img {
+            width: 52px;
+            height: 52px;
+            margin-bottom: 12px;
         }
 
-        .category-item {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 16px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .category-item span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .period-warning {
+        margin: 16px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: var(--badge-back-color);
+        color: var(--badge-text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+        .period-warning strong {
+            display: block;
+            font-weight: 700;
             text-align: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            cursor: pointer;
+            margin-top: 4px;
         }
 
-            .category-item:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 4px 14px rgba(0,0,0,0.14);
-            }
-
-            .category-item img {
-                width: 52px;
-                height: 52px;
-                margin-bottom: 12px;
-            }
-
-            .category-item span {
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: #333;
-            }
-
-        .period-warning {
-            margin: 16px;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: var(--badge-back-color);
-            color: var(--badge-text-color);
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    /* Melhorar o toque no mobile */
+    @@media (hover: none) {
+        .category-item:active
+        {
+            transform: scale(0.96);
         }
-
-            .period-warning strong {
-                display: block;
-                font-weight: 700;
-                text-align: center;
-                margin-top: 4px;
-            }
-
-        /* Melhorar o toque no mobile */
-        @@media (hover: none) {
-            .category-item:active
-            {
-                transform: scale(0.96);
-            }
-        }
-    </style>
-}
+    }
+</style>
 
 @if (!Model.IsMesAtual)
 {
@@ -99,36 +98,37 @@
     }
 </div>
 
-@section script {
-    <script>
-        $(document).ready(function () {
-            const urlBase = '@urlBase';
-            $(".category-item").on("click", function () {
+<script>
+    $(".category-item").on("click", function () {
 
-                window.parent.pushOverlay(`/${urlBase}/DigitarValor`);
-
-                const idGrupo = $(this).data('grupo');
-                const descGrupo = $(this).find("span").text();
-                const dataLancto = "@Model.Year" + "-" + "@Model.Month" + "-" + "@Model.Day";
-                const DESPESA = 1;
-                const URL = `/${urlBase}/DigitarValor/${DESPESA}/${idGrupo}/${descGrupo}/${dataLancto}`;
-                $(window.parent.document).find("#overlayFrame").each(function () {
-                    $(this)
-                        .attr("src", URL)
-                        .show();
-                });
-
-                // mostrar o botão voltar
-                $(window.parent.document)
-                    .find("#backOverlayButton")
-                    .show();
-
-                // esconder tela inicial
-                $(window.parent.document)
-                    .find("#overlayHome")
-                    .hide();
-            });
+        window.overlayComponentDone({
+            Step: "grupo",
+            IDGrupo: $(this).data('grupo'),
+            DescGrupo: $(this).find("span").text()
         });
 
-    </script>
-}
+        // window.parent.pushOverlay(`/${urlBase}/DigitarValor`);
+
+        // const idGrupo = $(this).data('grupo');
+        // const descGrupo = $(this).find("span").text();
+        // const dataLancto = "@Model.Year" + "-" + "@Model.Month" + "-" + "@Model.Day";
+        // const DESPESA = 1;
+        // const URL = `/${urlBase}/DigitarValor/${DESPESA}/${idGrupo}/${descGrupo}/${dataLancto}`;
+        // $(window.parent.document).find("#overlayFrame").each(function () {
+        //     $(this)
+        //         .attr("src", URL)
+        //         .show();
+        // });
+
+        // // mostrar o botão voltar
+        // $(window.parent.document)
+        //     .find("#backOverlayButton")
+        //     .show();
+
+        // // esconder tela inicial
+        // $(window.parent.document)
+        //     .find("#overlayHome")
+        //     .hide();
+    });
+
+</script>

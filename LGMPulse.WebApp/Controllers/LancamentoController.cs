@@ -66,49 +66,41 @@ public class LancamentoController : LGMController
     }
 
 
-    [HttpGet("Lancamento/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{dataLancto=null}")]
-    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao=null, DateTime? dataLancto = null)
+    [HttpGet("Lancamento/digitarvalor/{descricao=null}")]
+    public IActionResult DigitarValor(string? descricao=null)
     {
-        DateTime hoje = DateTimeHelper.Now();
-        DateTime dataMovto = dataLancto ?? hoje;
-
-        DigitarValorViewModel model = new()
-        {
-            ID = null,
-            TipoMovto = tipo,
-            IDGrupo = idGrupo,
-            DescGrupo = descricao ?? "",
-            DataMovto = dataMovto,
-            MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
-            ValorMovto = 0
-        };
+        DigitarValorModel model = new() { Descricao = descricao ?? "" };
         return View(model);
     }
 
-    [HttpGet("lancamento/alterarvalor/{IDMovto}/{UrlRetorno=null}")]
-    public async Task<IActionResult?> AlterarValorAsync(int IDMovto, string? UrlRetorno=null)
+    [HttpGet("lancamento/alterarvalor/{IDMovto}")]
+    public async Task<IActionResult?> AlterarValorAsync(int IDMovto)
     {
         var result = await _movtoService.GetByIdAsync(IDMovto);
         if (!result.IsSuccess || result.Data == null) return null;
 
         var movto = result.Data;
-        DigitarValorViewModel model = new()
+        DigitarValorModel model = new()
         {
-            ID = IDMovto,
-            TipoMovto = movto.TipoMovto!.Value,
-            IDGrupo = movto.IDGrupo!.Value,
-            DescGrupo = movto.NomeGrupo!,
-            Descricao = movto.Descricao!,
-            DataMovto = movto.DataMovto!.Value,
-            MesReferencia = DateTimeHelper.MesReferencia(movto.DataMovto!.Value),
-            ValorMovto = movto.ValorMovto!.Value,
-            URLRetorno = UrlRetorno
+            Descricao = movto.Descricao ?? movto.NomeGrupo ?? "",
+            ValorInicial = movto.ValorMovto!.Value
         };
+        //LancamentoModel model = new()
+        //{
+        //    ID = IDMovto,
+        //    TipoMovto = movto.TipoMovto!.Value,
+        //    IDGrupo = movto.IDGrupo!.Value,
+        //    DescGrupo = movto.NomeGrupo!,
+        //    Descricao = movto.Descricao!,
+        //    DataMovto = movto.DataMovto!.Value,
+        //    MesReferencia = DateTimeHelper.MesReferencia(movto.DataMovto!.Value),
+        //    ValorMovto = movto.ValorMovto!.Value,
+        //};
         return View("DigitarValor", model);
     }
 
     [HttpPost("Lancamento/save")]
-    public async Task<JsonResult> Save([FromBody] DigitarValorViewModel model)
+    public async Task<JsonResult> Save([FromBody] LancamentoModel model)
     {
         Movto movto = new()
         {
