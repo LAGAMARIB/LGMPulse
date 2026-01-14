@@ -127,53 +127,44 @@ public class AgendaController : LGMController
         return LGMResult.Ok(model);
     }
 
-    [HttpGet("agenda/digitarvalor/{tipo}/{idGrupo}/{descricao=null}/{dataLancto=null}")]
-    public IActionResult DigitarValor(TipoMovtoEnum tipo, int idGrupo, string? descricao = null, DateTime? dataLancto = null)
+    [HttpGet("agenda/digitarvalor/{descricao=null}")]
+    public IActionResult DigitarValor(string? descricao = null)
     {
-        DateTime hoje = DateTimeHelper.Now();
-        DateTime dataMovto = dataLancto ?? hoje;
-
-        LancamentoModel model = new()
-        {
-            IsAgenda = true,
-            TipoMovto = tipo,
-            IDGrupo = idGrupo,
-            DescGrupo = descricao ?? "",
-            DataMovto = dataMovto,
-            MesReferencia = DateTimeHelper.MesReferencia(dataMovto),
-            ValorMovto = 0,
-            QtdParcelas = 1,
-            Parcela = 1,
-            StatusParcela = ParcelaStatusEnum.Pendente,
-            Recorrente = false
-        };
+        DigitarValorModel model = new() { Descricao = descricao ?? "" };
         return View(model);
     }
 
-    [HttpGet("agenda/editar/{IDMovto}/{UrlRetorno=null}")]
-    public async Task<IActionResult?> EditarAsync(int IDMovto, string? UrlRetorno = null)
+    [HttpGet("agenda/editar/{IDMovto}")]
+    public async Task<IActionResult?> EditarAsync(int IDMovto)
     {
         var result = await _agendaService.GetByIdAsync(IDMovto);
         if (!result.IsSuccess || result.Data == null) return null;
 
         var agenda = result.Data;
-        LancamentoModel model = new()
+        DigitarValorModel model = new()
         {
-            IsAgenda = true,
-            ID = IDMovto,
-            TipoMovto = agenda.TipoMovto!.Value,
-            IDGrupo = agenda.IDGrupo!.Value,
-            DescGrupo = agenda.NomeGrupo!,
-            Descricao = agenda.Descricao!,
-            DataMovto = agenda.DataVencto!.Value,
-            MesReferencia = DateTimeHelper.MesReferencia(agenda.DataVencto!.Value),
-            ValorMovto = agenda.ValorParcela!.Value,
-            QtdParcelas = agenda.QtdParcelas!.Value,
-            Parcela = agenda.Parcela!.Value,
-            StatusParcela = agenda.StatusParcela!.Value,
-            Recorrente = agenda.Recorrente!.Value,
-            URLRetorno = UrlRetorno
+            Descricao = agenda.Descricao ?? agenda.NomeGrupo ?? "",
+            ValorInicial = agenda.ValorParcela!.Value
         };
+
+        //var agenda = result.Data;
+        //LancamentoModel model = new()
+        //{
+        //    IsAgenda = true,
+        //    ID = IDMovto,
+        //    TipoMovto = agenda.TipoMovto!.Value,
+        //    IDGrupo = agenda.IDGrupo!.Value,
+        //    DescGrupo = agenda.NomeGrupo!,
+        //    Descricao = agenda.Descricao!,
+        //    DataMovto = agenda.DataVencto!.Value,
+        //    MesReferencia = DateTimeHelper.MesReferencia(agenda.DataVencto!.Value),
+        //    ValorMovto = agenda.ValorParcela!.Value,
+        //    QtdParcelas = agenda.QtdParcelas!.Value,
+        //    Parcela = agenda.Parcela!.Value,
+        //    StatusParcela = agenda.StatusParcela!.Value,
+        //    Recorrente = agenda.Recorrente!.Value,
+        //    URLRetorno = UrlRetorno
+        //};
         return View("DigitarValor", model);
     }
 
