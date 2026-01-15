@@ -291,10 +291,7 @@
 
              $('.btn-edit').on("click", function (e) {
                  const IDMovto = $(this).data('movto');
-                 const ano = parseInt('@Model.Year', 10);
-                 const mes = parseInt('@Model.Month', 10);
-                 const URL = `_relatorios_extrato_${ano}_${mes}`;
-                 window.location.href = `/lancamento/alterarvalor/${IDMovto}/${URL}`;
+                 editOverlay(IDMovto);
              });
 
              $('.btn-delete').on("click", function (e) {

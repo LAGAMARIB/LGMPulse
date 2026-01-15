@@ -21,11 +21,11 @@
             transform: translateY(100%);
             background: var(--overlay-dark);
             transition: transform 360ms cubic-bezier(.22,.9,.32,1);
-            z-index: 30;
             display: flex;
             flex-direction: column; /* 🔑 */
             align-items: stretch; /* 🔑 */
             overflow: hidden;
+            z-index: 30;
         }
 
             /* quando ativo */
@@ -150,7 +150,7 @@
                 filter: brightness(0) invert(1); /* deixa o ícone branco automaticamente */
             }
 
-
+        /* tela de overlay */
         #overlayHome {
             display: flex;
             flex-direction: column;
@@ -205,6 +205,37 @@
             background: linear-gradient(145deg, var(--sphere-expense-start), var(--sphere-expense-end));
         }
 
+        /* campos avançados */
+        #btnAdvancedFields {
+            position: absolute;
+            bottom: 85px;
+            right: 15px;
+            width: 53px;
+            height: 53px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.20);
+            backdrop-filter: blur(2px);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 1.6rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            z-index: 35;
+        }
+
+            #btnAdvancedFields:active {
+                transform: scale(0.92);
+                background: #e2e2e2;
+            }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 1;
+        }
+
     </style>
 }
 
@@ -247,20 +278,49 @@
     }
 </div>
 
+<button id="btnAdvancedFields"><i class="fas fa-gear"></i></button>
+
+<div class="form-container" id="divAdvancedFields" style="display: none">
+    <div class="form-group">
+        <label for="DataMovto">Data:</label>
+        <input type="date" id="DataMovto" name="DataMovto"
+               required class="form-input" />
+    </div>
+    <div class="form-group">
+        <label for="Descricao">Descrição:</label>
+        <input type="text" id="Descricao"
+               name="Descricao"
+               class="form-input" />
+    </div>
+</div>
+
+
 @section script {
     <script>
+        let editMode = false;
         let objMovto = null;
         let overlayHistory = [];
-        const dateFormated = "@_overview_dataLancto.Year" + "-" + "@_overview_dataLancto.Month" + "-" + "@_overview_dataLancto.Day";
+        const dateFormated = '@(_overview_dataLancto.ToString("yyyy-MM-dd"))';
         const urlBase = "@urlBase";
 
-        function loadComponent(url) {
+        function loadComponent(url, adv) {
             pushOverlay(url);
             $.get(url, function (html) {
                 $("#overlayFrame").html(html).show();
                 $("#overlayHome").hide();
-                $("#backOverlayButton").show();
+                if (editMode) {
+                    $("#backOverlayButton").hide();
+                    $('#mesReferencia').hide();
+                }
+                else {
+                    $("#backOverlayButton").show();
+                    $('#mesReferencia').show();
+                }
             });
+            if (adv)
+                $('#btnAdvancedFields').show();
+            else
+                $('#btnAdvancedFields').hide();
         }
 
         function openOverlayView(htmlContent) {
@@ -268,6 +328,8 @@
         }
 
         function closeOverlay() {
+            editMode = false;
+            $('#btnAdvancedFields').hide();
             $("#addOverlay").removeClass("active");
             $("#addButton").removeClass("hidden");
         }
@@ -296,14 +358,42 @@
             $("#backOverlayButton").toggle(overlayHistory.length > 0);
         }
 
+        function editOverlay(id) {
+            editMode = true;
+            $("#addOverlay").addClass("active");
+            $("#overlayHome").hide();
+            $("#overlayFrame").hide();
+            $("#backOverlayButton").hide();
+            overlayHistory = [];   // limpa histórico ao editar
+            
+            let url = `/lancamento/getmovto/${id}`;
+            objMovto = null;
+            $.get(url, function (movto) {
+                if (!movto) return;
+                objMovto = {
+                    ID: movto.ID,
+                    TipoMovto: movto.TipoMovto,
+                    IDGrupo: movto.IDGrupo,
+                    DataMovto: movto.DataMovto,
+                    Descricao: movto.Descricao,
+                    ValorMovto: movto.ValorMovto
+                }
+
+                let descricao = movto.Descricao ? movto.Descricao : movto.NomeGrupo;
+                let digUrl = `/${urlBase}/alterarvalor/${descricao}/${objMovto.ValorMovto}`;
+
+                loadComponent(digUrl, true);
+            });
+        }
+
         $(document).ready(function () {
             // abrir overlay no modo HOME
             $("#addButton").on("click", function () {
+                editMode = false;
                 $("#addOverlay").addClass("active");
                 $("#overlayHome").show();
                 $("#overlayFrame").hide();
                 $("#backOverlayButton").hide();
-                $("#overlayFrame").attr("src", "");
                 overlayHistory = [];   // limpa histórico ao abrir
             });
 
@@ -335,17 +425,42 @@
                 window.location.reload();
             }
 
+            $('#btnAdvancedFields').on('click', function () {
+                const $clone = $('#divAdvancedFields')
+                    .clone(true)
+                    .removeAttr('id')
+                    .show();
+
+                if (objMovto.DataMovto)
+                    $clone.find('[name="DataMovto"]').val(objMovto.DataMovto.split('T')[0]);
+
+                if (objMovto.Descricao)
+                    $clone.find('[name="Descricao"]').val(objMovto.Descricao);
+
+                showFormModal({
+                    titulo: 'Dados avançados',
+                    bodyHtml: $clone,
+                    onSubmit: (formData) => {
+                        objMovto.Descricao = formData.Descricao;
+                        objMovto.DataMovto = formData.DataMovto;
+                    }
+                });
+            });
+
             window.overlayComponentDone = function (payload) {
                 if (!objMovto) return;
 
                 if (payload.Step === "grupo") {
                     objMovto.IDGrupo = payload.IDGrupo;
-                    loadComponent(`/${urlBase}/DigitarValor/${payload.DescGrupo}`);
+                    objMovto.Descricao = "";
+                    objMovto.DataMovto = dateFormated;
+
+                    loadComponent(`/${urlBase}/DigitarValor/${payload.DescGrupo}`, true);
                 }
                 
                 else if (payload.Step === "valor") {
                     objMovto.ValorMovto = payload.ValorMovto;
-                    console.log(objMovto);
+                    
                     $.ajax({
                         url: `/${urlBase}/save`,
                         method: "POST",
@@ -365,6 +480,7 @@
                 }
             }
 
+            $('#btnAdvancedFields').hide();
         });
     </script>
 }

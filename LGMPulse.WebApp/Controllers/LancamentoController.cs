@@ -69,33 +69,21 @@ public class LancamentoController : LGMController
     [HttpGet("Lancamento/digitarvalor/{descricao=null}")]
     public IActionResult DigitarValor(string? descricao=null)
     {
-        DigitarValorModel model = new() { Descricao = descricao ?? "" };
+        DigitarValorModel model = new()
+        {
+            Descricao = descricao ?? "",
+        };
         return View(model);
     }
 
-    [HttpGet("lancamento/alterarvalor/{IDMovto}")]
-    public async Task<IActionResult?> AlterarValorAsync(int IDMovto)
+    [HttpGet("lancamento/alterarvalor/{descricao}/{valor}")]
+    public async Task<IActionResult> AlterarValorAsync(string descricao, decimal valor)
     {
-        var result = await _movtoService.GetByIdAsync(IDMovto);
-        if (!result.IsSuccess || result.Data == null) return null;
-
-        var movto = result.Data;
         DigitarValorModel model = new()
         {
-            Descricao = movto.Descricao ?? movto.NomeGrupo ?? "",
-            ValorInicial = movto.ValorMovto!.Value
+            Descricao = descricao,
+            ValorInicial = valor,
         };
-        //LancamentoModel model = new()
-        //{
-        //    ID = IDMovto,
-        //    TipoMovto = movto.TipoMovto!.Value,
-        //    IDGrupo = movto.IDGrupo!.Value,
-        //    DescGrupo = movto.NomeGrupo!,
-        //    Descricao = movto.Descricao!,
-        //    DataMovto = movto.DataMovto!.Value,
-        //    MesReferencia = DateTimeHelper.MesReferencia(movto.DataMovto!.Value),
-        //    ValorMovto = movto.ValorMovto!.Value,
-        //};
         return View("DigitarValor", model);
     }
 
@@ -135,4 +123,13 @@ public class LancamentoController : LGMController
         GravarMensagem("Movimento excluído com sucesso");
         return Json(result);
     }
+
+    [HttpGet("lancamento/getmovto/{IDMovto}")]
+    public async Task<JsonResult> GetMovtoAsync(int IDMovto)
+    {
+        var result = await _movtoService.GetByIdAsync(IDMovto);
+        var movto = result.Data;
+        return Json(movto);
+    }
+
 }

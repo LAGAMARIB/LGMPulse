@@ -801,8 +801,9 @@
           function hideModal() {
             $backdrop.classList.remove('lgm-show');
             $modal.classList.remove('lgm-show');
-            $backdrop.setAttribute('aria-hidden','true');
-            $modal.setAttribute('aria-hidden','true');
+            $backdrop.setAttribute('aria-hidden','false');
+            $modal.setAttribute('aria-hidden','false');
+            document.activeElement?.blur();
             currentOnSubmit = null;
           }
 
