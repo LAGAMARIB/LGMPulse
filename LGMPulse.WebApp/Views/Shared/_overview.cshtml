@@ -236,6 +236,60 @@
             opacity: 1;
         }
 
+        .parcelas-container {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 280ms ease, opacity 200ms ease;
+        }
+
+            .parcelas-container.open {
+                max-height: 80px; /* ajuste para a altura real */
+                opacity: 1;
+            }
+
+        .divParcelas {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .divParcelas label {
+                margin-right: 5px;
+                font-weight: bold;
+            }
+
+            .divParcelas .form-input {
+                width: 50px;
+                text-align: center;
+                padding: 5px;
+            }
+
+        .btn-icon {
+            font-size: 24px;
+            font-weight: bold;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+            .btn-icon:focus {
+                outline: none;
+                box-shadow: none;
+            }
+
+        .divParcelas .form-input {
+            width: 60px;
+        }
+
     </style>
 }
 
@@ -292,6 +346,29 @@
                name="Descricao"
                class="form-input" />
     </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="switch swtRecorrente">
+                <input type="checkbox" class="chkRecorrente" />
+                <span class="slider"></span>
+            </label>
+            <label for="chkRecorrente">Recorrente</label>
+
+            <div class="parcelas-container">
+                <div class="divParcelas">
+                    <laber for="QtdParcelas">Parcelas:</laber>
+                    <button type="button" class="recorrenteMenos btn-icon">-</button>
+                    <input type="text"
+                            name="QtdParcelas"
+                            class="QtdParcelas form-input"
+                            data-mask="##0"
+                            data-mask-reverse="true" />
+                    <button type="button" class="recorrenteMais btn-icon">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
@@ -427,15 +504,23 @@
 
             $('#btnAdvancedFields').on('click', function () {
                 const $clone = $('#divAdvancedFields')
-                    .clone(true)
+                    .clone(false)   // 🔑 NÃO clone eventos
                     .removeAttr('id')
                     .show();
 
+                // estado inicial
                 if (objMovto.DataMovto)
                     $clone.find('[name="DataMovto"]').val(objMovto.DataMovto.split('T')[0]);
 
                 if (objMovto.Descricao)
                     $clone.find('[name="Descricao"]').val(objMovto.Descricao);
+
+                // eventos internos do clone
+                $(document).on('change', '.chkRecorrente', function () {
+                    const scope = $(this).closest('.form-container');
+                    toggleParcelas(scope);
+                });
+                toggleParcelas($clone);
 
                 showFormModal({
                     titulo: 'Dados avançados',
@@ -446,6 +531,37 @@
                     }
                 });
             });
+
+            $(document).on('click', '.recorrenteMais', function () {
+                const input = $(this)
+                    .closest('.divParcelas')
+                    .find('.QtdParcelas');
+
+                const valor = parseInt(input.val(), 10) || 0;
+                input.val(valor + 1);
+            });
+
+            $(document).on('click', '.recorrenteMenos', function () {
+                const input = $(this)
+                    .closest('.divParcelas')
+                    .find('.QtdParcelas');
+
+                const valor = parseInt(input.val(), 10) || 0;
+                if (valor > 1) input.val(valor - 1);
+            });
+
+            $('.QtdParcelas').on('blur', function () {
+                let val = parseInt($(this).val(), 10);
+                if (isNaN(val) || val <= 0) {
+                    $(this).val('1');
+                }
+            });
+
+            function toggleParcelas(scope) {
+                const container = scope.find('.parcelas-container');
+                const chk = scope.find('.chkRecorrente');
+                container.toggleClass('open', chk.is(':checked'));
+            }
 
             window.overlayComponentDone = function (payload) {
                 if (!objMovto) return;
