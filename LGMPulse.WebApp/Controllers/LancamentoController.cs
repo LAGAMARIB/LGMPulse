@@ -65,26 +65,23 @@ public class LancamentoController : LGMController
         return LGMResult.Ok(model);
     }
 
+    [HttpGet("lancamento/getmovto/{IDMovto}")]
+    public async Task<JsonResult> GetMovtoAsync(int IDMovto)
+    {
+        var result = await _movtoService.GetByIdAsync(IDMovto);
+        var movto = result.Data;
+        return Json(movto);
+    }
 
-    [HttpGet("Lancamento/digitarvalor/{descricao=null}")]
-    public IActionResult DigitarValor(string? descricao=null)
+    [HttpGet("lancamento/digitarvalor/{descricao=null}/{valor=0}")]
+    public IActionResult DigitarValor(string? descricao = null, decimal valor = 0)
     {
         DigitarValorModel model = new()
         {
             Descricao = descricao ?? "",
-        };
-        return View(model);
-    }
-
-    [HttpGet("lancamento/alterarvalor/{descricao}/{valor}")]
-    public async Task<IActionResult> AlterarValorAsync(string descricao, decimal valor)
-    {
-        DigitarValorModel model = new()
-        {
-            Descricao = descricao,
             ValorInicial = valor,
         };
-        return View("DigitarValor", model);
+        return View(model);
     }
 
     [HttpPost("Lancamento/save")]
@@ -124,12 +121,5 @@ public class LancamentoController : LGMController
         return Json(result);
     }
 
-    [HttpGet("lancamento/getmovto/{IDMovto}")]
-    public async Task<JsonResult> GetMovtoAsync(int IDMovto)
-    {
-        var result = await _movtoService.GetByIdAsync(IDMovto);
-        var movto = result.Data;
-        return Json(movto);
-    }
 
 }

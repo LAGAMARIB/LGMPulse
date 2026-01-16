@@ -127,46 +127,26 @@ public class AgendaController : LGMController
         return LGMResult.Ok(model);
     }
 
-    [HttpGet("agenda/digitarvalor/{descricao=null}")]
-    public IActionResult DigitarValor(string? descricao = null)
+    [HttpGet("agenda/getmovto/{IDMovto}")]
+    public async Task<JsonResult> GetMovtoAsync(int IDMovto)
     {
-        DigitarValorModel model = new() { Descricao = descricao ?? "" };
+        var result = await _agendaService.GetByIdAsync(IDMovto);
+        var movto = result.Data;
+        return Json(movto);
+    }
+
+
+    [HttpGet("agenda/digitarvalor/{descricao=null}/{valor=0}")]
+    public IActionResult DigitarValor(string? descricao = null, decimal valor = 0)
+    {
+        DigitarValorModel model = new()
+        {
+            Descricao = descricao ?? "",
+            ValorInicial = valor,
+        };
         return View(model);
     }
 
-    [HttpGet("agenda/editar/{IDMovto}")]
-    public async Task<IActionResult?> EditarAsync(int IDMovto)
-    {
-        var result = await _agendaService.GetByIdAsync(IDMovto);
-        if (!result.IsSuccess || result.Data == null) return null;
-
-        var agenda = result.Data;
-        DigitarValorModel model = new()
-        {
-            Descricao = agenda.Descricao ?? agenda.NomeGrupo ?? "",
-            ValorInicial = agenda.ValorParcela!.Value
-        };
-
-        //var agenda = result.Data;
-        //LancamentoModel model = new()
-        //{
-        //    IsAgenda = true,
-        //    ID = IDMovto,
-        //    TipoMovto = agenda.TipoMovto!.Value,
-        //    IDGrupo = agenda.IDGrupo!.Value,
-        //    DescGrupo = agenda.NomeGrupo!,
-        //    Descricao = agenda.Descricao!,
-        //    DataMovto = agenda.DataVencto!.Value,
-        //    MesReferencia = DateTimeHelper.MesReferencia(agenda.DataVencto!.Value),
-        //    ValorMovto = agenda.ValorParcela!.Value,
-        //    QtdParcelas = agenda.QtdParcelas!.Value,
-        //    Parcela = agenda.Parcela!.Value,
-        //    StatusParcela = agenda.StatusParcela!.Value,
-        //    Recorrente = agenda.Recorrente!.Value,
-        //    URLRetorno = UrlRetorno
-        //};
-        return View("DigitarValor", model);
-    }
 
     [HttpPost("agenda/save")]
     public async Task<JsonResult> Save([FromBody] LancamentoModel model)

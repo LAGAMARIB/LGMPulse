@@ -346,28 +346,34 @@
                name="Descricao"
                class="form-input" />
     </div>
-    <div class="form-group">
-        <div class="form-inline">
-            <label class="switch swtRecorrente">
-                <input type="checkbox" class="chkRecorrente" />
-                <span class="slider"></span>
-            </label>
-            <label for="chkRecorrente">Recorrente</label>
 
-            <div class="parcelas-container">
-                <div class="divParcelas">
-                    <laber for="QtdParcelas">Parcelas:</laber>
-                    <button type="button" class="recorrenteMenos btn-icon">-</button>
-                    <input type="text"
-                            name="QtdParcelas"
-                            class="QtdParcelas form-input"
-                            data-mask="##0"
-                            data-mask-reverse="true" />
-                    <button type="button" class="recorrenteMais btn-icon">+</button>
+    @if (isAgenda)
+    {
+        <div class="form-group">
+            <input type="hidden" name="Parcela" />
+            <div class="form-inline">
+                <label class="switch swtRecorrente">
+                    <input type="checkbox" class="chkRecorrente" name="Recorrente" />
+                    <span class="slider"></span>
+                </label>
+                <label for="chkRecorrente">Recorrente</label>
+
+                <div class="parcelas-container">
+                    <div class="divParcelas">
+                        <laber for="QtdParcelas">Parcelas:</laber>
+                        <button type="button" class="recorrenteMenos btn-icon">-</button>
+                        <input type="text"
+                               name="QtdParcelas"
+                               class="QtdParcelas form-input"
+                               data-mask="##0"
+                               data-mask-reverse="true"
+                               value="1"/>
+                        <button type="button" class="recorrenteMais btn-icon">+</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 
 </div>
 
@@ -379,6 +385,7 @@
         let overlayHistory = [];
         const dateFormated = '@(_overview_dataLancto.ToString("yyyy-MM-dd"))';
         const urlBase = "@urlBase";
+        const isAgenda = urlBase === "agenda";
 
         function loadComponent(url, adv) {
             pushOverlay(url);
@@ -443,21 +450,37 @@
             $("#backOverlayButton").hide();
             overlayHistory = [];   // limpa histórico ao editar
             
-            let url = `/lancamento/getmovto/${id}`;
+            let url = `/${urlBase}/getmovto/${id}`; 
             objMovto = null;
             $.get(url, function (movto) {
                 if (!movto) return;
-                objMovto = {
-                    ID: movto.ID,
-                    TipoMovto: movto.TipoMovto,
-                    IDGrupo: movto.IDGrupo,
-                    DataMovto: movto.DataMovto,
-                    Descricao: movto.Descricao,
-                    ValorMovto: movto.ValorMovto
-                }
 
+                if (isAgenda) {
+                    objMovto = {
+                        ID: movto.ID,
+                        TipoMovto: movto.TipoMovto,
+                        IDGrupo: movto.IDGrupo,
+                        DataMovto: movto.DataVencto,
+                        Descricao: movto.Descricao,
+                        ValorMovto: movto.ValorParcela,
+                        Recorrente: movto.Recorrente,
+                        Parcela: movto.Parcela,
+                        QtdParcelas: movto.QtdParcelas
+                    };
+                }
+                else {
+                    objMovto = {
+                        ID: movto.ID,
+                        TipoMovto: movto.TipoMovto,
+                        IDGrupo: movto.IDGrupo,
+                        DataMovto: movto.DataMovto,
+                        Descricao: movto.Descricao,
+                        ValorMovto: movto.ValorMovto
+                    };
+                }
+                
                 let descricao = movto.Descricao ? movto.Descricao : movto.NomeGrupo;
-                let digUrl = `/${urlBase}/alterarvalor/${descricao}/${objMovto.ValorMovto}`;
+                let digUrl = `/${urlBase}/digitarvalor/${descricao}/${objMovto.ValorMovto}`;
 
                 loadComponent(digUrl, true);
             });
@@ -488,8 +511,12 @@
                 objMovto = {
                     DataMovto: new Date(dateFormated).toISOString(),
                     TipoMovto: (tipo === "receita" ? 0 : 1),
-                    IsAgenda: (urlBase === "agenda")
+                    IsAgenda: (isAgenda),
+                    Recorrente: false,
+                    Parcela: 1,
+                    QtdParcelas: 1
                 };
+
                 loadComponent(url);
             });
 
@@ -511,9 +538,15 @@
                 // estado inicial
                 if (objMovto.DataMovto)
                     $clone.find('[name="DataMovto"]').val(objMovto.DataMovto.split('T')[0]);
-
                 if (objMovto.Descricao)
                     $clone.find('[name="Descricao"]').val(objMovto.Descricao);
+
+                if (objMovto.Recorrente)
+                    $clone.find('[name="Recorrente"]').prop('checked', objMovto.Recorrente === true);
+                if (objMovto.Parcela)
+                    $clone.find('[name="Parcela"]').val(objMovto.Parcela);
+                if (objMovto.QtdParcelas)
+                    $clone.find('[name="QtdParcelas"]').val(objMovto.QtdParcelas);
 
                 // eventos internos do clone
                 $(document).on('change', '.chkRecorrente', function () {
@@ -528,6 +561,9 @@
                     onSubmit: (formData) => {
                         objMovto.Descricao = formData.Descricao;
                         objMovto.DataMovto = formData.DataMovto;
+                        objMovto.Recorrente = !!formData.Recorrente;
+                        objMovto.Parcela = parseInt(formData.Parcela || 1, 10);
+                        objMovto.QtdParcelas = parseInt(formData.QtdParcelas || 1, 10);
                     }
                 });
             });
@@ -576,7 +612,9 @@
                 
                 else if (payload.Step === "valor") {
                     objMovto.ValorMovto = payload.ValorMovto;
-                    
+
+                    console.log(JSON.stringify(objMovto));
+
                     $.ajax({
                         url: `/${urlBase}/save`,
                         method: "POST",

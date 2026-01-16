@@ -387,19 +387,18 @@
 
             $('.btn-edit').on("click", function (e) {
                 const IDMovto = $(this).data('movto');
-                const URL = `_agenda_gradeagenda_dia_${year}-${month}-${day}`;
-                window.location.href = `/agenda/editar/${IDMovto}/${URL}`;
+                editOverlay(IDMovto);
             });
 
             $('.btn-delete').on("click", function (e) {
                 const id = $(this).data('movto');
                 showModalDialog({
-                titulo: 'Excluir',
-                mensagem: "Confirma excluir este agendamento?",
-                tipo: 'excluir', //excluir, info, confirmar, alertar
-                onConfirm: () => {
-                    ExcluirRegistro(id);
-                }
+                    titulo: 'Excluir',
+                    mensagem: "Confirma excluir este agendamento?",
+                    tipo: 'excluir', //excluir, info, confirmar, alertar
+                    onConfirm: () => {
+                        ExcluirRegistro(id);
+                    }
                 });
 
             });
