@@ -325,7 +325,10 @@
 
                     <div class="row-toolbar">
                         <i class="fas fa-keyboard btn-edit" data-movto="@agenda.ID" title="Editar"></i>
-                        <i class="fas fa-trash btn-delete" data-movto="@agenda.ID" title="Excluir"></i>
+                        <i class="fas fa-trash btn-delete" 
+                            data-movto="@agenda.ID" 
+                            data-numparcs = "@agenda.QtdParcelas"
+                            title="Excluir"></i>
                     </div>
                 </div>
             }
@@ -392,9 +395,14 @@
 
             $('.btn-delete').on("click", function (e) {
                 const id = $(this).data('movto');
+                const qtdParcs = parseInt($(this).data('numparcs'), 10) || 1;
+                console.log(`${id}-${qtdParcs}`);
+                let mens = 'Tem certeza que deseja remover o agendamento?'
+                if (qtdParcs > 1)
+                    mens += ' Todas as parcelas seguintes pendentes também serão removidas.'
                 showModalDialog({
                     titulo: 'Excluir',
-                    mensagem: "Confirma excluir este agendamento?",
+                    mensagem: mens,
                     tipo: 'excluir', //excluir, info, confirmar, alertar
                     onConfirm: () => {
                         ExcluirRegistro(id);

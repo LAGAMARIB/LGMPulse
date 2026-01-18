@@ -163,7 +163,8 @@ public class AgendaController : LGMController
             QtdParcelas = model.QtdParcelas,
             Parcela = model.Parcela,
             StatusParcela = model.StatusParcela,
-            Recorrente = model.Recorrente
+            Recorrente = model.Recorrente,
+            IDRecorrencia = model.IDRecorrencia
         };
         ILGMResult result;
         if (model.IsNew)

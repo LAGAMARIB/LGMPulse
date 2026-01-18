@@ -107,26 +107,27 @@ internal class AgendaService : BaseService<Agenda>, IAgendaService
         if (campos == null || campos.Count == 0)
             return LGMResult.Fail("Alteração de parcelas exige especificar os campos. Operação não permitida.");
 
-        if (agenda.Recorrente == true && !string.IsNullOrEmpty(agenda.IDRecorrencia))
-        {
-            using (var transCtx = TransactionContext.NewTransaction())
-            {
-                var filter = new Agenda { IDRecorrencia = agenda.IDRecorrencia, StatusParcela = ParcelaStatusEnum.Pendente };
-                var updateList = await _agendaRepository.GetListContextualAsync(transCtx, filter, null, null, null);
-                foreach (var item in updateList)
-                {
-                    if (item.Parcela >= agenda.Parcela)
-                    {
-                        AlterarCampos(origem: agenda, destino: item, campos: campos);
-                        await _agendaRepository.UpdateTransactionalAsync(transCtx, item, campos);
-                    }
-                }
+        // TODO: implementar opção de alterar uma ou todas as parcelas seguintes em uma recorrencia
+        //if (agenda.Recorrente == true && !string.IsNullOrEmpty(agenda.IDRecorrencia))
+        //{
+        //    using (var transCtx = TransactionContext.NewTransaction())
+        //    {
+        //        var filter = new Agenda { IDRecorrencia = agenda.IDRecorrencia, StatusParcela = ParcelaStatusEnum.Pendente };
+        //        var updateList = await _agendaRepository.GetListContextualAsync(transCtx, filter, null, null, null);
+        //        foreach (var item in updateList)
+        //        {
+        //            if (item.Parcela >= agenda.Parcela)
+        //            {
+        //                AlterarCampos(origem: agenda, destino: item, campos: campos);
+        //                await _agendaRepository.UpdateTransactionalAsync(transCtx, item, campos);
+        //            }
+        //        }
 
-                if (updateList.Count > 0)
-                    await transCtx.ExecuteTransactionAsync();
-            }
-        }
-        else
+        //        if (updateList.Count > 0)
+        //            await transCtx.ExecuteTransactionAsync();
+        //    }
+        //}
+        //else
         {
             await _agendaRepository.UpdateAsync(agenda, campos);
         }

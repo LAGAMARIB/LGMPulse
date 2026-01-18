@@ -4,6 +4,7 @@
     DateTime hoje = DateTimeHelper.Now();
     DateTime _overview_dataLancto = ViewBag.DataLancto != null ? ViewBag.DataLancto : hoje;
     bool _overview_IsMesAtual = _overview_dataLancto.Year == hoje.Year && _overview_dataLancto.Month == hoje.Month;
+    bool _overview_IsMesAnterior = _overview_dataLancto.Year < hoje.Year || (_overview_dataLancto.Year == hoje.Year && _overview_dataLancto.Month < hoje.Month);
     bool isAgenda = (ViewBag.IsAgenda != null && ViewBag.IsAgenda);
     string urlBase = isAgenda ? "agenda" : "lancamento";
     string acao = isAgenda ? "Agendar" : "Nova";
@@ -324,7 +325,7 @@
 <div id="addButton">
     <div class="add-plus">+</div>
 
-    @if (!_overview_IsMesAtual)
+    @if (_overview_IsMesAnterior)
     {
         <div class="period-badge">
             Período anterior
@@ -349,8 +350,9 @@
 
     @if (isAgenda)
     {
-        <div class="form-group">
+        <div class="form-group editParcelas">
             <input type="hidden" name="Parcela" />
+            <input type="hidden" name="IDRecorrencia" />
             <div class="form-inline">
                 <label class="switch swtRecorrente">
                     <input type="checkbox" class="chkRecorrente" name="Recorrente" />
@@ -371,6 +373,12 @@
                         <button type="button" class="recorrenteMais btn-icon">+</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="showParcelas">
+            <div class="form-inline">
+                <span>Parcela: </span>
+                <span class="textParcelas">1/1</span>
             </div>
         </div>
     }
@@ -464,6 +472,7 @@
                         Descricao: movto.Descricao,
                         ValorMovto: movto.ValorParcela,
                         Recorrente: movto.Recorrente,
+                        IDRecorrencia: movto.IDRecorrencia,
                         Parcela: movto.Parcela,
                         QtdParcelas: movto.QtdParcelas
                     };
@@ -547,6 +556,8 @@
                     $clone.find('[name="Parcela"]').val(objMovto.Parcela);
                 if (objMovto.QtdParcelas)
                     $clone.find('[name="QtdParcelas"]').val(objMovto.QtdParcelas);
+                if (objMovto.IDRecorrencia)
+                    $clone.find('[name="IDRecorrencia"]').val(objMovto.IDRecorrencia);
 
                 // eventos internos do clone
                 $(document).on('change', '.chkRecorrente', function () {
@@ -555,6 +566,20 @@
                 });
                 toggleParcelas($clone);
 
+                // regra visual para edição
+                if (editMode === true) {
+                    $clone.find('.editParcelas').hide();
+                    $clone.find('.showParcelas').show();
+
+                    const parcela = objMovto.Parcela || 1;
+                    const qtd = objMovto.QtdParcelas || 1;
+
+                    $clone.find('.textParcelas').text(`${parcela}/${qtd}`);
+                } else {
+                    $clone.find('.editParcelas').show();
+                    $clone.find('.showParcelas').hide();
+                }
+
                 showFormModal({
                     titulo: 'Dados avançados',
                     bodyHtml: $clone,
@@ -562,6 +587,7 @@
                         objMovto.Descricao = formData.Descricao;
                         objMovto.DataMovto = formData.DataMovto;
                         objMovto.Recorrente = !!formData.Recorrente;
+                        objMovto.IDRecorrencia = formData.IDRecorrencia;
                         objMovto.Parcela = parseInt(formData.Parcela || 1, 10);
                         objMovto.QtdParcelas = parseInt(formData.QtdParcelas || 1, 10);
                     }
