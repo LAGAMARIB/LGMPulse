@@ -49,7 +49,7 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
                                     ELSE 0 
                                 END), 0) AS TotalDespesas
 
-                            FROM lgm_movto
+                            FROM '{ctx.DBKey}'_movto
                             WHERE DataMovto IS NOT NULL
                               AND DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
                               AND DataMovto < '{dataFim.ToString("yyyy-MM-dd")}'
@@ -83,7 +83,7 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
                                 g.TipoMovto     AS TipoMovto,
                                 SUM(m.ValorMovto) AS ValorGrupo
                             FROM {ctx.DBKey}_movto m
-                            INNER JOIN lgm_grupo g
+                            INNER JOIN {ctx.DBKey}_grupo g
                                     ON g.ID = m.IDGrupo
                             WHERE m.DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
                               AND m.DataMovto <  '{dataFim.ToString("yyyy-MM-dd")}'

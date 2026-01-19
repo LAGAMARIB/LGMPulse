@@ -70,7 +70,6 @@ namespace LGMPulse.WebApp.Controllers
             return View(new LoginViewModel());
         }
 
-
         [HttpPost]
         public async Task<IActionResult> LoginAsync(LoginViewModel model)
         {
@@ -146,6 +145,34 @@ namespace LGMPulse.WebApp.Controllers
             }
             SessionHelper.ClearCookies(Request, Response);
             return View("Login", new LoginViewModel());
+        }
+
+        [HttpGet]
+        public IActionResult RecuperarSenha()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> RecuperarSenhaAsync(LoginViewModel model)
+        {
+            LoginModel loginModel = new()
+            {
+                CodAplicacao = "pulse",
+                NomeAplicacao = "LAGAMA Pulse",
+                UrlAplicacao = "https://pulse.lagama.com.br",
+                CodEmpresa = "",
+                Login = model.Email
+            };
+
+            LGMResult<string> result = await _loginService!.RecoverPasswordAsync(loginModel);
+            if (result.IsSuccess)
+            {
+                result.RedirectUrl = $"/home/login";
+                GravarMensagem(result.Message ?? "Email enviado");
+            }
+
+            return Json(result);
         }
 
         [HttpGet]
