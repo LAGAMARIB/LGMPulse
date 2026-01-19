@@ -184,10 +184,18 @@ public class AgendaController : LGMController
     }
 
     [HttpPost("agenda/delete/{IDMovto}")]
-    public async Task<JsonResult> Delete(int IDMovto)
+    public async Task<JsonResult> DeleteAsync(int IDMovto)
     {
         var result = await _agendaService.DeleteAsync(IDMovto);
-        GravarMensagem("Movimento excluído com sucesso");
+        GravarMensagem("Agendamento excluído com sucesso");
+        return Json(result);
+    }
+
+    [HttpPost("agenda/payoff/{IDMovto}")]
+    public async Task<JsonResult> PayoffAsync(int IDMovto)
+    {
+        var result = await _agendaService.BaixarAsync(IDMovto);
+        GravarMensagem("Agendamento baixado com sucesso");
         return Json(result);
     }
 

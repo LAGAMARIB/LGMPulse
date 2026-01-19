@@ -13,15 +13,12 @@ namespace LGMPulse.AppServices.Services;
 internal class AgendaService : BaseService<Agenda>, IAgendaService
 {
     private readonly IAgendaRepository _agendaRepository;
+    private readonly IMovtoRepository _movtoRepository;
 
-    public AgendaService(IAgendaRepository agendaRepository) : base(agendaRepository)
+    public AgendaService(IAgendaRepository agendaRepository, IMovtoRepository movtoRepository) : base(agendaRepository)
     {
-        _agendaRepository = agendaRepository;        
-    }
-
-    public Task<ILGMResult> BaixarAsync(BaixarAgendaModel agendaModel)
-    {
-        throw new NotImplementedException();
+        _agendaRepository = agendaRepository;
+        _movtoRepository = movtoRepository;
     }
 
     public override async Task<ILGMResult> CreateAsync(Agenda agenda)
@@ -61,6 +58,42 @@ internal class AgendaService : BaseService<Agenda>, IAgendaService
         // única parcela
         var newId = await _agendaRepository.CreateAsync(agenda);
         return LGMResult.Ok(newId);
+    }
+
+    //PayoffAsync
+    public async Task<ILGMResult> BaixarAsync(int id)
+    {
+        using (var transCtx = TransactionContext.NewTransaction())
+        {
+            var agenda = await _agendaRepository.GetByIDContextualAsync(transCtx, id);
+            if (agenda == null)
+                throw new RuleException("Registro não disponível");
+            if (agenda.StatusParcela != ParcelaStatusEnum.Pendente)
+                throw new RuleException("Parcela já quitada. Transação não permitida.");
+
+            agenda.StatusParcela = ParcelaStatusEnum.Quitada;
+            var descMovo = string.IsNullOrWhiteSpace(agenda.Descricao) ? agenda.NomeGrupo : agenda.Descricao;
+            if (agenda.QtdParcelas > 1)
+                descMovo += $" {agenda.Parcela}/{agenda.QtdParcelas}";
+
+            Movto movto = new()
+            {
+                DataMovto = DateTimeHelper.Now(),
+                Descricao = descMovo,
+                IDAgenda = agenda.ID,
+                IDGrupo = agenda.IDGrupo,
+                TipoMovto = agenda.TipoMovto,
+                ValorMovto = agenda.ValorParcela
+            };
+
+            await _movtoRepository.CreateTransactionalAsync(transCtx, movto);
+            await _agendaRepository.UpdateTransactionalAsync(transCtx, agenda, [nameof(agenda.StatusParcela)]);
+
+            if (!await transCtx.ExecuteTransactionAsync())
+                throw new Exception("Falha geral na execução da tarefa");
+
+            return LGMResult.Ok();
+        }
     }
 
     public override async Task<ILGMResult> DeleteAsync(int? id)

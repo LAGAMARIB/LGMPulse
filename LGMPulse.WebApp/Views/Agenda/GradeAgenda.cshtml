@@ -221,6 +221,11 @@
             color: var(--pulse-red);
         }
 
+        /* baixar */
+        .row-toolbar .btn-payoff {
+            color: var(--pulse-green);
+        }
+
         .divSumary {
             width: 100%;
             max-width: 360px;
@@ -324,9 +329,14 @@
                     </div>
 
                     <div class="row-toolbar">
-                        <i class="fas fa-keyboard btn-edit" data-movto="@agenda.ID" title="Editar"></i>
-                        <i class="fas fa-trash btn-delete" 
+                        <i class="fas fa-keyboard btn-edit" 
                             data-movto="@agenda.ID" 
+                            title="Editar"></i>
+                        <i class="fas fa-check-double btn-payoff"
+                           data-movto="@agenda.ID"
+                           title="Baixar"></i>
+                        <i class="fas fa-trash btn-delete"
+                           data-movto="@agenda.ID" 
                             data-numparcs = "@agenda.QtdParcelas"
                             title="Excluir"></i>
                     </div>
@@ -369,6 +379,19 @@
             });
         }
 
+        function BaixarAgendamento(id) {
+            $.post(`/agenda/payoff/${id}`, null, function(result) {
+                if (result.IsSuccess) {
+                    window.location.reload();
+                } else {
+                    alert(result.Message);
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                alert('Erro ao tentar remover o registro: ' + errorThrown);
+            });
+        }
+
         $(document).ready(function () {
             $('#btnFecharForm').on('click', function () {
                 window.location.href = `/agenda/${year}/${month}`;
@@ -388,15 +411,17 @@
                 $current.toggleClass("expanded");
             });
 
+            //editar agenda
             $('.btn-edit').on("click", function (e) {
                 const IDMovto = $(this).data('movto');
                 editOverlay(IDMovto);
             });
 
+            //deletar agenda
             $('.btn-delete').on("click", function (e) {
                 const id = $(this).data('movto');
                 const qtdParcs = parseInt($(this).data('numparcs'), 10) || 1;
-                console.log(`${id}-${qtdParcs}`);
+
                 let mens = 'Tem certeza que deseja remover o agendamento?'
                 if (qtdParcs > 1)
                     mens += ' Todas as parcelas seguintes pendentes também serão removidas.'
@@ -408,12 +433,26 @@
                         ExcluirRegistro(id);
                     }
                 });
-
             });
 
-             if (!isOnlyOneDay) {
+            //baixar agenda
+            $('.btn-payoff').on("click", function (e) {
+                const id = $(this).data('movto');
+
+                let mens = 'Confirma lançar o movimento agendado?'
+                showModalDialog({
+                    titulo: 'Executar baixa',
+                    mensagem: mens,
+                    tipo: 'confirmar', //excluir, info, confirmar, alertar
+                    onConfirm: () => {
+                        BaixarAgendamento(id);
+                    }
+                });
+            });
+
+            if (!isOnlyOneDay) {
                  $('#addButton').hide();
-             }
+            }
             DisableIcon(2);
         });
     </script>
