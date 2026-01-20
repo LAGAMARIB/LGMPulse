@@ -1,10 +1,12 @@
 {
   "name": "LAGAMA Pulse",
   "short_name": "Pulse",
+  "description": "Controle financeiro pessoal — Despesas vs Receitas",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F7E8C3",
-  "theme_color": "#E6B44A",
+  "theme_color": "#66520f",
   "icons": [
     {
       "src": "/icons/pulse.png",

@@ -32,7 +32,6 @@
     <script src="/Scripts/moment.js"></script>
 
     <!-- Scripts personalizados -->
-    <script src="/js/site.js" asp-append-version="true"></script>
     <script src="/js/select2.js"></script>
 
     <!-- padrão global -->
@@ -46,6 +45,7 @@
             --footer-bg: #CCCCCC;
             --main-header-bar: #3d2f00;
             --title-color: #e7e1d5;
+            --theme-color: #66520f;
         }
 
         .mainContainer {
@@ -942,6 +942,17 @@
                 window.location.href = "/Home/AlterarSenha";
             });
         });
+    </script>
+
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker
+                .register("/sw.js")
+                .catch(err => console.error("Erro ao registrar Service Worker:", err));
+          });
+        }
     </script>
 
     @RenderSection("script", required: false)

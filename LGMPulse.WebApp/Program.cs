@@ -58,7 +58,9 @@ var app = builder.Build();
 // Antes de UseHttpsRedirection ou qualquer middleware que dependa de HTTPS
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    KnownNetworks = { },
+    KnownProxies = { }
 });
 
 // Configure the HTTP request pipeline.
@@ -73,24 +75,17 @@ app.UseHttpsRedirection();
 // Impedir cache de arquivos estáticos críticos
 app.UseStaticFiles(new StaticFileOptions
 {
-    // sempre recarregar todos os .js, .css e outros arquivos estáticos - menor performance
-    //OnPrepareResponse = ctx =>
-    //{
-    //    ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-    //    ctx.Context.Response.Headers.Append("Pragma", "no-cache");
-    //    ctx.Context.Response.Headers.Append("Expires", "0");
-    //}
-
-    // apenas arquivos sensiveis, melhora a performance
     OnPrepareResponse = ctx =>
     {
-        var ext = Path.GetExtension(ctx.File.Name).ToLowerInvariant();
-        if (ctx.File.Name == "sw.js"
-         || ctx.File.Name == "manifest.json"
-         || new[] { ".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico" }
-            .Contains(ext))
+        var fileName = ctx.File.Name.ToLowerInvariant();
+
+        if (fileName == "sw.js" || fileName == "manifest.json")
         {
-            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        }
+        else
+        {
+            ctx.Context.Response.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
         }
     }
 });

@@ -49,7 +49,7 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
                                     ELSE 0 
                                 END), 0) AS TotalDespesas
 
-                            FROM '{ctx.DBKey}'_movto
+                            FROM {ctx.DBKey}_movto
                             WHERE DataMovto IS NOT NULL
                               AND DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
                               AND DataMovto < '{dataFim.ToString("yyyy-MM-dd")}'

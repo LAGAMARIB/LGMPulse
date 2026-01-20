@@ -1,22 +1,14 @@
 ﻿const CACHE_NAME = "lagama-pulse-cache-v1";
 const URLS_TO_CACHE = [
-    `/`,
-    `/css/site.css`,
-    `/js/site.js`,
-    `/manifest.json`,
-    `/icons/pulse.png`,
-    `/icons/xmark.svg`,
-    `/Content/fa/css/font-awesome.css`,
-    `/Content/fa/css/fontawesome.css`,
-    `/Content/fa/css/all.css`,
-    // adicione outros arquivos importantes conforme necessário
+    "/",
+    "/manifest.json"
 ];
 
 // Instalação do Service Worker
-self.addEventListener("install", (event) => {
+self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(URLS_TO_CACHE))
+            .then(cache => cache.addAll(URLS_TO_CACHE))
     );
     self.skipWaiting();
 });
@@ -26,7 +18,9 @@ self.addEventListener("activate", event => {
     event.waitUntil(
         caches.keys().then(keys =>
             Promise.all(
-                keys.map(key => key !== CACHE_NAME && caches.delete(key))
+                keys
+                    .filter(key => key !== CACHE_NAME)
+                    .map(key => caches.delete(key))
             )
         )
     );
@@ -35,17 +29,19 @@ self.addEventListener("activate", event => {
 
 // Intercepta requisições
 self.addEventListener("fetch", event => {
+
+    // Navegação (HTML) — garante abertura offline
+    if (event.request.mode === "navigate") {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => caches.match("/"))
+        );
+        return;
+    }
+
+    // Assets — cache first, depois rede
     event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                return response;
-            })
-            .catch(() =>
-                caches.match(event.request).then(resp =>
-                    resp || caches.match(`/`)
-                )
-            )
+        caches.match(event.request)
+            .then(response => response || fetch(event.request))
     );
 });
-
-
