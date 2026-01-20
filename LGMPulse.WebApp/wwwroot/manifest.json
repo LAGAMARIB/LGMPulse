@@ -9,12 +9,12 @@
   "theme_color": "#66520f",
   "icons": [
     {
-      "src": "/icons/pulse.png",
+      "src": "/icons/pulse-bw.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/pulse.png",
+      "src": "/icons/pulse-bw.png",
       "sizes": "512x512",
       "type": "image/png"
     }

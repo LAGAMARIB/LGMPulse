@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "lagama-pulse-cache-v1";
+﻿const CACHE_NAME = "lagama-pulse-cache-v3";
 const URLS_TO_CACHE = [
     "/",
     "/manifest.json"

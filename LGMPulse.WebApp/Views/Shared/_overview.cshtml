@@ -12,6 +12,22 @@
 
 @section style {
     <style>
+        /* Casca geral do overview */
+        .overview-shell {
+            position: relative;
+            height: calc( 100dvh - var(--header-height) - var(--footer-height) );
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Área que cresce exatamente até o botão */
+        .overview-content {
+            flex: 1;
+            overflow: hidden;
+            /* espaço reservado para o botão */
+            padding-bottom: calc(86px + 10px);
+        }
+
         /* Overlay */
         #addOverlay {
             position: fixed;
@@ -64,7 +80,7 @@
 
         #addButton {
             position: fixed;
-            bottom: 59px;
+            bottom: calc(var(--footer-height) - 11px);
             left: 50%;
             transform: translateX(-50%);
             width: 160px;
@@ -295,7 +311,11 @@
 }
 
 @RenderSection("style", required: false)
-@RenderBody()
+<div class="overview-shell">
+    <div class="overview-content">
+        @RenderBody()
+    </div>
+</div>
 
 <div id="addOverlay">
     <div class="overlay-topbar">
