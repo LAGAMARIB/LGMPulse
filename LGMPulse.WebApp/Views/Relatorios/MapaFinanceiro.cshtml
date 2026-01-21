@@ -1,11 +1,302 @@
-﻿@{
+﻿@using LGMPulse.Domain.ViewModels
+@model MapaFinanceiroViewModel
+@{
     Layout = null;
+    string[] monthName = {"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+                          "Total", "Média"};
 }
 
-<h2>Mapa Finaneiro</h2>
+<style>
+    .report-container {
+        height: 100%;
+        max-height: 100%;
+        overflow: hidden; /* 🔑 container NÃO rola */
+        background-color: var(--background-body);
+        padding: 8px;
+        box-sizing: border-box;
+        margin-top: 10px;
+    }
+
+    .mapa-scroll {
+        height: 100%;
+        overflow: auto; /* 🔑 scroll ÚNICO aqui */
+    }
+
+    .mapa-container {
+        display: flex;
+        flex-direction: column;
+        width: max-content;
+        min-width: 100%;
+        border: 1px solid var(--grid-lines);
+        font-size: 13px;
+    }
+
+    .mapa-headers {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--form-container-bg);
+    }
+
+    .mapa-header,
+    .mapa-row {
+        display: flex;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .mapa-header {
+        border-bottom: 1px solid var(--background-border);
+    }
+
+    .mapa-body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mapa-row {
+        min-height: 34px;
+    }
+
+        .mapa-row:nth-child(even) {
+            background-color: var(--cor-fundo-card-header);
+        }
+
+        .mapa-row:nth-child(odd) {
+            background-color: var(--background-body);
+        }
+
+    .mapa-col-fixed {
+        width: 140px;
+        min-width: 140px;
+        max-width: 140px;
+        padding: 6px 8px;
+        position: sticky;
+        left: 0;
+        z-index: 100;
+        background-color: var(--background-body);
+        border-right: 1px solid var(--background-border);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .mapa-header .mapa-col-fixed {
+        background: var(--form-container-bg);
+        font-weight: bold;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    .mapa-col {
+        min-width: 90px;
+        padding: 6px 8px;
+        text-align: right;
+        border-right: 1px solid var(--grid-lines);
+        font-size: 0.85rem;
+    }
+
+    .mapa-header .mapa-col {
+        font-weight: bold;
+        text-align: right;
+        background: var(--form-container-bg);
+        color: var(--cor-texto-card-header);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+
+    .mapa-col-bold {
+        font-weight: bolder;
+    }
+
+    .col-total {
+        border-left: 2px solid var(--background-border);
+        background: linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.06));
+    }
+
+    .receita {
+        color: var(--cor-receita);
+    }
+
+    .despesa {
+        color: var(--cor-despesa);
+    }
+
+    .liquidez-positiva {
+        background-color: rgba(46, 204, 113, 0.12);
+        font-weight: 600;
+    }
+
+    .liquidez-negativa {
+        background-color: rgba(231, 76, 60, 0.12);
+        font-weight: 600;
+    }
+
+    .nomeGrupo {
+        display: none;
+    }
+
+    @@media (min-width: 640px) {
+        .nomeGrupo
+        {
+            display: inline;
+        }
+
+    }
+
+    @@media (max-width: 639px) {
+        .mapa-col-fixed
+        {
+            font-weight: 600;
+        }
+
+        .nomeGrupo {
+            display: block;
+            line-height: 1.2;
+        }
+
+    }
+
+    @@media (min-width: 800px) {
+        .mapa-col-fixed {
+            min-width: 170px;
+        }
+    }
+</style>
+
+<div class="report-container">
+    <div class="mapa-scroll">
+        <div id="gridMapa" class="mapa-container">
+
+            <!-- HEADERS -->
+            <div class="mapa-headers">
+
+                <div class="mapa-header">
+                    <div class="mapa-col-fixed">Grupo</div>
+                    @for (int i = 0; i < 14; i++)
+                    {
+                        if (i < 12 && i > Model.LastMonth - 1) continue;
+                        string colTotal = (i == 12 ? "col-total" : "");
+                        <div class="mapa-col @colTotal">@monthName[i]</div>
+                    }
+                </div>
+
+                <div class="mapa-header">
+                    <div class="mapa-col-fixed">Receitas</div>
+                    @for (int i = 0; i < 14; i++)
+                    {
+                        if (i < 12 && i > Model.LastMonth - 1) continue;
+                        string colTotal = (i == 12 ? "col-total" : "");
+                        <div class="mapa-col receita @colTotal">
+                            @Model.Receitas.TotalMes[i].ToString("N2")
+                        </div>
+                    }
+                </div>
+
+                <div class="mapa-header">
+                    <div class="mapa-col-fixed">Despesas</div>
+                    @for (int i = 0; i < 14; i++)
+                    {
+                        if (i < 12 && i > Model.LastMonth - 1) continue;
+                        string colTotal = (i == 12 ? "col-total" : "");
+                        <div class="mapa-col despesa @colTotal">
+                            @Model.Despesas.TotalMes[i].ToString("N2")
+                        </div>
+                    }
+                </div>
+
+                <div class="mapa-header">
+                    <div class="mapa-col-fixed">Liquidez</div>
+                    @for (int i = 0; i < 14; i++)
+                    {
+                        if (i < 12 && i > Model.LastMonth - 1) continue;
+                        string colTotal = (i == 12 ? "col-total" : "");
+                        decimal liquidez = Model.Receitas.TotalMes[i] - Model.Despesas.TotalMes[i];
+                        string liquidezClass = liquidez < 0
+                        ? "liquidez-negativa despesa"
+                        : "liquidez-positiva receita";
+                        <div class="mapa-col @liquidezClass @colTotal">
+                            @liquidez.ToString("N2")
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <!-- BODY -->
+            <div class="mapa-body">
+                @foreach (var item in Model.Mapas)
+                {
+                    <div class="mapa-row">
+                        <div class="mapa-col-fixed">
+                            <span class="nomeGrupo">@item.DescGrupo</span>
+                        </div>
+
+                        @for (int i = 0; i < 14; i++)
+                        {
+                            if (i < 12 && i > Model.LastMonth - 1) continue;
+                            string classBold = (i > 11 ? "mapa-col-bold" : "");
+                            string colTotal = (i == 12 ? "col-total" : "");
+                            <div class="mapa-col @classBold @colTotal">
+                                @item.TotalMes[i].ToString("N2")
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function () {
+        // Seleciona os cabeçalhos da 1ª linha (Grupo + Meses)
+        $(".mapa-header:first .mapa-col").each(function (index) {
+            $(this).addClass("sortable").on("click", function () {
+                sortMapa(index, $(this));
+            });
+        });
+
+        function sortMapa(colIndex, $colElement, forceDesc = false) {
+            const $body = $(".mapa-body");
+            let $rows = $body.find(".mapa-row").get();
+
+            // Alternar direção (ou forçar desc se pedido)
+            let asc = forceDesc ? false : !$colElement.hasClass("asc");
+            $(".mapa-col").removeClass("asc desc");
+            $colElement.addClass(asc ? "asc" : "desc");
+
+            // Ordenar
+            $rows.sort(function (a, b) {
+                let A = $(a).find(".mapa-col").eq(colIndex).text().trim();
+                let B = $(b).find(".mapa-col").eq(colIndex).text().trim();
+
+                // Detecta número
+                let numA = parseFloat(A.replace(/\./g, "").replace(",", "."));
+                let numB = parseFloat(B.replace(/\./g, "").replace(",", "."));
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return asc ? numA - numB : numB - numA;
+                }
+                return asc ? A.localeCompare(B) : B.localeCompare(A);
+            });
+
+            // Reanexa em ordem
+            $.each($rows, function (_, row) {
+                $body.append(row);
+            });
+        }
+
+        // Já inicia a tela ordenando pela penúltima coluna (Total)
+        let $headers = $(".mapa-header:first .mapa-col");
+        let lastIndex = $headers.length - 2; // penúltima coluna visível (Total)
+        if (lastIndex >= 0) {
+            let $targetHeader = $headers.eq(lastIndex);
+            sortMapa(lastIndex, $targetHeader, true); // força decrescente
+        }
+
         localStorage.setItem('ultimoRelatorio', 'mapafinanceiro');
     });
 </script>

@@ -4,6 +4,7 @@ using LGMPulse.Domain.Enuns;
 using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Entities;
 using LGMPulse.Persistence.Interfaces;
+using Microsoft.VisualBasic;
 
 namespace LGMPulse.Persistence.Repositories;
 
@@ -101,6 +102,73 @@ internal class MovtoRepository : BaseRepository<Movto, MovtoEntity>, IMovtoRepos
                 DescGrupo = reader.GetString("DescGrupo"),
                 TipoMovto = (TipoMovtoEnum)reader.GetInt32("TipoMovto"),
                 ValorGrupo = reader.GetDecimal("ValorGrupo")
+            });
+            return grupos;
+        }
+    }
+
+    public async Task<List<MapaModel>> GetMapaFinanceiroAsync(int year)
+    {
+        DateTime dataIni = new DateTime(year, 1, 1);
+        DateTime dataFim = new DateTime(year + 1, 1, 1);
+        using (var ctx = NewDBContext())
+        {
+            string sql = $@"SELECT
+                                g.ID                AS IDGrupo,
+                                g.TipoMovto         AS TipoMovto,
+                                g.Descricao         AS DescGrupo,
+
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 1  THEN m.ValorMovto ELSE 0 END) AS Mes01,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 2  THEN m.ValorMovto ELSE 0 END) AS Mes02,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 3  THEN m.ValorMovto ELSE 0 END) AS Mes03,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 4  THEN m.ValorMovto ELSE 0 END) AS Mes04,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 5  THEN m.ValorMovto ELSE 0 END) AS Mes05,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 6  THEN m.ValorMovto ELSE 0 END) AS Mes06,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 7  THEN m.ValorMovto ELSE 0 END) AS Mes07,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 8  THEN m.ValorMovto ELSE 0 END) AS Mes08,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 9  THEN m.ValorMovto ELSE 0 END) AS Mes09,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 10 THEN m.ValorMovto ELSE 0 END) AS Mes10,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 11 THEN m.ValorMovto ELSE 0 END) AS Mes11,
+                                SUM(CASE WHEN MONTH(m.DataMovto) = 12 THEN m.ValorMovto ELSE 0 END) AS Mes12
+
+                            FROM {ctx.DBKey}_grupo g
+                            LEFT JOIN {ctx.DBKey}_movto m
+                                   ON m.IDGrupo = g.ID
+                                  AND m.DataMovto >= '{dataIni.ToString("yyyy-MM-dd")}'
+                                  AND m.DataMovto <  '{dataFim.ToString("yyyy-MM-dd")}'
+
+                            GROUP BY
+                                g.ID,
+                                g.TipoMovto,
+                                g.Descricao
+
+                            ORDER BY
+                                g.TipoMovto,
+                                g.Descricao;
+                            ";
+
+            var grupos = await ctx.GetListAsync<MapaModel>(sql, reader => new MapaModel
+            {
+                IDGrupo = reader.GetInt32("IDGrupo"),
+                DescGrupo = reader.GetString("DescGrupo"),
+                TipoMovto = (TipoMovtoEnum)reader.GetInt32("TipoMovto"),
+                TotalMes = new[]
+                {
+                    reader.GetDecimal("Mes01"),
+                    reader.GetDecimal("Mes02"),
+                    reader.GetDecimal("Mes03"),
+                    reader.GetDecimal("Mes04"),
+                    reader.GetDecimal("Mes05"),
+                    reader.GetDecimal("Mes06"),
+                    reader.GetDecimal("Mes07"),
+                    reader.GetDecimal("Mes08"),
+                    reader.GetDecimal("Mes09"),
+                    reader.GetDecimal("Mes10"),
+                    reader.GetDecimal("Mes11"),
+                    reader.GetDecimal("Mes12"),
+                    0m, // posição 12 reservada
+                    0m  // posição 13 reservada
+                }
             });
             return grupos;
         }

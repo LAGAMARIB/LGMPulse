@@ -11,4 +11,5 @@ public interface IMovtoService : IBaseService<Movto>
     Task<LGMResult<SumarioMes>> GetSumarioMesAsync(int year, int month);
     Task<LGMResult<RelatGrupoViewModel>> GetRelatGrupoViewModelAsync(int year, int month);
     Task<LGMResult<RelatEvolucaoViewModel>> GetSumarioPeriodoAsync(DateTime dataIni, DateTime dataFim);
+    Task<LGMResult<MapaFinanceiroViewModel>> GetMapaFinanceiroAsync(int year);
 }

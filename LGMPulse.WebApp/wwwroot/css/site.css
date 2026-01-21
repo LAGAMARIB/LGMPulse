@@ -109,16 +109,20 @@
     /* relatorios */
     --border-movto-receita: rgba(88,196,139,0.45);
     --border-movto-despesa: rgba(228,85,85,0.45);
+    --grid-lines: #c5ded8;
+    --grid-lines-hover: #a8d0c4;
     /* badges */
     --badge-text-color: #5a4300;
     --badge-back-color: linear-gradient(145deg, #fff1c2, #e7d18a);
     /* ===== Aliases para Agenda / Calendar ===== */
     /* Backgrounds */
-    --background-body: var(--bg-1);
+    --background-body: #d1bfb4;
     --background-light: #f5f3ef;
     --background-border: var(--border-soft);
     --surface-container: var(--background-light);
     --surface-border: var(--background-body);
+    --cor-fundo-card-header: #fab387;
+    --cor-texto-card-header: #212529;
     /* Texto */
     --color-text-body: var(--text-1);
     --dropdown-item-color: var(--text-2);

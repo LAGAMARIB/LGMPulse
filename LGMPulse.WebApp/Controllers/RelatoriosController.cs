@@ -90,7 +90,9 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/mapafinanceiro/{ano=0}/{mes=0}")]
     public async Task<IActionResult> MapaFinanceiro(int ano = 0, int mes = 0)
     {
-        return PartialView();
+        LGMResult<MapaFinanceiroViewModel> result = await _movtoService.GetMapaFinanceiroAsync(ano);
+        MapaFinanceiroViewModel viewModel = result.Data ?? new();
+        return PartialView(viewModel);
     }
 
 }

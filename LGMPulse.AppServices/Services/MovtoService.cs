@@ -94,4 +94,44 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
 
         return LGMResult.Ok(viewModel);
     }
+
+    public async Task<LGMResult<MapaFinanceiroViewModel>> GetMapaFinanceiroAsync(int year)
+    {
+        var today = DateTimeHelper.Now();
+        MapaFinanceiroViewModel viewModel = new()
+        {
+            Year = year,
+            LastMonth = (year == today.Year ? today.Month : year < today.Year ? 12 : 0),
+            Despesas = new(),
+            Receitas = new(),
+            Mapas = new(),
+        };
+
+        if (year > today.Year) return LGMResult.Ok(viewModel);
+
+        viewModel.Mapas = await _movtoRepository.GetMapaFinanceiroAsync(year);
+
+        if (viewModel.Mapas != null)
+        {
+            int lastMonth = viewModel.LastMonth;
+            foreach (var mapa in viewModel.Mapas)
+            {
+                for (int i = 0; i < 13; i++)
+                {
+                    if (mapa.TipoMovto == TipoMovtoEnum.Despesa)
+                        viewModel.Despesas.TotalMes[i] += mapa.TotalMes[i];
+                    else
+                        viewModel.Receitas.TotalMes[i] += mapa.TotalMes[i];
+                }
+                if (lastMonth > 0) // calcular média do subgrupo 
+                {
+                    viewModel.Receitas.TotalMes[13] = viewModel.Receitas.TotalMes[12] / lastMonth;
+                    viewModel.Despesas.TotalMes[13] = viewModel.Despesas.TotalMes[12] / lastMonth;
+                }
+            }
+        }
+
+        return LGMResult.Ok(viewModel);
+    }
+
 }
