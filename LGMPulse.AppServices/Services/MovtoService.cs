@@ -116,12 +116,22 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
             int lastMonth = viewModel.LastMonth;
             foreach (var mapa in viewModel.Mapas)
             {
-                for (int i = 0; i < 13; i++)
+                for (int i = 0; i < 12; i++)
                 {
+                    var totMes = mapa.TotalMes[i];
+                    mapa.TotalMes[12] += totMes;
+                    mapa.TotalMes[13] = (lastMonth > 0 ? mapa.TotalMes[12] / lastMonth : 0);
+
                     if (mapa.TipoMovto == TipoMovtoEnum.Despesa)
-                        viewModel.Despesas.TotalMes[i] += mapa.TotalMes[i];
+                    {
+                        viewModel.Despesas.TotalMes[i] += totMes;
+                        viewModel.Despesas.TotalMes[12] += totMes;
+                    }
                     else
-                        viewModel.Receitas.TotalMes[i] += mapa.TotalMes[i];
+                    {
+                        viewModel.Receitas.TotalMes[i] += totMes;
+                        viewModel.Receitas.TotalMes[12] += totMes;
+                    }
                 }
                 if (lastMonth > 0) // calcular média do subgrupo 
                 {
