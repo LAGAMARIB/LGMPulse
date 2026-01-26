@@ -2,6 +2,16 @@
 @using System.Globalization
 @model RelatEvolucaoViewModel
 
+@if (!Model.Liquidez.Any())
+{
+    <div class="chart-block">
+        <div class="chart-title">Liquidez</div>
+        <div class="empty-chart">Sem dados no período</div>
+    </div>
+    return;
+}
+
+
 @{
     var inv = CultureInfo.InvariantCulture;
     var absMax = (double)Model.Liquidez.Max(x => Math.Abs(x.ValorTotal)) * 1.2d;
@@ -67,24 +77,24 @@
 
         <!-- área positiva -->
         <polygon fill="var(--pulse-green)"
-                 opacity="0.20"
-                 points="@string.Join(" ", areaPos)" />
+                    opacity="0.20"
+                    points="@string.Join(" ", areaPos)" />
 
         <!-- área negativa -->
         <polygon fill="var(--pulse-red)"
-                 opacity="0.20"
-                 points="@string.Join(" ", areaNeg)" />
+                    opacity="0.20"
+                    points="@string.Join(" ", areaNeg)" />
 
         <!-- linha -->
         <polyline class="line" fill="none"
-                  stroke="var(--line-liquidez-pos)"
-                  points="@string.Join(" ",
-                                        Model.Liquidez.Select((r, i) =>
-                                            $"{(i * stepX).ToString(inv)},{Y((double)r.ValorTotal).ToString(inv)}"
-                                        ))" />
+                    stroke="var(--line-liquidez-pos)"
+                    points="@string.Join(" ",
+                                                            Model.Liquidez.Select((r, i) =>
+                                                                $"{(i * stepX).ToString(inv)},{Y((double)r.ValorTotal).ToString(inv)}"
+                                                            ))" />
 
-        <!-- pontos -->
-        @for (int i = 0; i < Model.Liquidez.Count; i++)
+    <!-- pontos -->
+    @for (int i = 0; i < Model.Liquidez.Count; i++)
         {
             var v = (double)Model.Liquidez[i].ValorTotal;
             var x = i * stepX;
@@ -106,3 +116,4 @@
         }
     </div>
 </div>
+

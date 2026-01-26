@@ -77,7 +77,7 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
 
     public async Task<LGMResult<RelatEvolucaoViewModel>> GetSumarioPeriodoAsync(DateTime dataIni, DateTime dataFim)
     {
-        List<SumarioPeriodo> sumario = await _movtoRepository.GetSumarioPeriodo(dataIni, dataFim);
+        List<SumarioPeriodo> sumario = await _movtoRepository.GetSumarioPeriodo(dataIni, dataFim); 
         
         RelatEvolucaoViewModel viewModel = new();
         foreach (var item in sumario)
@@ -88,8 +88,8 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
             viewModel.Liquidez.Add(new EvolucaoSumary() { Year = item.Ano, Month = item.Mes, MesReferencia = mesRef, ValorTotal = (item.TotalReceitas - item.TotalDespesas) });
         }
 
-        var maxRec = viewModel.Receitas.Max(x => x.ValorTotal) * 1.2m;
-        var maxDesp = viewModel.Despesas.Max(x => x.ValorTotal) * 1.2m;
+        var maxRec = viewModel.Receitas.Any() ? viewModel.Receitas.Max(x => x.ValorTotal) * 1.2m : 1m;
+        var maxDesp = viewModel.Receitas.Any() ? viewModel.Despesas.Max(x => x.ValorTotal) * 1.2m : 1m;
         viewModel.ValMaxRecDesp = Math.Max(maxRec, maxDesp);
 
         return LGMResult.Ok(viewModel);

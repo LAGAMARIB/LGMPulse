@@ -80,6 +80,11 @@
                 color: var(--main-header-title);
             }
 
+        .dropdown-header {
+            border-bottom: 1px solid var(--add-text);
+            margin-bottom: 4px;
+        }
+
         .user-menu {
             position: absolute;
             top: 4px;
@@ -285,6 +290,42 @@
 
         .lgm-show {
             display: block !important;
+        }
+
+        .lgm-modal-icon {
+            font-size: 2.6rem;
+            vertical-align: middle;
+            margin-right: 0.6rem;
+        }
+
+        /* INFO */
+        .modal-info .lgm-modal-header {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        /* ALERTA */
+        .modal-alertar .lgm-modal-header {
+            background: #f59f00;
+            color: #212529;
+        }
+
+        /* ERRO */
+        .modal-erro .lgm-modal-header {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* CONFIRMAÇÃO */
+        .modal-confirmar .lgm-modal-header {
+            background: #198754;
+            color: #fff;
+        }
+
+        /* EXCLUSÃO */
+        .modal-excluir .lgm-modal-header {
+            background: #842029;
+            color: #fff;
         }
 
     </style>
@@ -648,7 +689,7 @@
                         <div class="lgm-dropdown-menu">
                             <div class="dropdown-header">@ViewBag.Session.User.UserName</div>
                             <a id="alterar-senha" href="/Home/AlterarSenha"><i class="fas fa-key"></i> Alterar senha</a>
-                            <a id="toggle-theme" href="javascript:void(0);" data-no-loading><i class="fas fa-moon"></i> Mudar tema</a>
+                            @* <a id="toggle-theme" href="javascript:void(0);" data-no-loading><i class="fas fa-moon"></i> Mudar tema</a> *@
                             <a href="@Url.Action("Logout", "Home")"><i class="fas fa-door-open"></i> Sair</a>
                         </div>
                     </div>
@@ -738,12 +779,16 @@
             const content = `<div style="padding:8px 4px;font-size:0.98rem;">${mensagem}</div>`;
 
             showFormModal({
-                titulo: `<i class="${icon}"></i> ${titulo}`,
+                titulo: `<i class="${icon} lgm-modal-icon"></i> ${titulo}`,
                 bodyHtml: content,
                 onSubmit: function () {
                     if (typeof onConfirm === "function") onConfirm();
                 },
-                options: { backdropClose: false } // não fecha clicando fora
+                options: { 
+                    backdropClose: false,  // não fecha clicando fora
+                    showCancel: (tipo === "excluir" || tipo === "confirmar"),
+                    tipo: tipo
+                }
             });
         }
 
@@ -766,8 +811,28 @@
           let allowBackdropClose = false;
 
           function showModal({ titulo = '', bodyHtml = '', onSubmit = null, options = {} } = {}) {
+            // limpa classes anteriores
+            $modal.classList.remove(
+                'modal-info',
+                'modal-alerta',
+                'modal-erro',
+                'modal-confirmar',
+                'modal-excluir'
+            );
+            // aplica classe do tipo atual
+            if (options.tipo) {
+                $modal.classList.add(`modal-${options.tipo}`);
+            }
+
             currentOnSubmit = onSubmit;
             allowBackdropClose = !!options.backdropClose; // default false -> static
+
+            // CONTROLE DO BOTÃO CANCELAR
+            if (options.showCancel === false) {
+                $btnCancel.style.display = 'none';
+            } else {
+                $btnCancel.style.display = '';
+            }
 
             // set title (accept HTML)
             if (typeof titulo === 'string') $title.innerHTML = titulo;
