@@ -53,7 +53,7 @@ namespace LGMPulse.WebApp.Controllers
             decimal liquidezAtual = viewModel.TotalReceitas - viewModel.TotalDespesas;
             if (liquidezAnterior == 0)
             {
-                viewModel.PercDiferenca = liquidezAtual == 0 ? 0 : 100;
+                viewModel.PercDiferenca = liquidezAtual == 0 ? 0 : liquidezAtual < 0 ? -100 : 100;
             }
             else
             {
