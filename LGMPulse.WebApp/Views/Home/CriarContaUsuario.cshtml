@@ -121,9 +121,9 @@
                 alert(res.Message || "Ocorreu um erro ao criar a conta.");
              }
            })
-           .fail(function (xhr) {
-             alert("Erro de comunicação: " + (xhr.responseText || xhr.statusText));
-           });
+            .fail(function(xhr) {
+                ExibeErro(xhr);
+            });
          });
 
 

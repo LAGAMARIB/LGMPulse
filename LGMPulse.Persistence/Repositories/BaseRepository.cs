@@ -1,4 +1,5 @@
-﻿using LGMDAL;
+﻿using Google.Protobuf.WellKnownTypes;
+using LGMDAL;
 using LGMDAL.Interfaces;
 using LGMDAL.MySQL;
 using LGMDomains.Common;
@@ -61,6 +62,18 @@ internal abstract class BaseRepository<TDomain, TEntity> : IBaseRepository<TDoma
         }
     }
 
+    public virtual async Task<TDomain?> GetFirstAsync(TDomain objSelec,
+                                                      string? pSort = null,
+                                                      List<string>? fields = null)
+    {
+        TEntity startEntity = LGMMapper.MapToNewEntity<TEntity>(objSelec);
+        using (var ctx = NewDBContext())
+        {
+            var entity = await ctx.GetFirstAsync(startEntity, pSort, fields);
+            return entity?.MapTo<TDomain>();
+        }
+    }
+
     public virtual async Task<TDomain?> GetFirstInRangeAsync(TDomain objSelecIni,
                                                       TDomain? objSelecFim,
                                                       string? pSort = null,
@@ -78,15 +91,15 @@ internal abstract class BaseRepository<TDomain, TEntity> : IBaseRepository<TDoma
         }
     }
 
-    public virtual async Task<TDomain?> GetFirstAsync(TDomain objSelec,
-                                                      string? pSort = null,
-                                                      List<string>? fields = null)
+    public virtual async Task<bool> ExistsAsync(TDomain objSelecIni, TDomain? objSelecFim = null)
     {
-        TEntity startEntity = LGMMapper.MapToNewEntity<TEntity>(objSelec);
+        TDomain result = new();
+        TEntity startEntity = LGMMapper.MapToNewEntity<TEntity>(objSelecIni);
+        TEntity? endEntity = objSelecFim is null ? null : LGMMapper.MapToNewEntity<TEntity>(objSelecFim);
+
         using (var ctx = NewDBContext())
         {
-            var entity = await ctx.GetFirstAsync(startEntity, pSort, fields);
-            return entity?.MapTo<TDomain>();
+            return await ctx.AnyAsync<TEntity>(startEntity, endEntity);
         }
     }
 
@@ -227,6 +240,18 @@ internal abstract class BaseRepository<TDomain, TEntity> : IBaseRepository<TDoma
         LGMMapper.MapToUpdateEntity(domain, entity);
         await ctx.UpdateAsync(entity, changedFields);
         return domain.ID;
+    }
+
+    public virtual async Task<bool> ExistsContextualAsync(TransactionContext trctx, TDomain objSelecIni, TDomain? objSelecFim = null)
+    {
+        if (objSelecIni == null) throw new ArgumentNullException($"Objeto {typeof(TDomain).Name} vazio");
+        var ctx = trctx.DBContext;
+
+        TDomain result = new();
+        TEntity startEntity = LGMMapper.MapToNewEntity<TEntity>(objSelecIni);
+        TEntity? endEntity = objSelecFim is null ? null : LGMMapper.MapToNewEntity<TEntity>(objSelecFim);
+
+        return await ctx.AnyAsync<TEntity>(startEntity, endEntity);
     }
 
     #endregion

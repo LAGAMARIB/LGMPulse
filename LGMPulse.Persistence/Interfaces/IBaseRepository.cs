@@ -28,6 +28,8 @@ public interface IBaseRepository<TDomain> where TDomain : BaseDomain, new()
     Task<TDomain?> GetFirstAsync(TDomain objSelecIni,
                                  string? pSort = null,
                                  List<string>? fields = null);
+
+    Task<bool> ExistsAsync(TDomain objSelecIni, TDomain? objSelecFim = null);
     #endregion
 
     #region Contextual
@@ -57,6 +59,8 @@ public interface IBaseRepository<TDomain> where TDomain : BaseDomain, new()
     Task DeleteContextualAsync(TransactionContext trctx, TDomain domain);
 
     Task<int?> UpdateContextualAsync(TransactionContext trctx, TDomain domain, List<string>? changedFields = null);
+
+    Task<bool> ExistsContextualAsync(TransactionContext trctx, TDomain objSelecIni, TDomain? objSelecFim = null);
     #endregion
 
     #region Transactions

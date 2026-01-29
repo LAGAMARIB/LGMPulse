@@ -71,6 +71,32 @@
             margin-top: 4px;
         }
 
+    /* cadastro de grupos */
+    #btnCadastroGrupos {
+        position: absolute;
+        bottom: 85px;
+        right: 15px;
+        width: 53px;
+        height: 53px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.20);
+        backdrop-filter: blur(2px);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.6rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        z-index: 35;
+    }
+
+        #btnCadastroGrupos:active {
+            transform: scale(0.92);
+            background: #e2e2e2;
+        }
+
     /* Melhorar o toque no mobile */
     @@media (hover: none) {
         .category-item:active {
@@ -98,6 +124,8 @@
     }
 </div>
 
+<button id="btnCadastroGrupos"><i class="fas fa-gear"></i></button>
+
 <script>
     $(document).ready(function () {
         $(".category-item").on("click", function () {
@@ -107,29 +135,11 @@
                 IDGrupo: $(this).data('grupo'),
                 DescGrupo: $(this).find("span").text()
             });
+        });
 
-            // window.parent.pushOverlay(`/${urlBase}/DigitarValor`);
-
-            // const idGrupo = $(this).data('grupo');
-            // const descGrupo = $(this).find("span").html();
-            // const dataLancto = "@Model.Year" + "-" + "@Model.Month" + "-" + "@Model.Day";
-            // const RECEITA = 0;
-            // const URL = `/${urlBase}/DigitarValor/${RECEITA}/${idGrupo}/${descGrupo}/${dataLancto}`;
-            // $(window.parent.document).find("#overlayFrame").each(function () {
-            //     $(this)
-            //         .attr("src", URL)
-            //         .show();
-            // });
-
-            // // mostrar o botão voltar
-            // $(window.parent.document)
-            //     .find("#backOverlayButton")
-            //     .show();
-
-            // // esconder tela inicial
-            // $(window.parent.document)
-            //     .find("#overlayHome")
-            //     .hide();
+        $('#btnCadastroGrupos').on('click', function (e) {
+            e.preventDefault();
+            window.location.href = "/grupos";
         });
     });
 

@@ -148,8 +148,8 @@
                         alert(res.Message || "Ocorreu um erro ao alterar a senha.");
                     }
                 })
-                .fail(function (xhr) {
-                    alert("Erro de comunicação: " + (xhr.responseText || xhr.statusText));
+                .fail(function(xhr) {
+                    ExibeErro(xhr);
                 });
 
             });

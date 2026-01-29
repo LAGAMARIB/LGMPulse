@@ -91,7 +91,7 @@ public class AgendaController : LGMController
 
     private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(DateTime dataLancto)
     {
-        var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
+        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
         var hoje = DateTimeHelper.Now();
         NovoLancamentoModel model = new()
         {
@@ -114,7 +114,7 @@ public class AgendaController : LGMController
 
     private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(DateTime dataLancto)
     {
-        var lista = await _grupoService.GetListAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
+        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
         DateTime hoje = DateTimeHelper.Now();
         NovoLancamentoModel model = new()
         {

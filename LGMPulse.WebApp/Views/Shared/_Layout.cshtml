@@ -803,6 +803,21 @@
 
     <!-- SCRIPTS -->
     <script>
+        function ExibeErro(xhr) {
+            let msg = 'Erro inesperado.';
+
+            if (xhr.responseJSON?.Message) {
+                msg = xhr.responseJSON.Message;
+            } else if (xhr.responseText) {
+                try {
+                    const obj = JSON.parse(xhr.responseText);
+                    if (obj.Message) msg = obj.Message;
+                } catch { }
+            }
+
+            alert(msg);
+        }
+
         // Ícones do rodapé
         function DisableIcon(id) {
             $(".mainFooter a").removeClass("disabled");

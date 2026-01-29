@@ -1,19 +1,12 @@
-﻿@model AgendaViewModel
+﻿@model List<Grupo>
 @using System.Text.Json
 @using System.Globalization
 @using LGMDomains.Common.Helpers
+@using LGMPulse.Domain.Domains
 @using LGMPulse.Domain.Enuns
 @using LGMPulse.WebApp.Models
 @{
-    Layout = "_overview";
-    ViewBag.Title = ViewBag.Title ?? "Agendamento";
-    ViewBag.IsAgenda = true;
-    ViewBag.DataLancto = Model.Date;
-    decimal? valorTotalDespesas = 0;
-    decimal? valorTotalReceitas = 0;
-    string MesReferencia = Model.IsOnlyOneDay ?
-                            Model.Date.ToShortDateString() :
-                            DateTimeHelper.MesReferencia(Model.Year, Model.Month);
+    ViewBag.Title = ViewBag.Title ?? "Grupos Receitas/Despesas";
 }
 
 @section style {
@@ -224,57 +217,6 @@
             color: var(--pulse-red);
         }
 
-        /* baixar */
-        .row-toolbar .btn-payoff {
-            color: var(--pulse-green);
-        }
-
-        .divSumary {
-            width: 100%;
-            max-width: 360px;
-            margin: 14px auto;
-            background: var(--background-light);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-soft);
-            padding: var(--space-2);
-        }
-
-        .itemTotal {
-            display: grid;
-            grid-template-columns: 50px 1fr auto;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-bottom: 1px dashed var(--background-border);
-            margin-bottom: 6px;
-        }
-
-            .itemTotal:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-            }
-
-            .itemTotal i {
-                font-size: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .itemTotal span {
-                font-size: 1.05rem;
-            }
-
-                .itemTotal span:nth-child(2) {
-                    font-weight: bold;
-                }
-
-                .itemTotal span:last-child {
-                    font-size: 1.15rem;
-                    font-weight: bold;
-                    text-align: right;
-                }
-
         .valReceita {
             color: var(--cor-receita);
         }
@@ -293,11 +235,11 @@
 
 <div id="ExtratoContainer">
     <div id="ExtratoHeader">
-        <strong>@string.Format("{0} - {1}", "AGENDAMENTO", MesReferencia)</strong>
+        <strong>GRUPOS</strong>
         <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
     </div>
     <div id="ExtratoItems">
-        @if (Model.Agendas.Count == 0)
+        @if (Model.Count == 0)
         {
             <div class="empty-message">
                 <i class="fas fa-box-open"></i>
@@ -306,83 +248,42 @@
         }
         else
         {
-            @foreach (var agenda in Model.Agendas)
+            @foreach (var grupo in Model)
             {
-                var descMovto = (string.IsNullOrEmpty(agenda.Descricao) ? agenda.NomeGrupo : agenda.Descricao) +
-                                (agenda.QtdParcelas > 1 ?
-                                " (" + agenda.Parcela + "/" + agenda.QtdParcelas + ")" : "");
-                var classTipo = (agenda.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
-                if (agenda.TipoMovto == TipoMovtoEnum.Despesa)
-                    valorTotalDespesas += agenda.ValorParcela;
-                else
-                    valorTotalReceitas += agenda.ValorParcela;
+                var classTipo = (grupo.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
 
                 <div class="row-movto @classTipo">
                     <div class="row-content">
                         <div class="col-1">
-                            <img src="@agenda.ImagePathGrupo" alt="@agenda.NomeGrupo" />
+                            <img src="@grupo.ImagePath" alt="@grupo.Descricao" />
                         </div>
                         <div class="col-2">
-                            <span>@agenda.DataVencto!.Value.ToShortDateString()</span>
-                            <span><b>@descMovto</b></span>
+                            <span><b>@grupo.Descricao</b></span>
                         </div>
                         <div class="col-3">
-                            <span>@string.Format("{0:C2}", agenda.ValorParcela)</span>
+                            <span>@grupo.TipoMovto</span>
                         </div>
                     </div>
 
                     <div class="row-toolbar">
-                        <i class="fas fa-keyboard btn-edit" 
-                            data-movto="@agenda.ID" 
-                            title="Editar"></i>
-                        <i class="fas fa-check-double btn-payoff"
-                           data-movto="@agenda.ID"
-                           title="Baixar"></i>
+                        <i class="fas fa-keyboard btn-edit"
+                           data-id="@grupo.ID"
+                           title="Editar"></i>
                         <i class="fas fa-trash btn-delete"
-                           data-movto="@agenda.ID" 
-                            data-numparcs = "@agenda.QtdParcelas"
-                            title="Excluir"></i>
+                           data-id="@grupo.ID"
+                           data-descricao="@grupo.Descricao"
+                           title="Excluir"></i>
                     </div>
                 </div>
             }
         }
     </div>
-    <div class="divSumary">
-        <div class="itemTotal valReceita">
-            <i class="fas fa-money-bill-alt"></i>
-            <span>Receitas</span>
-            <span>@(string.Format("{0:C2}", valorTotalReceitas))</span>
-        </div>
-        <div class="itemTotal valDespesa">
-            <i class="fas fa-money-bill-alt"></i>
-            <span>Despesas</span>
-            <span>@(string.Format("{0:C2}", valorTotalDespesas))</span>
-        </div>
-    </div>
 </div>
 
 @section script {
     <script>
-        const year = Number('@Model.Year');
-        const month = Number('@Model.Month');
-        const day = Number('@Model.Day');
-        const isOnlyOneDay = @Model.IsOnlyOneDay.ToString().ToLower();
-
         function ExcluirRegistro(id) {
-            $.post(`/agenda/delete/${id}`, null, function(result) {
-                if (result.IsSuccess) {
-                    window.location.reload();
-                } else {
-                    alert(result.Message);
-                }
-            })
-            .fail(function(xhr) {
-                ExibeErro(xhr);
-            });
-        }
-
-        function BaixarAgendamento(id) {
-            $.post(`/agenda/payoff/${id}`, null, function(result) {
+            $.post(`/grupo/delete/${id}`, null, function(result) {
                 if (result.IsSuccess) {
                     window.location.reload();
                 } else {
@@ -396,7 +297,11 @@
 
         $(document).ready(function () {
             $('#btnFecharForm').on('click', function () {
-                window.location.href = `/agenda/${year}/${month}`;
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = `/Home`;
+                }
             });
 
             $(".row-movto").on("click", function (e) {
@@ -413,20 +318,19 @@
                 $current.toggleClass("expanded");
             });
 
-            //editar agenda
+            //editar 
             $('.btn-edit').on("click", function (e) {
-                const IDMovto = $(this).data('movto');
-                editOverlay(IDMovto);
+                const id = $(this).data('id');
+                const url = `/grupo/edit/${id}`;
+                window.location.href = url;
             });
 
-            //deletar agenda
+            //deletar 
             $('.btn-delete').on("click", function (e) {
-                const id = $(this).data('movto');
-                const qtdParcs = parseInt($(this).data('numparcs'), 10) || 1;
+                const id = $(this).data('id');
+                const nome = $(this).data('descricao');
 
-                let mens = 'Tem certeza que deseja remover o agendamento?'
-                if (qtdParcs > 1)
-                    mens += ' Todas as parcelas seguintes pendentes também serão removidas.'
+                let mens = `Tem certeza que deseja remover o grupo ${nome}?`;
                 showModalDialog({
                     titulo: 'Excluir',
                     mensagem: mens,
@@ -437,25 +341,6 @@
                 });
             });
 
-            //baixar agenda
-            $('.btn-payoff').on("click", function (e) {
-                const id = $(this).data('movto');
-
-                let mens = 'Confirma lançar o movimento agendado?'
-                showModalDialog({
-                    titulo: 'Executar baixa',
-                    mensagem: mens,
-                    tipo: 'confirmar', //excluir, info, confirmar, alertar
-                    onConfirm: () => {
-                        BaixarAgendamento(id);
-                    }
-                });
-            });
-
-            if (!isOnlyOneDay) {
-                 $('#addButton').hide();
-            }
-            DisableIcon(2);
         });
     </script>
 }

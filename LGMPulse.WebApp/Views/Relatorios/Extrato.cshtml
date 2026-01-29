@@ -268,8 +268,8 @@
                     alert(result.Message);
                 }
             })
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                alert('Erro ao tentar remover o registro: ' + errorThrown);
+            .fail(function(xhr) {
+                ExibeErro(xhr);
             });
         }
 
