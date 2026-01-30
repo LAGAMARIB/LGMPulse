@@ -28,6 +28,18 @@ public class GrupoController : LGMController
         return await _grupoService.GetListAsync(null, null, nameof(Grupo.Descricao));
     }
 
+    [HttpGet("grupo/create")]
+    public async Task<IActionResult> CreateGrupo()
+    {
+        return await ValidateSessionAsync(() =>
+            ExecuteViewAsync(() => newGrupo(), "EditGrupo")
+        );
+    }
+
+    private Task<LGMResult<Grupo>> newGrupo() {
+        return Task.FromResult( LGMResult.Ok(new Grupo()) );
+    }
+
     [HttpGet("grupo/edit/{id}")]
     public async Task<IActionResult> EditGrupo(int id)
     {
@@ -44,7 +56,7 @@ public class GrupoController : LGMController
     }
 
     [HttpPost("grupo/save")]
-    public async Task<JsonResult> Save([FromBody] GrupoModel grupoModel)
+    public async Task<JsonResult> Save(GrupoModel grupoModel)
     {
         Grupo grupo = new()
         {

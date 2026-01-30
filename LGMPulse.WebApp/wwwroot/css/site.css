@@ -129,6 +129,8 @@
     /* Cores funcionais */
     --cor-receita: var(--pulse-green);
     --cor-despesa: var(--pulse-red);
+    --back-btn-receita: rgba(46, 204, 113, 0.15);
+    --back-btn-despesa: rgba(231, 76, 60, 0.15);
     /* Estados de parcelas */
     --bill-open-color: var(--color-amber);
     --bill-late-color: var(--cor-despesa);
