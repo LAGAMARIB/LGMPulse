@@ -28,6 +28,7 @@
         /* ===== LAYOUT BASE ===== */
 
         #HealthSnapshotPanel {
+            position: relative;
             display: flex;
             flex-direction: column;
             width: 100%;
@@ -206,6 +207,47 @@
             font-weight: 500;
         }
 
+        #btnShowHideValues {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            background: var(--branco-transparente);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 6px 14px var(--preto-sombra);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.75;
+            transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+        }
+
+            #btnShowHideValues:hover {
+                opacity: 1;
+            }
+
+            #btnShowHideValues:active {
+                transform: scale(0.9);
+                box-shadow: 0 3px 8px var(--preto-sombra);
+            }
+
+            #btnShowHideValues i {
+                font-size: 1.1rem;
+            }
+
+        .values-hidden .sphere span {
+            filter: blur(8px);
+            user-select: none;
+        }
+
+        .values-hidden .sphere label {
+            opacity: 0.75;
+        }
+
         @@media screen and (min-width: 800px) {
             .area-esferas {
                 flex-direction: row;
@@ -225,6 +267,8 @@
 }
 
 <div id="HealthSnapshotPanel">
+    <button id="btnShowHideValues"><i class="fas fa-eye-slash"></i></button>
+
     <div class="area-esferas">
         <div id="incomeCircle" class="sphere">
             <div class="sphereText">
@@ -270,90 +314,95 @@
 
 @section script {
     <script>
-        let currentYear = @Model.Year;
-        let currentMonth = @Model.Month; 
+        $(function () {
+            const STORAGE_KEY = 'pulse.values.visible';
 
-        function navigateMonth(offset) {
-            currentMonth += offset;
+            let currentYear = @Model.Year;
+            let currentMonth = @Model.Month; 
 
-            if (currentMonth === 0) {
-                currentMonth = 12;
-                currentYear--;
+            function RefreshSpheres() {
+                const income = parseFloat("@Model.TotalReceitas".replace(",", "."));
+                const expenses = parseFloat("@Model.TotalDespesas".replace(",", "."));
+
+                const $income = $("#incomeCircle");
+                const $expenses = $("#expensesCircle");
+                const $liquid = $("#liquidCircle");
+
+
+                $income.removeClass("big small");
+                $expenses.removeClass("big small");
+                $liquid.removeClass("blue yellow");
+
+                if (income > expenses) {
+                    $income.addClass("big");
+                    $expenses.addClass("small");
+                } else if (expenses > income) {
+                    $expenses.addClass("big");
+                    $income.addClass("small");
+                } else {
+                    $income.addClass("small");
+                    $expenses.addClass("small");
+                }
+
+                const liquidValue = income - expenses;
+                if (liquidValue >= 0) {
+                    $liquid.addClass("blue");
+                } else {
+                    $liquid.addClass("yellow");
+                }
+
+                moveSpheres();
             }
 
-            if (currentMonth === 13) {
-                currentMonth = 1;
-                currentYear++;
+            function moveSpheres() {
+                const spheres = ["#incomeCircle", "#expensesCircle", "#liquidCircle"];
+
+                spheres.forEach(id => {
+                    const el = $(id);
+
+                    // entre -60px e +60px (mais elegante no desktop)
+                    const randomOffset = Math.floor(Math.random() * 120) - 60;
+
+                    el.css("transform", `translateX(${randomOffset}px) rotate(var(--sphere-tilt, 0deg))`);
+                });
             }
 
-            // versão simples: reload com querystring
-            window.location.href = `/Home/Index?ano=${currentYear}&mes=${currentMonth}`;
-        }
+            function navigateMonth(offset) {
+                currentMonth += offset;
 
-        function RefreshSpheres() {
-            const income = parseFloat("@Model.TotalReceitas".replace(",", "."));
-            const expenses = parseFloat("@Model.TotalDespesas".replace(",", "."));
+                if (currentMonth === 0) {
+                    currentMonth = 12;
+                    currentYear--;
+                }
 
-            const $income = $("#incomeCircle");
-            const $expenses = $("#expensesCircle");
-            const $liquid = $("#liquidCircle");
+                if (currentMonth === 13) {
+                    currentMonth = 1;
+                    currentYear++;
+                }
 
-
-            $income.removeClass("big small");
-            $expenses.removeClass("big small");
-            $liquid.removeClass("blue yellow");
-
-            if (income > expenses) {
-                $income.addClass("big");
-                $expenses.addClass("small");
-            } else if (expenses > income) {
-                $expenses.addClass("big");
-                $income.addClass("small");
-            } else {
-                $income.addClass("small");
-                $expenses.addClass("small");
+                window.location.href = `/Home/Index?ano=${currentYear}&mes=${currentMonth}`;
             }
 
-            const liquidValue = income - expenses;
-            if (liquidValue >= 0) {
-                $liquid.addClass("blue");
-            } else {
-                $liquid.addClass("yellow");
+
+            function applyValuesVisibility(isVisible) {
+                const $panel = $('#HealthSnapshotPanel');
+                const $icon  = $('#btnShowHideValues i');
+
+                if (isVisible) {
+                    $panel.removeClass('values-hidden');
+                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    $panel.addClass('values-hidden');
+                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+
+                localStorage.setItem(STORAGE_KEY, isVisible);
             }
 
-            moveSpheres();
-        }
-
-        function moveSpheres() {
-            const spheres = ["#incomeCircle", "#expensesCircle", "#liquidCircle"];
-
-            spheres.forEach(id => {
-                const el = $(id);
-
-                // entre -60px e +60px (mais elegante no desktop)
-                const randomOffset = Math.floor(Math.random() * 120) - 60;
-
-                el.css("transform", `translateX(${randomOffset}px) rotate(var(--sphere-tilt, 0deg))`);
-            });
-        }
-
-        function navigateMonth(offset) {
-            currentMonth += offset;
-
-            if (currentMonth === 0) {
-                currentMonth = 12;
-                currentYear--;
+            function isValuesVisible() {
+                return !$('#HealthSnapshotPanel').hasClass('values-hidden');
             }
 
-            if (currentMonth === 13) {
-                currentMonth = 1;
-                currentYear++;
-            }
-
-            window.location.href = `/Home/Index?ano=${currentYear}&mes=${currentMonth}`;
-        }
-
-        $(document).ready(function () {
             $("#prevMonth").click(() => navigateMonth(-1));
             $("#nextMonth").click(() => navigateMonth(1));
 
@@ -371,6 +420,18 @@
 
             DisableIcon(1);
             RefreshSpheres();
+
+            const stored = localStorage.getItem(STORAGE_KEY);
+
+            // padrão: visível
+            const isVisible = stored === null ? true : stored === 'true';
+
+            applyValuesVisibility(isVisible);
+
+            $('#btnShowHideValues').on('click', function () {
+                applyValuesVisibility(!isValuesVisible());
+            });
+
         });
     </script>
 }

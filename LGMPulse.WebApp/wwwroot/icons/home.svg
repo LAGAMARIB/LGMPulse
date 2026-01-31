@@ -1,4 +1,14 @@
-<svg id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 32 32"><style>.duotone_twee{fill:#555D5E;}
-.duotone_een{fill:#0B1719;}
-.st0{fill:#FFF9F9;}
-.st1{fill:#808080;}</style><g><path class="duotone_een" d="M19 28h-6v-7.5c0-.276.224-.5.5-.5h5c.276.0.5.224.5.5V28zm7.4-16.2C26.18 11.635 26 11.275 26 11V6.5C26 6.225 25.775 6 25.5 6h-2C23.225 6 23 6.225 23 6.5v2.25c0 .275-.18.365-.4.2L16.4 4.3c-.22-.165-.58-.165-.8.0L4.4 12.7C4.18 12.865 4.225 13 4.5 13h23c.275.0.32-.135.1-.3L26.4 11.8z"/><path class="duotone_twee" d="M27.5 14h-23c-.275.0-.5.225-.5.5v13C4 27.775 4.225 28 4.5 28H12v-7.5c0-.827.673-1.5 1.5-1.5h5c.827.0 1.5.673 1.5 1.5V28h7.5c.275.0.5-.225.5-.5v-13C28 14.225 27.775 14 27.5 14z"/></g></svg>
+<svg id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 32 32"><style>.isometric_vijf{fill:#F29227;}
+.isometric_zeven{fill:#FF7344;}
+.isometric_acht{fill:#F05A28;}
+.isometric_negen{fill:#BE1E2D;}
+.isometric_tien{fill:#7BD6C4;}
+.isometric_twaalf{fill:#569080;}
+.st0{fill:#225B49;}
+.st1{fill:#72C0AB;}
+.st2{fill:#F5DF89;}
+.st3{fill:#F2D76C;}
+.st4{fill:#F28103;}
+.st5{fill:#F8F7C5;}
+.st6{fill:#AD9A74;}
+.st7{fill:#7BD6C4;}</style><g><polygon class="isometric_zeven" points="20.042,6.945 12.632,18.191 27,9.724"/><polygon class="isometric_acht" points="27,9.724 12.808,3.038 20.042,6.945"/><polygon class="isometric_negen" points="20.042,6.945 12.708,3 5,13.952 12.632,18.173"/><polygon class="isometric_tien" points="15,16.806 15,28 16.534,27.134 16.534,20.891 20.201,18.774 20.201,25.064 25,22.355 25,10.902"/><path class="isometric_twaalf" d="M15 28l-7-4.24v-8.286l4.632 2.698v.019L15 16.806V28zm8.791-14.301-2.444 1.411v2.805l2.444-1.411V13.699z"/><polygon class="isometric_vijf" points="20.201,25.035 16.534,27.152 16.534,20.891 20.201,18.774"/></g></svg>
