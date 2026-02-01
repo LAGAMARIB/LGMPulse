@@ -3,16 +3,19 @@ using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Domains;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 
 namespace LGMPulse.WebApp.Controllers;
 
 public class GrupoController : LGMController
 {
     private readonly IGrupoService _grupoService;
+    private readonly IWebHostEnvironment _env;
 
-    public GrupoController(IGrupoService grupoService)
+    public GrupoController(IGrupoService grupoService, IWebHostEnvironment env)
     {
         _grupoService = grupoService;
+        _env = env;
     }
 
     [HttpGet("grupos")]
@@ -32,27 +35,59 @@ public class GrupoController : LGMController
     public async Task<IActionResult> CreateGrupo()
     {
         return await ValidateSessionAsync(() =>
-            ExecuteViewAsync(() => newGrupo(), "EditGrupo")
+            ExecuteViewAsync(() => newEditGrupo(), "EditGrupo")
         );
     }
 
-    private Task<LGMResult<Grupo>> newGrupo() {
-        return Task.FromResult( LGMResult.Ok(new Grupo()) );
-    }
 
     [HttpGet("grupo/edit/{id}")]
     public async Task<IActionResult> EditGrupo(int id)
     {
         return await ValidateSessionAsync(() =>
-            ExecuteViewAsync(() => getGrupo(id))
+            ExecuteViewAsync(() => getEditGrupo(id))
         );
     }
 
-    private async Task<LGMResult<Grupo>> getGrupo(int id)
+    private Task<LGMResult<EditGrupoModel>> newEditGrupo()
+    {
+        EditGrupoModel model = new()
+        {
+            Grupo = new()
+        };
+        model.IconsPath = getIconsPaths();
+        model.Grupo.ImagePath = "/icons/plus-misc.svg";
+        return Task.FromResult( LGMResult.Ok(model) );
+    }
+
+    private async Task<LGMResult<EditGrupoModel>> getEditGrupo(int id)
     {
         var result = await _grupoService.GetByIdAsync(id);
-        var grupo = result.Data ?? new();
-        return LGMResult.Ok(grupo);
+        EditGrupoModel model = new()
+        {
+            Grupo = result.Data ?? new()
+        };
+        model.IconsPath = getIconsPaths();
+        return LGMResult.Ok(model);
+    }
+
+    private List<string> getIconsPaths()
+    {
+        var result = new List<string>();
+
+        var iconsFolder = Path.Combine(_env.WebRootPath, "icons");
+
+        if (!Directory.Exists(iconsFolder))
+            return result;
+
+        var files = Directory.GetFiles(iconsFolder, "*.svg");
+
+        foreach (var file in files)
+        {
+            var fileName = Path.GetFileName(file);
+            result.Add($"/icons/{fileName}");
+        }
+
+        return result;
     }
 
     [HttpPost("grupo/save")]

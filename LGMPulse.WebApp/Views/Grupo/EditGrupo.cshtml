@@ -1,6 +1,7 @@
 ﻿@using LGMPulse.Domain.Domains
 @using LGMPulse.Domain.Enuns
-@model Grupo
+@using LGMPulse.WebApp.Models
+@model EditGrupoModel
 
 @section style {
     <style>
@@ -113,21 +114,147 @@
                 transform: scale(0.88) rotate(-6deg);
                 box-shadow: 0 3px 8px var(--preto-sombra);
             }
+
+        /* === MODAL ICONES === */
+        #btnFecharModal {
+            width: 44px;
+            height: 44px;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--pulse-red);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 6px 14px var(--preto-sombra);
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+        }
+
+            #btnFecharModal:active {
+                transform: scale(0.88) rotate(-6deg);
+                box-shadow: 0 3px 8px var(--preto-sombra);
+            }
+
+        #modalIcons {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            background: rgba(0,0,0,0.35);
+        }
+
+            #modalIcons .modal-shell {
+                width: 95vw;
+                height: 95vh;
+                margin: auto;
+                background: #f8f9fb;
+                border-radius: 20px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0,0,0,.35);
+            }
+
+        /* Header */
+        #modal-header {
+            flex: 0 0 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            background: #fff;
+            border-bottom: 1px solid var(--background-border);
+        }
+
+        /* Ícone selecionado */
+        #IconSelected {
+            margin: 20px auto;
+            height: 110px;
+            background-color: var(--branco-gelo);
+            border-radius: 16px;
+            padding: 8px;
+        }
+
+        /* Grid ocupa tudo que sobra */
+        #category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px);
+            gap: 10px;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .category-item {
+            background: #ffffff;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            width: 80px;
+            height: 80px;
+            padding: 10px;
+        }
+
+            .category-item img {
+                width: 48px;
+                height: 48px;
+            }
+
+            .category-item:hover {
+                transform: scale(1.06);
+            }
+    
+        /* Item selecionado */
+        .category-item.selected {
+            background: var(--pulse-green-soft);
+            box-shadow: 0 0 0 3px var(--pulse-green);
+        }
+
+        /* Rodapé */
+        #btnChangeIcon {
+            margin: 16px auto 20px;
+            width: 90%;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        #choiceIcon {
+            width: 90px;
+            height: 90px;
+            margin: auto;
+        }
+            #choiceIcon img {
+                height: 110px;
+                background-color: var(--branco-gelo);
+                border-radius: 16px;
+                padding: 8px;
+            }
+
+        .modal-icon-selected {
+            position: relative;
+            display: flex;
+        }
+
     </style>
 }
 
 <div id="EditHeader">
-    <strong>@(Model.ID == null ? "Novo grupo" : "Editando " + Model.Descricao)</strong>
+    <strong>@(Model.Grupo.ID == null ? "Novo grupo" : "Editando " + Model.Grupo.Descricao)</strong>
     <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
 </div>
 
-
 <form class="form-container" action="/grupo/save">
-    <input type="hidden" name="ID" value="@Model.ID" />
-    <input type="hidden" name="ImagePath" value="@Model.ImagePath" />
+    <input type="hidden" name="ID" value="@Model.Grupo.ID" />
+    <input type="hidden" name="ImagePath" id="ImagePath" value="@Model.Grupo.ImagePath" />
     <div class="form-group">
         <label for="Natureza">Natureza:</label>
-        @if (Model.ID == null)
+        @if (Model.Grupo.ID == null)
         {
             <div class="tipo-movto">
                 <button type="button"
@@ -148,11 +275,11 @@
         else
         {
             <div class="tipo-movto readonly">
-                <div class="tipo-btn @(Model.TipoMovto == TipoMovtoEnum.Receita ? "receita active" : "despesa active") readonly">
-                    @(Model.TipoMovto == TipoMovtoEnum.Receita ? "Receita" : "Despesa")
+                <div class="tipo-btn @(Model.Grupo.TipoMovto == TipoMovtoEnum.Receita ? "receita active" : "despesa active") readonly">
+                    @(Model.Grupo.TipoMovto == TipoMovtoEnum.Receita ? "Receita" : "Despesa")
                 </div>
 
-                <input type="hidden" name="TipoMovto" id="TipoMovto" value="@Model.TipoMovto" />
+                <input type="hidden" name="TipoMovto" id="TipoMovto" value="@Model.Grupo.TipoMovto" />
             </div>
         }
     </div>
@@ -162,16 +289,46 @@
         <input type="text" id="Descricao"
                name="Descricao"
                class="form-input"
-               value="@Model.Descricao"
+               value="@Model.Grupo.Descricao"
                required/>
+    </div>
+
+    <div class="form-group">
+        <input type="hidden" name="ImagePath" id="ImagePath" value="@Model.Grupo.ImagePath" />
+        <a href="#" id="choiceIcon">
+            <img src="@Model.Grupo.ImagePath" />
+        </a>
     </div>
 
     <button type="submit" id="btnGravar">Gravar</button>
 </form>
 
+<div id="modalIcons">
+    <div class="modal-shell">
+        <div id="modal-header">
+            <strong>Escolha a figura</strong>
+            <img class="close-icon" src="/icons/xmark.svg" id="btnFecharModal" />
+        </div>
+        <div class="modal-icon-selected">
+            <img id="IconSelected" src="" alt="Selecione um ícone" />
+        </div>
+        <div id="category-grid">
+            @foreach (var iconPath in Model.IconsPath)
+            {
+                <div class="category-item" data-path="@iconPath">
+                    <img src="@iconPath" alt="@iconPath" />
+                </div>
+            }
+        </div>
+        <button type="button" id="btnChangeIcon">Confirmar</button>
+    </div>
+</div>
+
 @section script {
     <script>
         $(document).ready(function () {
+            let selectedIconPath = null;
+
             $('#btnFecharForm').on('click', function () {
                 if (window.history.length > 1) {
                     window.history.back();
@@ -208,6 +365,45 @@
                 .fail(function (xhr) {
                     ExibeErro(xhr);
                 });
+            });
+
+
+            // abrir modal
+            $('#choiceIcon').on('click', function (e) {
+                e.preventDefault();
+
+                selectedIconPath = $('#ImagePath').val();
+                $('#IconSelected').attr('src', selectedIconPath);
+
+                $('.category-item').removeClass('selected')
+                    .filter(`[data-path="${selectedIconPath}"]`)
+                    .addClass('selected');
+
+                $('#modalIcons').fadeIn(150);
+            });
+
+            // fechar modal
+            $('#btnFecharModal').on('click', function () {
+                $('#modalIcons').fadeOut(150);
+            });
+
+            // escolher ícone
+            $('.category-item').on('click', function () {
+                $('.category-item').removeClass('selected');
+                $(this).addClass('selected');
+
+                selectedIconPath = $(this).data('path');
+                $('#IconSelected').attr('src', selectedIconPath);
+            });
+
+            // confirmar troca
+            $('#btnChangeIcon').on('click', function () {
+                if (!selectedIconPath) return;
+
+                $('#ImagePath').val(selectedIconPath);
+                $('#choiceIcon img').attr('src', selectedIconPath);
+
+                $('#modalIcons').fadeOut(150);
             });
 
         });
