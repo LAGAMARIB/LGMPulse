@@ -21,6 +21,7 @@ public class GrupoController : LGMController
     [HttpGet("grupos")]
     public async Task<IActionResult> Grupos()
     {
+        // TODO:  validar versão Free ou Premium em ValidateSessionAsync
         return await ValidateSessionAsync(() =>
             ExecuteViewAsync(() => getListGrupos())
         );

@@ -38,6 +38,7 @@ public class LancamentoController : LGMController
             DateLancto = dataLancto,
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
             IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
+            IsFreeMode = true  // TODO: Validar versão aqui
         };
         return LGMResult.Ok(model);
     }
@@ -61,6 +62,7 @@ public class LancamentoController : LGMController
             DateLancto = dataLancto,
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
             IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
+            IsFreeMode = true // TODO: Validar versão aqui
         };
         return LGMResult.Ok(model);
     }

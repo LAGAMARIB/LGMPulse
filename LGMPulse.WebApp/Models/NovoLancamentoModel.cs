@@ -13,4 +13,5 @@ public class NovoLancamentoModel
     public string MesReferencia { get; set; }
     public bool IsMesAtual { get; set; }
     public bool IsAgenda { get; set; }
+    public bool IsFreeMode { get; set; }
 }
