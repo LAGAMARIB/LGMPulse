@@ -22,7 +22,7 @@ public class GrupoController : LGMController
     public async Task<IActionResult> Grupos()
     {
         // TODO:  validar versão Free ou Premium em ValidateSessionAsync
-        return await ValidateSessionAsync(() =>
+        return await ValidateSessionPremiumAsync(() =>
             ExecuteViewAsync(() => getListGrupos())
         );
     }
@@ -35,7 +35,7 @@ public class GrupoController : LGMController
     [HttpGet("grupo/create")]
     public async Task<IActionResult> CreateGrupo()
     {
-        return await ValidateSessionAsync(() =>
+        return await ValidateSessionPremiumAsync(() =>
             ExecuteViewAsync(() => newEditGrupo(), "EditGrupo")
         );
     }
@@ -44,7 +44,7 @@ public class GrupoController : LGMController
     [HttpGet("grupo/edit/{id}")]
     public async Task<IActionResult> EditGrupo(int id)
     {
-        return await ValidateSessionAsync(() =>
+        return await ValidateSessionPremiumAsync(() =>
             ExecuteViewAsync(() => getEditGrupo(id))
         );
     }

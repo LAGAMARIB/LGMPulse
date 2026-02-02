@@ -1,5 +1,6 @@
 ﻿using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
+using LGMPulse.AppServices.Helpers;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
@@ -23,13 +24,13 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaReceita(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposReceita(dataLancto), "NovaReceita")
+                ExecuteViewAsync(() => GetGrupos(dataLancto, TipoMovtoEnum.Receita), "NovaReceita")
         );
     }
 
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(DateTime dataLancto)
+    private async Task<LGMResult<NovoLancamentoModel>> GetGrupos(DateTime dataLancto, TipoMovtoEnum tipoMovto)
     {
-        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
+        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = tipoMovto });
         var hoje = DateTimeHelper.Now();
         NovoLancamentoModel model = new()
         {
@@ -37,9 +38,10 @@ public class LancamentoController : LGMController
             Grupos = lista.Data ?? new(),
             DateLancto = dataLancto,
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
-            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
-            IsFreeMode = true  // TODO: Validar versão aqui
+            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month)
         };
+        model.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+
         return LGMResult.Ok(model);
     }
 
@@ -47,24 +49,8 @@ public class LancamentoController : LGMController
     public async Task<IActionResult> NovaDespesa(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposDespesa(dataLancto), "NovaDespesa")
+                ExecuteViewAsync(() => GetGrupos(dataLancto, TipoMovtoEnum.Despesa), "NovaDespesa")
         );
-    }
-
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(DateTime dataLancto)
-    {
-        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
-        DateTime hoje = DateTimeHelper.Now();
-        NovoLancamentoModel model = new()
-        {
-            IsAgenda = false,
-            Grupos = lista.Data ?? new(),
-            DateLancto = dataLancto,
-            MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
-            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
-            IsFreeMode = true // TODO: Validar versão aqui
-        };
-        return LGMResult.Ok(model);
     }
 
     [HttpGet("lancamento/getmovto/{IDMovto}")]

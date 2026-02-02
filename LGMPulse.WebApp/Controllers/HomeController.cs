@@ -114,6 +114,7 @@ namespace LGMPulse.WebApp.Controllers
             localUser.UserLogin = lgmUser.UserLogin;
             localUser.UserName = lgmUser.UserName;
             localUser.Token = lgmUser.Token;
+            localUser.SubscriptLevel = lgmUser.SubscriptLevel;
             LGMSession lgmSession = new LGMSession()
             {
                 User = localUser

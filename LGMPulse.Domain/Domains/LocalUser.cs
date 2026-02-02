@@ -9,4 +9,5 @@ public class LocalUser : BaseDomain
     public string? UserEmail { get; set; }
     public string? DBKey { get; set; }
     public string? Token { get; set; }
+    public int? SubscriptLevel { get; set; }
 }

@@ -6,6 +6,7 @@ using LGMPulse.Connections.Helpers;
 using LGMPulse.Domain.Domains;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI;
 using System.Globalization;
 using System.Text.Json;
 
@@ -13,6 +14,12 @@ namespace LGMPulse.WebApp.Controllers;
 
 public class LGMController : Controller
 {
+    protected enum AccessLevel
+    {
+        AnyAuthenticated,
+        PremiumOnly
+    }
+
     protected const string TEMPDATA_MENSAGEM = "Mensagem";
     protected const string TEMPDATA_AVISO = "Aviso";
     protected const string TEMPDATA_ERRO = "Erro";
@@ -25,11 +32,25 @@ public class LGMController : Controller
     protected WebAPIHelper WebAPIHelper =>
         _webAPIHelper ??= HttpContext.RequestServices.GetRequiredService<WebAPIHelper>();
 
-    protected async Task<IActionResult> ValidateSessionAsync(Func<Task<IActionResult>> action)
+    protected Task<IActionResult> ValidateSessionAsync(
+        Func<Task<IActionResult>> action)
+    {
+        return ValidateSessionInternalAsync(action, AccessLevel.AnyAuthenticated);
+    }
+
+    protected Task<IActionResult> ValidateSessionPremiumAsync(
+        Func<Task<IActionResult>> action)
+    {
+        return ValidateSessionInternalAsync(action, AccessLevel.PremiumOnly);
+    }
+
+    private async Task<IActionResult> ValidateSessionInternalAsync(
+        Func<Task<IActionResult>> action,
+        AccessLevel accessLevel)
     {
         try
         {
-            var valida = await validarSessao();
+            var valida = await validarSessao(accessLevel);
             return valida ?? await action();
         }
         catch (UnauthorizedAccessException)
@@ -40,7 +61,6 @@ public class LGMController : Controller
             if (controller?.Equals("Home", StringComparison.OrdinalIgnoreCase) == true &&
                 callAction?.Equals("Index", StringComparison.OrdinalIgnoreCase) == true)
             {
-                // Já estamos em Home/Index → evita loop
                 return ViewError("Acesso não autorizado.");
             }
 
@@ -118,29 +138,27 @@ public class LGMController : Controller
         }
     }
 
-    private async Task<IActionResult?> validarSessao()
+    private async Task<IActionResult?> validarSessao(
+        AccessLevel accessLevel = AccessLevel.AnyAuthenticated)
     {
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
         LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie();
         
         if (lgmSession == null)
         {
-            var lgmRefresh = SessionHelper.GetLGMRefresh_Cookie();
-            if (lgmRefresh == null)
+            if (!await TryRefreshSession())
                 return Redirect("/Home/Login");
 
-            var refreshResult = await PostApiRefresh(lgmRefresh);
-            if (!refreshResult)
-                return Redirect("/Home/Login");
+            if (accessLevel == AccessLevel.PremiumOnly && IsFreeLevel())
+                throw new UnauthorizedAccessException();
 
-            if (!GenerateCookies(lgmRefresh))
-                return Redirect("/Home/Login");
-
-            //ViewBag.Session = lgmRefresh;
-            //return null;
             var currentPath = HttpContext.Request.Path + HttpContext.Request.QueryString;
             return Redirect(currentPath);
         }
+
+        if (accessLevel == AccessLevel.PremiumOnly &&
+            lgmSession.User?.SubscriptLevel == 0)
+               throw new UnauthorizedAccessException();
 
         if (lgmSession.ExpireDateTime < DateTimeHelper.Now() ||
             lgmSession.User == null ||
@@ -148,9 +166,26 @@ public class LGMController : Controller
             return Redirect("/Home/Login");
 
         ViewBag.Session = lgmSession;
-        lgmSession = SessionHelper.GetLGMSession_Cookie();
-
         return null;
+    }
+
+    private async Task<bool> TryRefreshSession()
+    {
+        var refresh = SessionHelper.GetLGMRefresh_Cookie();
+        if (refresh == null)
+            return false;
+
+        if (!await PostApiRefresh(refresh))
+            return false;
+
+        return GenerateCookies(refresh);
+    }
+
+
+    private bool IsFreeLevel()
+    {
+        LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie();
+        return (lgmSession == null || lgmSession.User.SubscriptLevel == 0);
     }
 
     protected async Task PostApiLogout(LGMSession lgmSession)
@@ -225,8 +260,6 @@ public class LGMController : Controller
         return true;
     }
 
-
-
     // Tratar mensagens de erros e avisos
     protected void GravarMensagem(string texto)
     {
@@ -254,8 +287,6 @@ public class LGMController : Controller
         ViewBag.Mensagem = message;
         return View("ViewError");
     }
-
-
 
 }
 

@@ -65,28 +65,28 @@
         }
 
         #div-login {
-            position: relative;
-            display: block;
-            width: 400px;
-            height: auto;
+            display: flex;
+            flex-direction: column;
             min-height: 450px;
             float: right;
+
+            width: 400px;
             margin-right: 200px;
             padding: 20px;
+            box-sizing: border-box;
             border-radius: 10px;
             background-color: var(--login-bg);
             box-shadow: var(--login-shadow);
         }
 
         #frm-footer {
-            position: relative;
-            bottom: 1em;
             width: 100%;
             border-top: 1px solid var(--input-border-color);
             padding: 15px 0;
-            margin: 50px 0;
+            margin-top: 24px;
             text-align: center;
         }
+
 
         .frm-field label {
             font-weight: bold;
@@ -109,12 +109,8 @@
         }
 
         .criar-conta-bottom {
-            position: absolute;
-            bottom: 15px; /* distância do fundo da div */
-            left: 50%;
-            transform: translateX(-50%); /* centraliza horizontalmente */
             text-align: center;
-            width: 100%; /* garante alinhamento central */
+            margin-top: 8px;
         }
 
         .criar-conta-link {
@@ -131,6 +127,10 @@
                 color: var(--color-text-default);
             }
 
+        .login-content {
+            display: flex;
+            flex-direction: column;
+        }
 
         @@media screen and (max-width: 1300px) {
             #div-logo {
@@ -138,9 +138,7 @@
             }
 
             #div-login {
-                float: none;
                 margin: auto;
-                height: 500px;
             }
 
             #div-logo-min {
@@ -176,17 +174,21 @@
                 <img src="/img/pulse.svg" alt="login" />
             </div>
             <br />
-            @if (TempData["Mensagem"] != null && TempData["Mensagem"] != String.Empty)
-            {
-                <div class="alert alert-danger">
-                    <small>@TempData["Mensagem"]</small>
+            <div class="login-content">
+                @if (TempData["Mensagem"] != null && TempData["Mensagem"] != String.Empty)
+                {
+                    <div class="alert alert-danger">
+                        <small>@TempData["Mensagem"]</small>
+                    </div>
+                }
+    
+                @RenderBody()
+
+                <div class="criar-conta-bottom">
+                    <a href="/Home/CriarContaUsuario" class="criar-conta-link">
+                        <i class="fas fa-user-plus"></i> Ainda não tem conta? Cadastre-se
+                    </a>
                 </div>
-            }
-            @RenderBody()
-            <div class="criar-conta-bottom">
-                <a href="/Home/CriarContaUsuario" class="criar-conta-link">
-                    <i class="fas fa-user-plus"></i> Ainda não tem conta? Cadastre-se
-                </a>
             </div>
         </div>
     </div>
