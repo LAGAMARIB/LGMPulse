@@ -8,4 +8,5 @@ public class ExtratoViewModel
     public int Month { get; set; }
     public List<Movto> Movtos { get; set; }
     public string MovtoReferencia { get; set; } = "";
+
 }

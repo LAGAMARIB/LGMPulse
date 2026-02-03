@@ -1,4 +1,5 @@
 ﻿using LGMDomains.Common;
+using LGMDomains.Common.Exceptions;
 using LGMDomains.Common.Helpers;
 using LGMPulse.AppServices.Helpers;
 using LGMPulse.AppServices.Interfaces;
@@ -104,13 +105,13 @@ public class AgendaController : LGMController
     public async Task<IActionResult> NovaReceita(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposReceita(dataLancto), "NovaReceita")
+                ExecuteViewAsync(() => GetGrupos(dataLancto, TipoMovtoEnum.Receita), "NovaReceita")
         );
     }
 
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposReceita(DateTime dataLancto)
+    private async Task<LGMResult<NovoLancamentoModel>> GetGrupos(DateTime dataLancto, TipoMovtoEnum tipoMovto)
     {
-        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Receita });
+        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = tipoMovto });
         var hoje = DateTimeHelper.Now();
         NovoLancamentoModel model = new()
         {
@@ -120,6 +121,8 @@ public class AgendaController : LGMController
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
             IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
         };
+        model.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+
         return LGMResult.Ok(model);
     }
 
@@ -127,23 +130,8 @@ public class AgendaController : LGMController
     public async Task<IActionResult> NovaDespesa(DateTime dataLancto)
     {
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => GetGruposDespesa(dataLancto), "NovaDespesa")
+                ExecuteViewAsync(() => GetGrupos(dataLancto, TipoMovtoEnum.Despesa), "NovaDespesa")
         );
-    }
-
-    private async Task<LGMResult<NovoLancamentoModel>> GetGruposDespesa(DateTime dataLancto)
-    {
-        var lista = await _grupoService.GetListOrderedAsync(new Grupo { TipoMovto = TipoMovtoEnum.Despesa });
-        DateTime hoje = DateTimeHelper.Now();
-        NovoLancamentoModel model = new()
-        {
-            IsAgenda = true,
-            Grupos = lista.Data ?? new(),
-            DateLancto = dataLancto,
-            MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
-            IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
-        };
-        return LGMResult.Ok(model);
     }
 
     [HttpGet("agenda/getmovto/{IDMovto}")]
@@ -185,7 +173,14 @@ public class AgendaController : LGMController
             Recorrente = model.Recorrente,
             IDRecorrencia = model.IDRecorrencia
         };
+        
         ILGMResult result;
+        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        if (isFreeMode && model.QtdParcelas > 2)
+        {
+            throw new RuleException("Transação não permitida");
+        }
+
         if (model.IsNew)
             result = await _agendaService.CreateAsync(agenda);
         else

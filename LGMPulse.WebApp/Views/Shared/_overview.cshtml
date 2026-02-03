@@ -8,7 +8,9 @@
     bool isAgenda = (ViewBag.IsAgenda != null && ViewBag.IsAgenda);
     string urlBase = isAgenda ? "agenda" : "lancamento";
     string acao = isAgenda ? "Agendar" : "Nova";
+    bool IsFreeMode = ViewBag.Session?.User?.SubscriptLevel != null ? ViewBag.Session?.User?.SubscriptLevel == 0 : true;
 }
+
 
 @section style {
     <style>
@@ -610,9 +612,37 @@
                         objMovto.IDRecorrencia = formData.IDRecorrencia;
                         objMovto.Parcela = parseInt(formData.Parcela || 1, 10);
                         objMovto.QtdParcelas = parseInt(formData.QtdParcelas || 1, 10);
+                        @if (IsFreeMode)
+                        {
+                            <text>
+                            if (objMovto.QtdParcelas > 2)
+                            {
+                                ShowLimiteParcelasMessage();
+                                objMovto.QtdParcelas = 2;
+                            }
+                            </text>
+                        }
                     }
                 });
             });
+
+            function ShowLimiteParcelasMessage() {
+                const titulo = "O futuro já está no seu radar";
+                const mens = `
+                    <p>
+                        No <strong>Pulse gratuito</strong>, você pode planejar compromissos
+                        para o mês atual e o próximo — o suficiente para manter o controle
+                        do curto prazo.
+                    </p>
+
+                    <p>
+                        A partir daí, o planejamento de médio e longo prazo fica disponível
+                        na <strong>versão completa</strong>, onde você pode agendar com mais
+                        parcelas e mais meses à frente, com total liberdade.
+                    </p>
+                `;
+                ShowFreeModeModal(titulo, mens);
+            }
 
             $(document).on('click', '.recorrenteMais', function () {
                 const input = $(this)
@@ -620,6 +650,16 @@
                     .find('.QtdParcelas');
 
                 const valor = parseInt(input.val(), 10) || 0;
+                @if (IsFreeMode) 
+                {
+                    <text>
+                    if (valor >= 2)
+                    {
+                        ShowLimiteParcelasMessage();
+                        return;
+                    }
+                    </text>
+                }
                 input.val(valor + 1);
             });
 
@@ -632,7 +672,7 @@
                 if (valor > 1) input.val(valor - 1);
             });
 
-            $('.QtdParcelas').on('blur', function () {
+            $(document).on('blur', '.QtdParcelas', function () {
                 let val = parseInt($(this).val(), 10);
                 if (isNaN(val) || val <= 0) {
                     $(this).val('1');
@@ -673,8 +713,7 @@
                             closeOverlayAndReload();
                         },
                         error: function (xhr, status, error) {
-                            console.error('Erro:', error);
-                            alert("Erro ao salvar: " + (xhr.responseText || "Erro interno"));
+                            ExibeErro(xhr);
                         }
                     });
                 }
