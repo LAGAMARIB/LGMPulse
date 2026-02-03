@@ -1,5 +1,6 @@
 ﻿using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
+using LGMPulse.AppServices.Helpers;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
@@ -26,7 +27,7 @@ public class AgendaController : LGMController
         ano ??= hoje.Year;
         mes ??= hoje.Month;
         return await ValidateSessionAsync(() =>
-                ExecuteViewAsync(() => getAgendaViewModelAsync(ano!.Value, mes!.Value))
+            ExecuteViewAsync(() => getAgendaViewModelAsync(ano!.Value, mes!.Value))
         );
     }
 
@@ -60,6 +61,24 @@ public class AgendaController : LGMController
         // marcar atrasados mas enviar apenas os agendamentos do periodo selecionado
         viewModel.HasDelayed = listAgenda.Any((x) => x.DataVencto!.Value < startDate);
         viewModel.Agendas = listAgenda.Where(x => x.DataVencto!.Value >= startDate).OrderBy(x => x.DataVencto).ToList() ?? new();
+
+        // validar restrição para versão free
+        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        if (isFreeMode)
+        {
+            var limitDate = hoje.AddMonths(2);
+            limitDate = new DateTime(limitDate.Year, limitDate.Month, 01).AddDays(-1);
+
+            if (startDate > limitDate) // tentativa de acessar direto pela URL
+                return LGMResult.Fail<AgendaViewModel>("Acesso não permitido");
+
+            bool isLastFreeMonth =
+                startDate.Year == limitDate.Year && 
+                startDate.Month == limitDate.Month;
+            
+            // Free: último mês navegável (UI deve desabilitar avanço)
+            viewModel.HasFreeRestrict = isLastFreeMonth;
+        }
 
         return  LGMResult.Ok(viewModel);
     }

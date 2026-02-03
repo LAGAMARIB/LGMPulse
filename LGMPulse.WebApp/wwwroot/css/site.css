@@ -8,7 +8,8 @@
     /* Cores principais */
     --pulse-green: #58c48b;
     --pulse-red: #e45555;
-    --pulse-blue: #3c7df0;
+    --pulse-blue: rgb(60, 125, 240);
+    --pulse-blue-alpha: rgba(60, 125, 240, 0.5);
     --branco-transparente: rgba(255,255,255,0.55);
     --preto-sombra: rgba(0,0,0,0.12);
     --preto-sombra-2: rgba(122, 90, 0, 0.25);

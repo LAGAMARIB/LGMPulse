@@ -12,4 +12,6 @@ internal class AgendaViewModel
     public int Day => Date.Day;
 
     public List<Agenda> Agendas { get; set; } = new();
+
+    public bool HasFreeRestrict { get; set; }
 }
