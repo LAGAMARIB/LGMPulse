@@ -6,6 +6,7 @@ public class RelatEvolucaoViewModel
     public List<EvolucaoSumary> Despesas { get; set; } = new();
     public List<EvolucaoSumary> Liquidez { get; set; } = new();
     public decimal ValMaxRecDesp { get; set; } = 1;
+    public bool IsFreeMode { get; set; }
 }
 
 public class EvolucaoSumary

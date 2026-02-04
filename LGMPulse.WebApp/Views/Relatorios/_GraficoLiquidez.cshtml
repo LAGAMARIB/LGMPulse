@@ -2,6 +2,38 @@
 @using System.Globalization
 @model RelatEvolucaoViewModel
 
+<style>
+    .chart-wrapper {
+        position: relative;
+    }
+
+    #btnShowMore {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 34px;
+        background: linear-gradient( to right, rgba(0,0,0,0.08), rgba(0,0,0,0.02) );
+        border: none;
+        border-right: 1px solid var(--grid-lines);
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--cor-texto-card-header);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, width 0.2s ease;
+    }
+
+        #btnShowMore:hover {
+            background: linear-gradient( to right, rgba(0,0,0,0.14), rgba(0,0,0,0.04) );
+            width: 42px;
+        }
+
+</style>
+
+
 @if (!Model.Liquidez.Any())
 {
     <div class="chart-block">
@@ -68,52 +100,61 @@
     areaNeg.Add("0,70");
 }
 
-<div class="chart-block">
-    <div class="chart-title">Liquidez</div>
+<div class="chart-wrapper">
+    @if (Model.IsFreeMode)
+    {
+        <button type="button" id="btnShowMore"> ◀ </button>
+    }
 
-    <svg viewBox="0 0 600 140" preserveAspectRatio="none">
+    <div class="chart-block">
+        <div class="chart-title">Liquidez</div>
 
-        <line x1="0" y1="70" x2="600" y2="70" class="axis" />
+        <svg viewBox="0 0 600 140" preserveAspectRatio="none">
 
-        <!-- área positiva -->
-        <polygon fill="var(--pulse-green)"
-                    opacity="0.20"
-                    points="@string.Join(" ", areaPos)" />
+            <line x1="0" y1="70" x2="600" y2="70" class="axis" />
 
-        <!-- área negativa -->
-        <polygon fill="var(--pulse-red)"
-                    opacity="0.20"
-                    points="@string.Join(" ", areaNeg)" />
+            <!-- área positiva -->
+            <polygon fill="var(--pulse-green)"
+                     opacity="0.20"
+                     points="@string.Join(" ", areaPos)" />
 
-        <!-- linha -->
-        <polyline class="line" fill="none"
-                    stroke="var(--line-liquidez-pos)"
-                    points="@string.Join(" ",
-                                                            Model.Liquidez.Select((r, i) =>
-                                                                $"{(i * stepX).ToString(inv)},{Y((double)r.ValorTotal).ToString(inv)}"
-                                                            ))" />
+            <!-- área negativa -->
+            <polygon fill="var(--pulse-red)"
+                     opacity="0.20"
+                     points="@string.Join(" ", areaNeg)" />
 
-    <!-- pontos -->
-    @for (int i = 0; i < Model.Liquidez.Count; i++)
-        {
-            var v = (double)Model.Liquidez[i].ValorTotal;
-            var x = i * stepX;
-            var y = Y(v);
-            var color = v >= 0 ? "var(--pulse-green)" : "var(--pulse-red)";
+            <!-- linha -->
+            <polyline class="line" fill="none"
+                      stroke="var(--line-liquidez-pos)"
+                      points="@string.Join(" ",
+                                                                                  Model.Liquidez.Select((r, i) =>
+                                                                                      $"{(i * stepX).ToString(inv)},{Y((double)r.ValorTotal).ToString(inv)}"
+                                                                                  ))" />
 
-            <circle cx="@x.ToString(inv)"
-                    cy="@y.ToString(inv)"
-                    r="4"
-                    fill="@color"
-                    stroke="@color" />
-        }
-    </svg>
+            <!-- pontos -->
+            @for (int i = 0; i < Model.Liquidez.Count; i++)
+            {
+                var v = (double)Model.Liquidez[i].ValorTotal;
+                var x = i * stepX;
+                var y = Y(v);
+                var color = v >= 0 ? "var(--pulse-green)" : "var(--pulse-red)";
 
-    <div class="months">
-        @foreach (var m in Model.Liquidez)
-        {
-            <span>@m.MesReferencia</span>
-        }
+                <circle cx="@x.ToString(inv)"
+                        cy="@y.ToString(inv)"
+                        r="4"
+                        fill="@color"
+                        stroke="@color" />
+            }
+        </svg>
+
+        <div class="months">
+            @foreach (var m in Model.Liquidez)
+            {
+                <span>@m.MesReferencia</span>
+            }
+        </div>
     </div>
+
 </div>
+
 

@@ -1,4 +1,5 @@
-﻿@using LGMPulse.Domain.ViewModels
+﻿@using LGMDomains.Common.Helpers
+@using LGMPulse.Domain.ViewModels
 @model MapaFinanceiroViewModel
 @{
     Layout = null;
@@ -160,6 +161,11 @@
         color: var(--cor-receita);
     }
 
+    .free-hidden {
+        filter: blur(4px);
+        cursor: pointer;
+    }
+
     .despesa {
         color: var(--cor-despesa);
     }
@@ -219,6 +225,8 @@
     }
 </style>
 
+@await Html.PartialAsync("_FreeModeModal")
+
 <div class="report-container">
     <div class="mapa-scroll">
         <div id="gridMapa" class="mapa-container">
@@ -242,8 +250,9 @@
                     {
                         if (i < 12 && i > Model.LastMonth - 1) continue;
                         string colTotal = (i == 12 ? "col-total" : "");
-                        <div class="mapa-col receita @colTotal">
-                            @Model.Receitas.TotalMes[i].ToString("N2")
+                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        <div class="mapa-col receita @colTotal @classHidden">
+                            @(string.IsNullOrWhiteSpace(classHidden) ? Model.Receitas.TotalMes[i].ToString("N2") : "000,00")
                         </div>
                     }
                 </div>
@@ -254,8 +263,9 @@
                     {
                         if (i < 12 && i > Model.LastMonth - 1) continue;
                         string colTotal = (i == 12 ? "col-total" : "");
-                        <div class="mapa-col despesa @colTotal">
-                            @Model.Despesas.TotalMes[i].ToString("N2")
+                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        <div class="mapa-col despesa @colTotal @classHidden">
+                            @(string.IsNullOrWhiteSpace(classHidden) ? Model.Despesas.TotalMes[i].ToString("N2") : "000,00")
                         </div>
                     }
                 </div>
@@ -270,8 +280,9 @@
                         string liquidezClass = liquidez < 0
                         ? "liquidez-negativa despesa"
                         : "liquidez-positiva receita";
-                        <div class="mapa-col @liquidezClass @colTotal">
-                            @liquidez.ToString("N2")
+                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        <div class="mapa-col @liquidezClass @colTotal @classHidden">
+                            @(string.IsNullOrWhiteSpace(classHidden) ? liquidez.ToString("N2") : "000,00")
                         </div>
                     }
                 </div>
@@ -293,8 +304,9 @@
                             if (i < 12 && i > Model.LastMonth - 1) continue;
                             string classBold = (i > 11 ? "mapa-col-bold" : "");
                             string colTotal = (i == 12 ? "col-total" : "");
-                            <div class="mapa-col @classBold @colTotal">
-                                @item.TotalMes[i].ToString("N2")
+                            string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                            <div class="mapa-col @classBold @colTotal @classHidden">
+                                @(string.IsNullOrWhiteSpace(classHidden) ? item.TotalMes[i].ToString("N2") : "000,00")
                             </div>
                         }
                     </div>
@@ -308,6 +320,28 @@
 
 <script>
     $(document).ready(function () {
+        function ShowFreeModeMessage() {
+            const titulo = "Sua visão financeira pode ir além";
+            const mens = `
+                <p>
+                    No <strong>Pulse gratuito</strong>, você tem foco total no seu fluxo de
+                    caixa imediato, acompanhando de perto o último trimestre. 
+                    É o fôlego necessário para o dia a dia.
+                </p>
+
+                <p>
+                    Na <strong>versão completa</strong>, o Mapa Financeiro revela todos os meses do ano de uma só vez.
+                    Compare meses, calcule médias e totais, identifique padrões e tenha a segurança de um planejamento ilimitado.
+                    Desbloqueie o horizonte e tenha o <strong>domínio completo</strong> de sua realidade financeira.
+                </p>
+            `;
+            ShowFreeModeModal(titulo, mens);
+        }
+
+        $(document).on("click", ".free-hidden", function () {
+            ShowFreeModeMessage();
+        });
+
         // Seleciona os cabeçalhos da 1ª linha (Grupo + Meses)
         $(".mapa-header:first .mapa-col").each(function (index) {
             $(this).addClass("sortable").on("click", function () {
@@ -354,5 +388,25 @@
         }
 
         localStorage.setItem('ultimoRelatorio', 'mapafinanceiro');
+
+        // em telas menores rolar para a coluna do mês corrente
+        if (window.innerWidth < 768) {
+
+            const mesAtual = new Date().getMonth() - 1; // 0 = Jan
+            const $scroll = $(".mapa-scroll");
+
+            // pega o header do mês correspondente
+            const $colMes = $(".mapa-header:first .mapa-col").eq(mesAtual);
+
+            if ($colMes.length) {
+                const offsetLeft = $colMes.position().left;
+                const ajusteVisual = 40; // margem pra não colar na borda
+
+                $scroll.animate({
+                    scrollLeft: offsetLeft - ajusteVisual
+                }, 300);
+            }
+        }
+
     });
 </script>

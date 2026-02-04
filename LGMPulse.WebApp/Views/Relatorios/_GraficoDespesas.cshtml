@@ -2,6 +2,37 @@
 @using System.Globalization
 @model RelatEvolucaoViewModel
 
+<style>
+    .chart-wrapper {
+        position: relative;
+    }
+
+    #btnShowMore {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 34px;
+        background: linear-gradient( to right, rgba(0,0,0,0.08), rgba(0,0,0,0.02) );
+        border: none;
+        border-right: 1px solid var(--grid-lines);
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--cor-texto-card-header);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, width 0.2s ease;
+    }
+
+        #btnShowMore:hover {
+            background: linear-gradient( to right, rgba(0,0,0,0.14), rgba(0,0,0,0.04) );
+            width: 42px;
+        }
+
+</style>
+
 @if (!Model.Despesas.Any())
 {
     <div class="chart-block">
@@ -19,57 +50,64 @@
         : 0;
 }
 
-<div class="chart-block">
-    <div class="chart-title">Despesas</div>
+<div class="chart-wrapper">
+    @if (Model.IsFreeMode)
+    {
+        <button type="button" id="btnShowMore"> ◀ </button>
+    }
 
-    <svg viewBox="0 0 600 120" preserveAspectRatio="none">
+    <div class="chart-block">
+        <div class="chart-title">Despesas</div>
 
-        <!-- eixo horizontal -->
-        <line x1="0" y1="100" x2="600" y2="100" class="axis" />
+        <svg viewBox="0 0 600 120" preserveAspectRatio="none">
 
-        <!-- linha -->
-        <polygon class="area"
-                    fill="var(--line-despesa)"
-                    opacity="0.20"
-                    points="@string.Join(" ",
-                                                Model.Despesas.Select((r, i) =>
-                                                    $"{(i * stepX).ToString(inv)}," +
-                                                    $"{(100 - (double)(r.ValorTotal / max * 90)).ToString(inv)}"
-                                                )
-                                                .Concat(new[]{
-                                                $"600,100",
-                                                $"0,100"
-                                                })
-                                            )" />
+            <!-- eixo horizontal -->
+            <line x1="0" y1="100" x2="600" y2="100" class="axis" />
 
-    <polyline class="line"
-                stroke="var(--line-despesa)"
-                fill="none"
-                points="@string.Join(" ", Model.Despesas.Select((r, i) =>
+            <!-- linha -->
+            <polygon class="area"
+                        fill="var(--line-despesa)"
+                        opacity="0.20"
+                        points="@string.Join(" ",
+                                                    Model.Despesas.Select((r, i) =>
                                                         $"{(i * stepX).ToString(inv)}," +
                                                         $"{(100 - (double)(r.ValorTotal / max * 90)).ToString(inv)}"
-                                                    ))" />
+                                                    )
+                                                    .Concat(new[]{
+                                                    $"600,100",
+                                                    $"0,100"
+                                                    })
+                                                )" />
 
-    <!-- pontos -->
-    @for (int i = 0; i < Model.Despesas.Count; i++)
-        {
-            var x = i * stepX;
-            var y = 100 - (double)(Model.Despesas[i].ValorTotal / max * 90);
-
-            <circle cx="@x.ToString(inv)"
-                    cy="@y.ToString(inv)"
-                    r="4"
+            <polyline class="line"
                     stroke="var(--line-despesa)"
-                    fill="var(--line-despesa)"
-                    class="point" />
-        }
-    </svg>
+                    fill="none"
+                    points="@string.Join(" ", Model.Despesas.Select((r, i) =>
+                                                            $"{(i * stepX).ToString(inv)}," +
+                                                            $"{(100 - (double)(r.ValorTotal / max * 90)).ToString(inv)}"
+                                                        ))" />
 
-    <div class="months">
-        @foreach (var m in Model.Despesas)
-        {
-            <span>@m.MesReferencia</span>
-        }
+        <!-- pontos -->
+        @for (int i = 0; i < Model.Despesas.Count; i++)
+            {
+                var x = i * stepX;
+                var y = 100 - (double)(Model.Despesas[i].ValorTotal / max * 90);
+
+                <circle cx="@x.ToString(inv)"
+                        cy="@y.ToString(inv)"
+                        r="4"
+                        stroke="var(--line-despesa)"
+                        fill="var(--line-despesa)"
+                        class="point" />
+            }
+        </svg>
+
+        <div class="months">
+            @foreach (var m in Model.Despesas)
+            {
+                <span>@m.MesReferencia</span>
+            }
+        </div>
     </div>
 </div>
 

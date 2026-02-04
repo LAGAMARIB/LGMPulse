@@ -1,5 +1,7 @@
 ﻿using LGMDomains.Common;
+using LGMDomains.Common.Exceptions;
 using LGMDomains.Common.Helpers;
+using LGMPulse.AppServices.Helpers;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.Domain.ViewModels;
@@ -42,6 +44,7 @@ public class RelatoriosController : LGMController
             IsMesAtual = (y == hoje.Year && m == hoje.Month),
             MesReferencia = DateTimeHelper.MesReferencia(y, m),
         };
+        vm.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
 
         return Task.FromResult( LGMResult.Ok(vm) );
     }
@@ -78,20 +81,63 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/evolucao/{ano=0}/{mes=0}")]
     public async Task<IActionResult> RelatorioEvolucao(int ano=0, int mes=0)
     {
+        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
         DateTime dataBase = new DateTime(ano, mes, 01);
-        DateTime dataIni = dataBase.AddMonths(-5);
+        DateTime dataIni = isFreeMode ? dataBase.AddMonths(-2) : dataBase.AddMonths(-6);
         DateTime dataFim = dataBase.AddMonths(1).AddSeconds(-1);
-        
+
         var result = await _movtoService.GetSumarioPeriodoAsync(dataIni, dataFim);
         RelatEvolucaoViewModel viewModel = result.Data ?? new();
+        viewModel.IsFreeMode = isFreeMode;
         return PartialView(viewModel);
     }
 
     [HttpGet("/relatorios/mapafinanceiro/{ano=0}/{mes=0}")]
     public async Task<IActionResult> MapaFinanceiro(int ano = 0, int mes = 0)
     {
+        DateTime today = DateTimeHelper.Now();
+        if (ano > today.Year)
+            throw new RuleException("Período inválido");
+
         LGMResult<MapaFinanceiroViewModel> result = await _movtoService.GetMapaFinanceiroAsync(ano);
         MapaFinanceiroViewModel viewModel = result.Data ?? new();
+
+        int firstMonthToShow = 1;
+        int lastMonthToShow = 12;
+        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+
+        if (isFreeMode)
+        {
+            if (ano == today.Year)
+            {
+                int todayMonth = today.Month;
+                if (todayMonth == 1)
+                {
+                    firstMonthToShow = 1;
+                    lastMonthToShow = 3;
+                }
+                else if (todayMonth == 12)
+                {
+                    firstMonthToShow = 10;
+                    lastMonthToShow = 12;
+                }
+                else
+                {
+                    firstMonthToShow = Math.Max(todayMonth - 1, 1);
+                    lastMonthToShow = Math.Min(todayMonth + 1, 12);
+                }
+            }
+            else // anos anteriores
+            {
+                firstMonthToShow = 10;
+                lastMonthToShow = 12;
+            }
+        }
+
+        viewModel.FirstMonthToShow = firstMonthToShow;
+        viewModel.LastMonthToShow = lastMonthToShow;
+        viewModel.IsFreeMode = isFreeMode;
+
         return PartialView(viewModel);
     }
 

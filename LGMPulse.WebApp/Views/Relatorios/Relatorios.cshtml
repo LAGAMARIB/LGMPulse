@@ -133,12 +133,22 @@
     <script>
         let currentYear = @Model.Year;
         let currentMonth = @Model.Month;
+        let currentReport = "";
 
-        $("#prevMonth").click(() => navigateMonth(-1));
-        $("#nextMonth").click(() => navigateMonth(1));
+        $(document).on("click", "#prevMonth", function () {
+            navigateMonth(-1);
+        });
+
+        $(document).on("click", "#nextMonth", function () {
+            navigateMonth(1);
+        });
 
         function navigateMonth(offset) {
-            currentMonth += offset;
+            if (currentReport === "mapafinanceiro") {
+                currentYear += offset;
+            } else {
+                currentMonth += offset;
+            }
 
             if (currentMonth === 0) {
                 currentMonth = 12;
@@ -158,6 +168,12 @@
             $.get(url, function (resp) {
                 if (resp) {
                     $('#relatoriosFrame').html(resp);
+                    currentReport = nome;
+
+                    if (currentReport === "mapafinanceiro") {
+                        $('#currentMonthLabel').text(currentYear);
+                    }
+
                     if (subtitle) {
                         $('#subTitle').html(` - ${subtitle}`)
                     }
@@ -181,6 +197,10 @@
         $(document).ready(function () {
             const ultimo = localStorage.getItem('ultimoRelatorio');
             const label = localStorage.getItem('ultimoRelatorioLabel');
+
+            if (ultimo === "mapafinanceiro") {
+                $('#currentMonthLabel').text(currentYear);
+            }
 
             if (ultimo) {
                 carregarRelatorio(ultimo, label);

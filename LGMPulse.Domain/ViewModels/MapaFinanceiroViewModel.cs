@@ -8,6 +8,9 @@ public class MapaFinanceiroViewModel
     public int LastMonth { get; set; }
     public MapaModel Receitas { get; set; }
     public MapaModel Despesas { get; set; }
+    public int FirstMonthToShow { get; set; }
+    public int LastMonthToShow { get; set; }
+    public bool IsFreeMode { get; set; }
 
     public List<MapaModel> Mapas { get; set; }
 }
