@@ -66,6 +66,38 @@
     }
 </style>
 
+<style>
+    .chart-wrapper {
+        position: relative;
+    }
+
+    .btnShowMore {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 34px;
+        background: linear-gradient( to right, rgba(255,255,255,0.78), rgba(255,255,255,0.72) );
+        border: none;
+        border-right: 1px solid var(--grid-lines);
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--cor-texto-card-header);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, width 0.2s ease;
+    }
+
+        .btnShowMore:hover {
+            background: linear-gradient( to right, rgba(255,255,255,0.84), rgba(255,255,255,0.80) );
+            width: 42px;
+        }
+
+</style>
+
+
 <div id="relatorioEvolucao">
 
     @await Html.PartialAsync("_GraficoReceitas", Model)
@@ -76,6 +108,29 @@
 
 <script>
     $(document).ready(function () {
+        function ShowFreeModeMessage() {
+            const titulo = "Mais contexto ao longo do tempo";
+            const mens = `
+                <p>
+                    No <strong>Pulse gratuito</strong>, você acompanha a evolução recente:
+                    o mês atual e os dois anteriores. É uma visão clara do curto prazo,
+                    ideal para decisões do dia a dia.
+                </p>
+                <br>
+                <p>
+                    Na <strong>versão completa</strong>, o gráfico se amplia.
+                    Além do mês atual, você visualiza os <strong>últimos seis meses</strong>,
+                    identifica tendências, compara períodos e planeja com mais segurança.
+                </p>
+            `;
+            ShowFreeModeModal(titulo, mens);
+        }
+
+        $(document).on("click", ".btnShowMore", function () {
+            ShowFreeModeMessage();
+        });
+
+
         localStorage.setItem('ultimoRelatorio', 'evolucao');
     });
 </script>

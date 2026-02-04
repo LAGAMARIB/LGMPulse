@@ -2,37 +2,6 @@
 @using System.Globalization
 @model RelatEvolucaoViewModel
 
-<style>
-    .chart-wrapper {
-        position: relative;
-    }
-
-    #btnShowMore {
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 34px;
-        background: linear-gradient( to right, rgba(0,0,0,0.08), rgba(0,0,0,0.02) );
-        border: none;
-        border-right: 1px solid var(--grid-lines);
-        cursor: pointer;
-        font-size: 18px;
-        font-weight: bold;
-        color: var(--cor-texto-card-header);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.2s ease, width 0.2s ease;
-    }
-
-        #btnShowMore:hover {
-            background: linear-gradient( to right, rgba(0,0,0,0.14), rgba(0,0,0,0.04) );
-            width: 42px;
-        }
-
-</style>
-
 
 @if (!Model.Liquidez.Any())
 {
@@ -103,7 +72,7 @@
 <div class="chart-wrapper">
     @if (Model.IsFreeMode)
     {
-        <button type="button" id="btnShowMore"> ◀ </button>
+        <button type="button" class="btnShowMore"> ◀ </button>
     }
 
     <div class="chart-block">
