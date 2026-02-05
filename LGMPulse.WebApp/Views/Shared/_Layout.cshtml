@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using LGMPulse.AppServices.Helpers
+@{
+    bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+    string classPremium = isFreeMode ? "" : "premium-mode";
+}
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="utf-8" />
@@ -198,6 +203,16 @@
                     pointer-events: none;
                     opacity: 0.3;
                 }
+
+
+        .premium-mode footer {
+            background: #111;
+            color: silver;
+        }
+
+        .premium-mode footer a {
+            color: silver;
+        }
 
         .allmodal {
             display: none;
@@ -718,7 +733,7 @@
     @RenderSection("style", required: false)
 </head>
 
-<body>
+<body class="@classPremium">
     @await Html.PartialAsync("_FreeModeModal");
 
     <div class="mainContainer">

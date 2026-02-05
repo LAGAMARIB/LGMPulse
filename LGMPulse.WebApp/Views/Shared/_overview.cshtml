@@ -26,8 +26,7 @@
         .overview-content {
             flex: 1;
             overflow: hidden;
-            /* espaço reservado para o botão */
-            padding-bottom: 96px;
+            padding-bottom: calc(var(--footer-height) + 110px);
         }
 
         /* Overlay */
@@ -82,31 +81,52 @@
 
         #addButton {
             position: fixed;
-            bottom: calc(var(--footer-height) - 11px);
+            bottom: calc(var(--footer-height));
+
+
             left: 50%;
             transform: translateX(-50%);
+
             width: 160px;
             height: 86px;
+
             border-top-left-radius: 28px;
             border-top-right-radius: 28px;
+
             background: linear-gradient(145deg, var(--add-bg-start), var(--add-bg-end));
             color: var(--add-text);
+
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
+
             font-size: 2.4rem;
             font-weight: 700;
+
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-            z-index: 40;
-            transition: transform 360ms cubic-bezier(.22,.9,.32,1), opacity 240ms ease;
+
+            z-index: 20;
+            transition: transform 220ms cubic-bezier(.22,.9,.32,1), box-shadow 220ms ease;
         }
 
-            /* toque */
-            #addButton:active {
-                transform: translateX(-50%) scale(0.96);
+        @@media (max-width: 768px) {
+            #addButton {
+                left: 50%;
+                transform: translateX(-50%);
             }
+
+            .overview-content {
+                padding-bottom: calc(var(--footer-height) + 100px);
+            }
+        }
+
+        /* toque */
+        #addButton:active {
+            transform: translateX(-50%) scale(0.96);
+            box-shadow: 0 4px 10px rgba(0,0,0,.25);
+        }
 
         #mesReferencia {
             position: absolute;
@@ -317,6 +337,17 @@
     <div class="overview-content">
         @RenderBody()
     </div>
+
+    <div id="addButton">
+        <div class="add-plus">+</div>
+
+        @if (_overview_IsMesAnterior)
+        {
+            <div class="period-badge">
+                Período anterior
+            </div>
+        }
+    </div>
 </div>
 
 <div id="addOverlay">
@@ -344,16 +375,6 @@
     </div>
 </div>
 
-<div id="addButton">
-    <div class="add-plus">+</div>
-
-    @if (_overview_IsMesAnterior)
-    {
-        <div class="period-badge">
-            Período anterior
-        </div>
-    }
-</div>
 
 <button id="btnAdvancedFields"><i class="fas fa-gear"></i></button>
 

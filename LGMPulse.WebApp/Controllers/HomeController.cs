@@ -1,6 +1,7 @@
 using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
+using LGMPulse.AppServices.Helpers;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.ViewModels;
@@ -49,6 +50,7 @@ namespace LGMPulse.WebApp.Controllers
             var sumario = result.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;
             viewModel.TotalDespesas = sumario?.TotalDespesas ?? 0;
+            viewModel.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
 
             decimal liquidezAtual = viewModel.TotalReceitas - viewModel.TotalDespesas;
             if (liquidezAnterior == 0)

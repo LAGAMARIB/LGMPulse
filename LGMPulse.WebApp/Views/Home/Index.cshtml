@@ -207,6 +207,14 @@
             font-weight: 500;
         }
 
+        #imgPremium {
+            position: absolute;
+            top: -6px;
+            left: -19px;
+            height: 27px;
+            opacity: .5;
+        }
+
         #btnShowHideValues {
             position: absolute;
             top: 10px;
@@ -267,6 +275,10 @@
 }
 
 <div id="HealthSnapshotPanel">
+    @if (!Model.IsFreeMode)  
+    {
+        <img id="imgPremium" src="/img/premium_min.png" />
+    }
     <button id="btnShowHideValues"><i class="fas fa-eye-slash"></i></button>
 
     <div class="area-esferas">
