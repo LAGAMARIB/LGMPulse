@@ -1,6 +1,7 @@
 ﻿@using LGMPulse.AppServices.Helpers
 @{
-    bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+    var localUser = LocalUserHelper.GetLocalUser();
+    bool isFreeMode = localUser == null || localUser.SubscriptLevel == 0;
     string classPremium = isFreeMode ? "" : "premium-mode";
 }
 <!DOCTYPE html>
