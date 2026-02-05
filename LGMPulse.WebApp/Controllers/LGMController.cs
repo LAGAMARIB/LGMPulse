@@ -1,11 +1,13 @@
 ﻿using LGMDomains.Common;
 using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
+using LGMPulse.AppServices.Helpers;
 using LGMPulse.Connections;
 using LGMPulse.Connections.Helpers;
 using LGMPulse.Domain.Domains;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using MySqlX.XDevAPI;
 using System.Globalization;
 using System.Text.Json;
@@ -31,6 +33,21 @@ public class LGMController : Controller
         _sessionHelper ??= HttpContext.RequestServices.GetRequiredService<SessionHelper>();
     protected WebAPIHelper WebAPIHelper =>
         _webAPIHelper ??= HttpContext.RequestServices.GetRequiredService<WebAPIHelper>();
+
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        try
+        {
+            var localUser = LocalUserHelper.GetLocalUser();
+            ViewBag.IsFreeMode = localUser == null || localUser.SubscriptLevel == 0;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            ViewBag.IsFreeMode = true;
+        }
+
+        base.OnActionExecuting(context);
+    }
 
     protected Task<IActionResult> ValidateSessionAsync(
         Func<Task<IActionResult>> action)

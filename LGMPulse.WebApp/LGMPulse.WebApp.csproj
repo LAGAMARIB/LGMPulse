@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\img\premium_red.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\LGMDomains\LGMDomains.Common\LGMDomains.Common.csproj" />
     <ProjectReference Include="..\..\LGMDomains\LGMDomains.Identity\LGMDomains.Identity.csproj" />
     <ProjectReference Include="..\LGMPulse.AppServices\LGMPulse.AppServices.csproj" />

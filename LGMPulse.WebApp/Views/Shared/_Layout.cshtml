@@ -1,9 +1,9 @@
 ﻿@using LGMPulse.AppServices.Helpers
 @{
-    var localUser = LocalUserHelper.GetLocalUser();
-    bool isFreeMode = localUser == null || localUser.SubscriptLevel == 0;
+    bool isFreeMode = ViewBag.IsFreeMode ?? true;
     string classPremium = isFreeMode ? "" : "premium-mode";
 }
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
