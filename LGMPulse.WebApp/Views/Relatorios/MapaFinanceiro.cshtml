@@ -250,7 +250,7 @@
                     {
                         if (i < 12 && i > Model.LastMonth - 1) continue;
                         string colTotal = (i == 12 ? "col-total" : "");
-                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        string classHidden = Model.IsFreeMode && (i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1)) ? "free-hidden" : "";
                         <div class="mapa-col receita @colTotal @classHidden">
                             @(string.IsNullOrWhiteSpace(classHidden) ? Model.Receitas.TotalMes[i].ToString("N2") : "000,00")
                         </div>
@@ -263,7 +263,7 @@
                     {
                         if (i < 12 && i > Model.LastMonth - 1) continue;
                         string colTotal = (i == 12 ? "col-total" : "");
-                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        string classHidden = Model.IsFreeMode && (i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1)) ? "free-hidden" : "";
                         <div class="mapa-col despesa @colTotal @classHidden">
                             @(string.IsNullOrWhiteSpace(classHidden) ? Model.Despesas.TotalMes[i].ToString("N2") : "000,00")
                         </div>
@@ -280,7 +280,7 @@
                         string liquidezClass = liquidez < 0
                         ? "liquidez-negativa despesa"
                         : "liquidez-positiva receita";
-                        string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                        string classHidden = Model.IsFreeMode && (i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1)) ? "free-hidden" : "";
                         <div class="mapa-col @liquidezClass @colTotal @classHidden">
                             @(string.IsNullOrWhiteSpace(classHidden) ? liquidez.ToString("N2") : "000,00")
                         </div>
@@ -304,7 +304,7 @@
                             if (i < 12 && i > Model.LastMonth - 1) continue;
                             string classBold = (i > 11 ? "mapa-col-bold" : "");
                             string colTotal = (i == 12 ? "col-total" : "");
-                            string classHidden = i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1) ? "free-hidden" : "";
+                            string classHidden = Model.IsFreeMode && (i < (Model.FirstMonthToShow - 1) || i > (Model.LastMonthToShow - 1)) ? "free-hidden" : "";
                             <div class="mapa-col @classBold @colTotal @classHidden">
                                 @(string.IsNullOrWhiteSpace(classHidden) ? item.TotalMes[i].ToString("N2") : "000,00")
                             </div>

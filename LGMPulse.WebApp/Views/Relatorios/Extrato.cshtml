@@ -215,6 +215,12 @@
         .row-toolbar .btn-delete {
             color: var(--pulse-red);
         }
+
+        .empty-message {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
     </style>
 }
 
@@ -225,29 +231,39 @@
         <img class="close-icon" src="/icons/xmark.svg" id="btnFecharForm" />
     </div>
     <div id="ExtratoItems">
-        @foreach (var movto in Model.Movtos)
+        @if (Model.Movtos.Count == 0)
         {
-            var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
-            var classTipo = (movto.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
-            <div class="row-movto @classTipo">
-                <div class="row-content">
-                    <div class="col-1">
-                        <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" />
-                    </div>
-                    <div class="col-2">
-                        <span>@movto.DataMovto!.Value.ToShortDateString()</span>
-                        <span><b>@descMovto</b></span>
-                    </div>
-                    <div class="col-3">
-                        <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
-                    </div>
-                </div>
-
-                <div class="row-toolbar">
-                    <i class="fas fa-keyboard btn-edit" data-movto="@movto.ID" title="Editar valor"></i>
-                    <i class="fas fa-trash btn-delete" data-movto="@movto.ID" title="Excluir"></i>
-                </div>
+            <div class="empty-message">
+                <i class="fas fa-box-open"></i>
+                <h5>Sem movimentos no período</h5>
             </div>
+        }
+        else
+        {
+            @foreach (var movto in Model.Movtos)
+            {
+                var descMovto = (!string.IsNullOrWhiteSpace(movto.Descricao) ? movto.Descricao : movto.NomeGrupo);
+                var classTipo = (movto.TipoMovto == TipoMovtoEnum.Receita ? "receita" : "despesa");
+                <div class="row-movto @classTipo">
+                    <div class="row-content">
+                        <div class="col-1">
+                            <img src="@movto.ImagePathGrupo" alt="@movto.NomeGrupo" />
+                        </div>
+                        <div class="col-2">
+                            <span>@movto.DataMovto!.Value.ToShortDateString()</span>
+                            <span><b>@descMovto</b></span>
+                        </div>
+                        <div class="col-3">
+                            <span>@string.Format("{0:C2}", movto.ValorMovto)</span>
+                        </div>
+                    </div>
+
+                    <div class="row-toolbar">
+                        <i class="fas fa-keyboard btn-edit" data-movto="@movto.ID" title="Editar valor"></i>
+                        <i class="fas fa-trash btn-delete" data-movto="@movto.ID" title="Excluir"></i>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>
