@@ -57,7 +57,6 @@ internal class LoginService : ILoginService
                     PropertyNameCaseInsensitive = true
                 };
 
-                //var result = await response.Content.ReadAsStringAsync();
                 var result = await response.Content.ReadFromJsonAsync<LGMResult<string>>(options);
                 if (result == null || !result.IsSuccess)
                     return LGMResult.Fail<string>(result?.Message ?? "Falha geral ao recuperar senha");
