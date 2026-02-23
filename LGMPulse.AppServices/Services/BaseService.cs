@@ -70,4 +70,10 @@ internal class BaseService<TDomain> : IBaseService<TDomain> where TDomain : Base
             return LGMResult.Fail<TDomain>();
         return LGMResult.Ok(data);
     }
+
+    public async Task<bool> ExistsAsync(TDomain objSelecIni, TDomain? objSelecFim=null)
+    {
+        return await _repository.ExistsAsync(objSelecIni, objSelecFim);
+    }
+
 }

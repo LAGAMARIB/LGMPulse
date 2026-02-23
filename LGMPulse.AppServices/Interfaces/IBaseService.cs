@@ -19,4 +19,6 @@ public interface IBaseService<TDomain> where TDomain : BaseDomain, new()
                                  string? pSort = null,
                                  List<string>? fields = null);
 
+    Task<bool> ExistsAsync(TDomain objSelecIni, TDomain? objSelecFim=null);
+
 }

@@ -1,5 +1,7 @@
-﻿@{
+﻿@using LGMPulse.AppServices.Helpers
+@{
     Layout = null;
+    var user = LocalUserHelper.GetLocalUserOrDefault() ?? new();
 }
 
 <!---====  MODAL FREE MODE  ====--->
@@ -90,6 +92,10 @@
         color: #666;
         cursor: pointer;
     }
+
+    .freemode-form {
+        text-align: center;
+    }
 </style>
 
 
@@ -107,9 +113,11 @@
         </div>
 
         <div class="freemode-actions">
-            <button id="btnConhecerPlano" class="btn-freemode-primary">
-                Conhecer a versão completa
-            </button>
+            <form class="freemode-form" method="post" action="https://www.lagama.com.br/pulse/entry">
+                <input type="hidden" name="Name" value="@user.UserName" />
+                <input type="hidden" name="Email" value="@user.UserEmail" />
+                <button id="btnConhecerPlano" class="btn-freemode-primary">Conhecer a versão completa</button>
+            </form>
             <button id="btnFecharFreeMode" class="btn-freemode-secondary">
                 Agora não
             </button>

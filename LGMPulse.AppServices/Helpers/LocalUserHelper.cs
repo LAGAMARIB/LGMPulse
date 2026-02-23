@@ -18,4 +18,10 @@ public class LocalUserHelper
 
         return _user;
     }
+
+    public static LocalUser? GetLocalUserOrDefault()
+    {
+        SessionHelper SessionHelper = new HttpContextAccessor().HttpContext!.RequestServices.GetRequiredService<SessionHelper>();
+        return SessionHelper.GetLGMSession_Cookie()?.User;
+    }
 }
