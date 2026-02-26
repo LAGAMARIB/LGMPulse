@@ -75,6 +75,17 @@ internal class MovtoService : BaseService<Movto>, IMovtoService
         return LGMResult.Ok(result);
     }
 
+    public async Task<LGMResult<SumarioMes>> GetSumarioAteAsync(int year, int month, int day)
+    {
+        var dataIni = new DateTime(year, month, 1);
+        int ultimoDiaDoMes = DateTime.DaysInMonth(year, month);
+        int diaValido = Math.Min(day, ultimoDiaDoMes);
+        var dataFim = new DateTime(year, month, diaValido, 23, 59, 59);
+        
+        var result = await _movtoRepository.GetSumarioMes(dataIni, dataFim);
+        return LGMResult.Ok(result);
+    }
+
     public async Task<LGMResult<RelatEvolucaoViewModel>> GetSumarioPeriodoAsync(DateTime dataIni, DateTime dataFim)
     {
         List<SumarioPeriodo> sumario = await _movtoRepository.GetSumarioPeriodo(dataIni, dataFim); 

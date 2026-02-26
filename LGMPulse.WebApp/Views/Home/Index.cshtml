@@ -5,7 +5,6 @@
     Layout = "_overview";
     ViewBag.Title = ViewBag.Title ?? "LAGAMA Pulse";
     DateTime hoje = DateTimeHelper.Now();
-    bool IsMesAtual = Model.Year == hoje.Year && Model.Month == hoje.Month;
     string MesReferencia = DateTimeHelper.MesReferencia(Model.Year, Model.Month);
     var perc = Math.Round(Model.PercDiferenca);
     var isNegative = perc < 0;
@@ -13,7 +12,7 @@
     var texto = isNegative
         ? $"Você está {absPerc}% abaixo do mês passado"
         : $"Você está {absPerc}% melhor que no mês passado";
-    int dia = IsMesAtual ? hoje.Day : 1;
+    int dia = Model.IsMesAtual ? hoje.Day : 1;
     ViewBag.DataLancto = new DateTime(Model.Year, Model.Month, dia); // gerar mes referencia para _overview
 }
 
@@ -309,7 +308,7 @@
             <div class="month-nav">
                 <i class="fas fa-chevron-left month-btn prev" id="prevMonth"></i>
                 <span id="currentMonthLabel">@MesReferencia</span>
-                @if (!IsMesAtual)
+                @if (!Model.IsMesAtual)
                 {
                     <i class="fas fa-chevron-right month-btn next" id="nextMonth"></i>
                 }

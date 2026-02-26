@@ -8,5 +8,6 @@ public class HealthyDashViewModel
     public decimal TotalDespesas { get; set; } = 0;
     public decimal PercDiferenca { get; set; } = 0;
     public bool IsFreeMode { get; set; }
+    public bool IsMesAtual { get; set; }
 
 }

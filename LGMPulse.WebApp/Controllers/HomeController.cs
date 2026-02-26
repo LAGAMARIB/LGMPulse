@@ -31,26 +31,40 @@ namespace LGMPulse.WebApp.Controllers
 
         private async Task<LGMResult<HealthyDashViewModel>> NewHealthyDashViewModel(int? year=null, int? month=null)
         {
+            DateTime hoje = DateTimeHelper.Now();
             year ??= DateTimeHelper.Now().Year;
             month ??= DateTimeHelper.Now().Month;
 
             int anoAnterior = month.Value == 1 ? year.Value - 1 : year.Value;
             int mesAnterior = month.Value == 1 ? 12 : month.Value - 1;
-            LGMResult<SumarioMes> anterior = await _movtoService.GetSumarioMesAsync(anoAnterior, mesAnterior);
-            var sumAnt = anterior.Data;
-            decimal liquidezAnterior = (sumAnt != null ? sumAnt.TotalReceitas - sumAnt.TotalDespesas : 0);
-            
-            LGMResult<SumarioMes> result = await _movtoService.GetSumarioMesAsync(year.Value, month.Value); 
-            DateTime hoje = DateTimeHelper.Now();
+            bool isMesAtual = year == hoje.Year && month == hoje.Month;
+
+            LGMResult<SumarioMes> anteriorResult;
+            LGMResult<SumarioMes> atualResult;
+            if (isMesAtual)
+            {
+                anteriorResult = await _movtoService.GetSumarioAteAsync(anoAnterior, mesAnterior, hoje.Day);
+                atualResult= await _movtoService.GetSumarioAteAsync(year.Value, month.Value, hoje.Day); 
+            }
+            else
+            {
+                anteriorResult = await _movtoService.GetSumarioMesAsync(anoAnterior, mesAnterior);
+                atualResult = await _movtoService.GetSumarioMesAsync(year.Value, month.Value);
+            }
+
+            var sumarioAnterior = anteriorResult.Data;
+            decimal liquidezAnterior = (sumarioAnterior != null ? sumarioAnterior.TotalReceitas - sumarioAnterior.TotalDespesas : 0);
+
             HealthyDashViewModel viewModel = new()
             {
                 Year = year.Value,
                 Month = month.Value
             };
-            var sumario = result.Data;
+            var sumario = atualResult.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;
             viewModel.TotalDespesas = sumario?.TotalDespesas ?? 0;
             viewModel.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+            viewModel.IsMesAtual = isMesAtual;
 
             decimal liquidezAtual = viewModel.TotalReceitas - viewModel.TotalDespesas;
             if (liquidezAnterior == 0)

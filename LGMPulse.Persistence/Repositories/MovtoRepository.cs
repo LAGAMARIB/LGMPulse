@@ -1,10 +1,8 @@
-﻿using LGMDAL;
-using LGMPulse.Domain.Domains;
+﻿using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.Enuns;
 using LGMPulse.Domain.ViewModels;
 using LGMPulse.Persistence.Entities;
 using LGMPulse.Persistence.Interfaces;
-using Microsoft.VisualBasic;
 
 namespace LGMPulse.Persistence.Repositories;
 
