@@ -7,4 +7,5 @@ namespace LGMPulse.AppServices.Interfaces;
 public interface IAgendaService : IBaseService<Agenda>
 {
     Task<ILGMResult> BaixarAsync(int id);
+    Task<ILGMResult> UpdateAgendaAsync(Agenda agenda, bool applyToAll);
 }

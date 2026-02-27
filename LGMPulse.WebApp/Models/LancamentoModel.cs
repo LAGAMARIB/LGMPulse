@@ -20,4 +20,5 @@ public class LancamentoModel
     public ParcelaStatusEnum StatusParcela { get; set; } = ParcelaStatusEnum.Pendente;
     public bool Recorrente { get; set; }
     public string IDRecorrencia { get; set; }
+    public bool UpdateAll { get; set; }
 }

@@ -184,7 +184,7 @@ public class AgendaController : LGMController
         if (model.IsNew)
             result = await _agendaService.CreateAsync(agenda);
         else
-            result = await _agendaService.UpdateAsync(agenda, [nameof(agenda.DataMovto), nameof(agenda.Descricao), nameof(agenda.ValorParcela)]);
+            result = await _agendaService.UpdateAgendaAsync(agenda, applyToAll: model.UpdateAll);
         if (result.IsSuccess)
         {
             if (!string.IsNullOrEmpty(result.Message))

@@ -133,34 +133,33 @@ internal class AgendaService : BaseService<Agenda>, IAgendaService
         }
     }
 
-    public override async Task<ILGMResult> UpdateAsync(Agenda agenda, List<string>? campos = null)
+    public async Task<ILGMResult> UpdateAgendaAsync(Agenda agenda, bool applyToAll)
     {
+    //result = await _agendaService.UpdateAgendaAsync(agenda, [nameof(agenda.DataMovto), nameof(agenda.Descricao), nameof(agenda.ValorParcela)]);
         if (agenda.StatusParcela != ParcelaStatusEnum.Pendente)
             return LGMResult.Fail("Parcela já quitada. Operação não permitida.");
-        if (campos == null || campos.Count == 0)
-            return LGMResult.Fail("Alteração de parcelas exige especificar os campos. Operação não permitida.");
 
-        // TODO: implementar opção de alterar uma ou todas as parcelas seguintes em uma recorrencia
-        //if (agenda.Recorrente == true && !string.IsNullOrEmpty(agenda.IDRecorrencia))
-        //{
-        //    using (var transCtx = TransactionContext.NewTransaction())
-        //    {
-        //        var filter = new Agenda { IDRecorrencia = agenda.IDRecorrencia, StatusParcela = ParcelaStatusEnum.Pendente };
-        //        var updateList = await _agendaRepository.GetListContextualAsync(transCtx, filter, null, null, null);
-        //        foreach (var item in updateList)
-        //        {
-        //            if (item.Parcela >= agenda.Parcela)
-        //            {
-        //                AlterarCampos(origem: agenda, destino: item, campos: campos);
-        //                await _agendaRepository.UpdateTransactionalAsync(transCtx, item, campos);
-        //            }
-        //        }
+        List<string> campos = [nameof(agenda.DataMovto), nameof(agenda.Descricao), nameof(agenda.ValorParcela)];
+        if (agenda.Recorrente == true && !string.IsNullOrEmpty(agenda.IDRecorrencia) && applyToAll)
+        {
+            using (var transCtx = TransactionContext.NewTransaction())
+            {
+                var filter = new Agenda { IDRecorrencia = agenda.IDRecorrencia, StatusParcela = ParcelaStatusEnum.Pendente };
+                var updateList = await _agendaRepository.GetListContextualAsync(transCtx, filter, null, null, null);
+                foreach (var item in updateList)
+                {
+                    if (item.Parcela >= agenda.Parcela)
+                    {
+                        AlterarCampos(origem: agenda, destino: item, campos: campos);
+                        await _agendaRepository.UpdateTransactionalAsync(transCtx, item, campos);
+                    }
+                }
 
-        //        if (updateList.Count > 0)
-        //            await transCtx.ExecuteTransactionAsync();
-        //    }
-        //}
-        //else
+                if (updateList.Count > 0)
+                    await transCtx.ExecuteTransactionAsync();
+            }
+        }
+        else
         {
             await _agendaRepository.UpdateAsync(agenda, campos);
         }

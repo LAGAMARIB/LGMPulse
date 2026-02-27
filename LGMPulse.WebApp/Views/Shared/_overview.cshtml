@@ -424,6 +424,15 @@
                 <span class="textParcelas">1/1</span>
             </div>
         </div>
+        <div class="form-group update-all-container" style="display:none;">
+            <div class="form-inline">
+                <label class="switch swtUpdateAll">
+                    <input type="checkbox" class="chkUpdateAll" name="UpdateAll" />
+                    <span class="slider"></span>
+                </label>
+                <label for="chkUpdateAll">Aplicar alteração às próximas parcelas</label>
+            </div>
+        </div>
     }
 
 </div>
@@ -517,7 +526,8 @@
                         Recorrente: movto.Recorrente,
                         IDRecorrencia: movto.IDRecorrencia,
                         Parcela: movto.Parcela,
-                        QtdParcelas: movto.QtdParcelas
+                        QtdParcelas: movto.QtdParcelas,
+                        UpdateAll: false
                     };
                 }
                 else {
@@ -568,7 +578,8 @@
                     IsAgenda: (isAgenda),
                     Recorrente: false,
                     Parcela: 1,
-                    QtdParcelas: 1
+                    QtdParcelas: 1,
+                    UpdateAll: false
                 };
 
                 loadComponent(url);
@@ -604,6 +615,8 @@
                 if (objMovto.IDRecorrencia)
                     $clone.find('[name="IDRecorrencia"]').val(objMovto.IDRecorrencia);
 
+                $clone.find('[name="UpdateAll"]').prop('checked', objMovto.UpdateAll === true);
+                
                 // eventos internos do clone
                 $(document).on('change', '.chkRecorrente', function () {
                     const scope = $(this).closest('.form-container');
@@ -620,21 +633,34 @@
                     const qtd = objMovto.QtdParcelas || 1;
 
                     $clone.find('.textParcelas').text(`${parcela}/${qtd}`);
-                } else {
+
+                    // Mostrar opção de atualizar futuras apenas se for recorrente
+                    if (objMovto.IDRecorrencia && parcela < qtd) {
+                        $clone.find('.update-all-container').show();
+                    }
+                } 
+                else 
+                {
                     $clone.find('.editParcelas').show();
                     $clone.find('.showParcelas').hide();
+                    $clone.find('.update-all-container').hide();
                 }
 
                 showFormModal({
                     titulo: 'Dados avançados',
                     bodyHtml: $clone,
                     onSubmit: (formData) => {
+                        const $modalVisivel = $('.lgm-modal, .modal, .modal-container').last();
+                        const checkbox = $modalVisivel.find('.chkUpdateAll')[0];
+                        objMovto.UpdateAll = checkbox ? checkbox.checked : false;
+
                         objMovto.Descricao = formData.Descricao;
                         objMovto.DataMovto = formData.DataMovto;
                         objMovto.Recorrente = !!formData.Recorrente;
                         objMovto.IDRecorrencia = formData.IDRecorrencia;
                         objMovto.Parcela = parseInt(formData.Parcela || 1, 10);
                         objMovto.QtdParcelas = parseInt(formData.QtdParcelas || 1, 10);
+
                         @if (IsFreeMode)
                         {
                             <text>
@@ -721,9 +747,7 @@
                 
                 else if (payload.Step === "valor") {
                     objMovto.ValorMovto = payload.ValorMovto;
-
-                    console.log(JSON.stringify(objMovto));
-
+                    
                     $.ajax({
                         url: `/${urlBase}/save`,
                         method: "POST",
