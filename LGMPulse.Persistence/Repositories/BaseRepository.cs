@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using LGMDAL;
+﻿using LGMDAL;
 using LGMDAL.Interfaces;
 using LGMDAL.MySQL;
 using LGMDomains.Common;

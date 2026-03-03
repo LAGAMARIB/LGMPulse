@@ -8,7 +8,6 @@ using LGMPulse.Domain.Domains;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using MySqlX.XDevAPI;
 using System.Globalization;
 using System.Text.Json;
 
