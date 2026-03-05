@@ -10,7 +10,6 @@ public static class ServiceCollectionExt
     {
         services.AddScoped<IGrupoRepository, GrupoRepository>();
         services.AddScoped<IMovtoRepository, MovtoRepository>();
-        services.AddScoped<ILocalUserRepository, LocalUserRepository>();
         services.AddScoped<IAgendaRepository, AgendaRepository>();
 
         return services;

@@ -1,7 +1,5 @@
-﻿using LGMDAL.MySQL;
-using LGMPulse.Connections;
+﻿using LGMDomains.Identity;
 using LGMPulse.Connections.Helpers;
-using LGMPulse.Domain.Domains;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +7,7 @@ namespace LGMPulse.AppServices.Helpers;
 
 public class LocalUserHelper
 {
-    public static LocalUser GetLocalUser()
+    public static LGMUser GetLocalUser()
     {
         SessionHelper SessionHelper = new HttpContextAccessor().HttpContext!.RequestServices.GetRequiredService<SessionHelper>();
         var _user = SessionHelper.GetLGMSession_Cookie()?.User;
@@ -19,7 +17,7 @@ public class LocalUserHelper
         return _user;
     }
 
-    public static LocalUser? GetLocalUserOrDefault()
+    public static LGMUser? GetLocalUserOrDefault()
     {
         SessionHelper SessionHelper = new HttpContextAccessor().HttpContext!.RequestServices.GetRequiredService<SessionHelper>();
         return SessionHelper.GetLGMSession_Cookie()?.User;

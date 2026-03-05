@@ -7,13 +7,11 @@ namespace LGMPulse.Connections.Helpers;
 public class WebAPIHelper
 {
     private readonly IConfiguration _configuration;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SessionHelper _sessionHelper;
 
-    public WebAPIHelper(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper)
+    public WebAPIHelper(IConfiguration configuration, SessionHelper sessionHelper)
     {
         _configuration = configuration;
-        _httpContextAccessor = httpContextAccessor;
         _sessionHelper = sessionHelper;
     }
 

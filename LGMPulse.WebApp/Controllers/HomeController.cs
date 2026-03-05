@@ -7,7 +7,6 @@ using LGMPulse.Domain.Domains;
 using LGMPulse.Domain.ViewModels;
 using LGMPulse.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 
 namespace LGMPulse.WebApp.Controllers 
 {
@@ -80,7 +79,7 @@ namespace LGMPulse.WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             SessionHelper.ClearCookies(Request, Response);
             return View(new LoginViewModel());
@@ -119,21 +118,9 @@ namespace LGMPulse.WebApp.Controllers
                 return View(model);
             }
 
-            LGMResult<LocalUser> localUserResult = await _loginService.GetLocalUser(lgmUser);
-            if (!localUserResult.IsSuccess || localUserResult.Data == null)
-            {
-                ModelState.AddModelError(string.Empty, localUserResult.Message ?? "Falha na autenticação - usuário local não ativado");
-                return View(model);
-            }
-
-            LocalUser localUser = localUserResult.Data;  // DBKey n UserEmail assigned
-            localUser.UserLogin = lgmUser.UserLogin;
-            localUser.UserName = lgmUser.UserName;
-            localUser.Token = lgmUser.Token;
-            localUser.SubscriptLevel = lgmUser.SubscriptLevel;
             LGMSession lgmSession = new LGMSession()
             {
-                User = localUser
+                User = lgmUser
             };
 
             if (!this.GenerateCookies(lgmSession))

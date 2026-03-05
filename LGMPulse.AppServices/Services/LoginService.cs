@@ -3,8 +3,6 @@ using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Connections.Helpers;
-using LGMPulse.Domain.Domains;
-using LGMPulse.Persistence.Interfaces;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -12,30 +10,11 @@ namespace LGMPulse.AppServices.Services;
 
 internal class LoginService : ILoginService
 {
-    private readonly ILocalUserRepository _localUserRepository;
     private readonly WebAPIHelper _webAPIHelper;
 
-    public LoginService(ILocalUserRepository localUserRepository, WebAPIHelper webAPIHelper)
+    public LoginService(WebAPIHelper webAPIHelper)
     {
-        _localUserRepository = localUserRepository;
         _webAPIHelper = webAPIHelper;
-    }
-
-    public async Task<LGMResult<LocalUser>> GetLocalUser(LGMUser lgmUser)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(lgmUser.UserEmail))
-                throw new Exception("Email inválido. Usuário não autenticado.");
-            var localUser = await _localUserRepository.GetByEmailAsync(lgmUser.UserEmail);
-            if (localUser == null)
-                throw new Exception("LoginService.GetLocalUser: Usuário não autenticado");
-            return LGMResult.Ok(localUser);
-        }
-        catch (Exception ex)
-        {
-            return LGMResult.Fail<LocalUser>(ex.Message);
-        }
     }
 
     public async Task<LGMResult<string>> RecoverPasswordAsync(LoginModel loginModel)
