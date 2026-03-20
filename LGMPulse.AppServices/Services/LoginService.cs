@@ -132,6 +132,7 @@ internal class LoginService : ILoginService
                 model.ApplicationName = "LAGAMA Pulse";
                 model.CodCompany = "";
                 model.UserLogin = model.UserEmail;
+                model.IsOwner = true;
 
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var response = await httpClient.PostAsJsonAsync(urlCreate, model, options);
