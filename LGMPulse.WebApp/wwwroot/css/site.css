@@ -25,10 +25,19 @@
     --color-sand: #f6e8c3;
     --color-amber: #efc359;
     --color-green-soft: #a3d9a5;
+    /* === BOTÕES === */
     --btn-danger-back: #dc3545;
     --btn-danger-color: #ffffff;
     --btn-success-back: #5200FF;
     --btn-success-color: #ffffff;
+    --btn-font-primary: #ffffff;
+    --btn-bg-primary: #f4a261;
+    --btn-font-secondary: #6b4f3a;
+    --btn-bg-secondary: #f1e3d3;
+    --btn-font-danger: #ffffff;
+    --btn-bg-danger: #e76f51;
+    --btn-font-success: #ffffff;
+    --btn-bg-success: #8ab17d;
     --section-begin: antiquewhite;
     --section-end: wheat;
     --cor-sombra-box: rgba(0, 123, 255, 0.35);
@@ -117,6 +126,7 @@
     --badge-back-color: linear-gradient(145deg, #fff1c2, #e7d18a);
     /* ===== Aliases para Agenda / Calendar ===== */
     /* Backgrounds */
+    --background-soft: #fdf6ec;
     --background-body: #d1bfb4;
     --background-light: #f5f3ef;
     --background-border: var(--border-soft);

@@ -98,13 +98,29 @@ namespace LGMPulse.WebApp.Controllers
                 Login = model.Email,
                 Senha = model.Senha
             };
+
             LGMResult<LGMUser> result = await _loginService!.ValidateLoginAsync(loginModel);
+
+            LGMUser? lgmUser = result.Data;
+            if (lgmUser != null &&
+                lgmUser.SubscriptStatus == LGMDomains.Identity.Enums.SubscriptStatusEnum.Vencido &&
+                lgmUser.IsOwner == true)
+            {
+                return RedirectToAction("RenovarAssinatura", new
+                {
+                    Name = lgmUser.UserName,
+                    Email = lgmUser.UserEmail,
+                    Phone = lgmUser.UserPhone,
+                    CodCompany = lgmUser.CodCompany,
+                    CompanyName = lgmUser.CompanyName
+                });
+            }
+
             if (!result.IsSuccess || result.Data == null)
             {
                 ModelState.AddModelError(string.Empty, result.Message ?? "Falha na autenticação");
                 return View(model);
             }
-            LGMUser lgmUser = result.Data;
 
             if (lgmUser.RegisterStatus == UserRegisterStatus.New || lgmUser.RegisterStatus == UserRegisterStatus.Initializing)
             {
@@ -227,6 +243,11 @@ namespace LGMPulse.WebApp.Controllers
             return Json(result);
         }
 
+        [HttpGet]
+        public IActionResult RenovarAssinatura(CheckoutRequest checkout)
+        {
+            return View(checkout);
+        }
 
     }
 }

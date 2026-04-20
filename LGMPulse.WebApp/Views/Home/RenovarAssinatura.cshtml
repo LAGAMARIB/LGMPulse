@@ -1,0 +1,123 @@
+﻿@using LGMPulse.Domain.ViewModels
+@model CheckoutRequest
+@{
+    ViewData["Title"] = "Pulse";
+}
+
+<style>
+
+    /* =========================
+               RENOVAÇÃO
+               ========================= */
+
+    .freemode-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mm-renew {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, var(--lgm-bg-start), var(--lgm-bg-end));
+    }
+
+    .mm-renew-box {
+        max-width: 460px;
+        width: 100%;
+        background: var(--background-soft);
+        padding: 36px 28px;
+        border-radius: 10px;
+        box-shadow: var(--shadow-soft);
+        text-align: center;
+    }
+
+        /* TÍTULO */
+        .mm-renew-box h1 {
+            font-size: 1.7rem;
+            margin-bottom: 18px;
+            color: var(--text-1);
+        }
+
+    /* TEXTO */
+    .mm-renew-text {
+        font-size: 0.95rem;
+        color: var(--text-2);
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    /* BOTÃO */
+    .mm-renew-btn {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 12px 26px;
+        background: var(--btn-success-back);
+        color: var(--btn-font-primary);
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: var(--shadow-soft);
+        transition: 0.2s ease;
+    }
+
+        .mm-renew-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+    /* SUPORTE */
+    .mm-renew-support {
+        margin-top: 22px;
+        font-size: 0.85rem;
+        color: var(--text-3);
+    }
+
+        .mm-renew-support a {
+            color: var(--color-link);
+            text-decoration: none;
+        }
+
+            .mm-renew-support a:hover {
+                text-decoration: underline;
+            }
+
+</style>
+
+
+<section class="mm-renew">
+    <div class="mm-renew-box">
+
+        <h1>Vamos continuar?</h1>
+
+        <p class="mm-renew-text">
+            Percebemos que sua assinatura ainda não foi renovada.
+        </p>
+
+        <p class="mm-renew-text">
+            Se quiser seguir utilizando o Gourmet, é só continuar de onde parou.
+        </p>
+
+        <div class="freemode-actions">
+            <form class="freemode-form" method="post" action="https://www.lagama.com.br/pulse/checkout">
+                <input type="hidden" name="Name" value="@Model.Name" />
+                <input type="hidden" name="Email" value="@Model.Email" />
+                <input type="hidden" name="Phone" value="@Model.Phone" />
+                <input type="hidden" name="CodCompany" value="@Model.CodCompany" />
+                <input type="hidden" name="CompanyName" value="@Model.CompanyName" />
+                <button id="btnCheckout" class="mm-renew-btn">Ir para renovação</button>
+            </form>
+        </div>
+
+        <p class="mm-renew-support">
+            Se precisar de ajuda ou tiver qualquer dúvida,
+            fale com a gente em
+            <a href="mailto:contato@lagama.com.br">contato@lagama.com.br</a>.
+        </p>
+
+    </div>
+</section>
+
