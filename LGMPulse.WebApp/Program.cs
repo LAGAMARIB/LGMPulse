@@ -1,12 +1,11 @@
+using LGMPulse.AppServices;
 using LGMPulse.Connections;
 using LGMPulse.Connections.Helpers;
+using LGMPulse.Persistence;
 using LGMPulse.WebApp.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Globalization;
-using LGMPulse.AppServices;
-using LGMPulse.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

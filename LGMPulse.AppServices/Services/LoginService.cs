@@ -3,6 +3,7 @@ using LGMDomains.Common.Helpers;
 using LGMDomains.Identity;
 using LGMPulse.AppServices.Interfaces;
 using LGMPulse.Connections.Helpers;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -11,42 +12,19 @@ namespace LGMPulse.AppServices.Services;
 internal class LoginService : ILoginService
 {
     private readonly WebAPIHelper _webAPIHelper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public LoginService(WebAPIHelper webAPIHelper)
+    public LoginService(WebAPIHelper webAPIHelper, IHttpContextAccessor httpContextAccessor)
     {
         _webAPIHelper = webAPIHelper;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<LGMResult<string>> RecoverPasswordAsync(LoginModel loginModel)
     {
-        var urlLogin = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/user/restore-password";
-
-        using (var httpClient = new HttpClient())
-        {
-            try
-            {
-                httpClient.DefaultRequestHeaders.Add("X-DbKey", "");
-
-                var response = await httpClient.PostAsJsonAsync(urlLogin, loginModel);
-                if (!response.IsSuccessStatusCode)
-                    return LGMResult.Fail<string>($"Erro na API: {response.StatusCode}");
-
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                var result = await response.Content.ReadFromJsonAsync<LGMResult<string>>(options);
-                if (result == null || !result.IsSuccess)
-                    return LGMResult.Fail<string>(result?.Message ?? "Falha geral ao recuperar senha");
-
-                return LGMResult.Ok<string>(result!.Message);
-            }
-            catch (Exception ex)
-            {
-                return LGMResult.Fail<string>($"Erro de execução da API: {ex.Message}");
-            }
-        }
+        var urlLogin = "/auth/v1/user/restore-password";
+        var result = await _webAPIHelper.SendPostAsync<LGMResult<string>>(urlLogin, loginModel);
+        return result ?? LGMResult.Fail<string>($"API retornou resposta inválida");
     }
 
     public async Task<LGMResult<LGMUser>> ValidateLoginAsync(LoginModel loginModel)
@@ -64,6 +42,12 @@ internal class LoginService : ILoginService
         {
             try
             {
+                var userIp = _httpContextAccessor.HttpContext?
+                            .Connection?
+                            .RemoteIpAddress?
+                            .ToString();
+                httpClient.DefaultRequestHeaders.Remove("X-Client-IP");
+                httpClient.DefaultRequestHeaders.Add("X-Client-IP", userIp);
                 httpClient.DefaultRequestHeaders.Add("X-DbKey", "");
 
                 var response = await httpClient.PostAsJsonAsync(urlLogin, requestBody);
@@ -133,6 +117,14 @@ internal class LoginService : ILoginService
                 model.CodCompany = "";
                 model.UserLogin = model.UserEmail;
                 model.IsOwner = true;
+
+                var userIp = _httpContextAccessor.HttpContext?
+                        .Connection?
+                        .RemoteIpAddress?
+                        .ToString();
+                httpClient.DefaultRequestHeaders.Remove("X-Client-IP");
+                httpClient.DefaultRequestHeaders.Add("X-Client-IP", userIp);
+                httpClient.DefaultRequestHeaders.Add("X-DbKey", "");
 
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var response = await httpClient.PostAsJsonAsync(urlCreate, model, options);
