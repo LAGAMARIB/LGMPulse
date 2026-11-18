@@ -101,7 +101,7 @@ internal class LoginService : ILoginService
 
     public async Task<LGMResult<LGMUser>> CreateUser(RequestRegisterModel model)
     {
-        var urlCreate = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/user/request-register";
+        var urlCreate = _webAPIHelper.GetAPIBaseUrl() + "/requests/request-register";
 
         if (model is null ||
             string.IsNullOrWhiteSpace(model.UserEmail) ||
@@ -112,10 +112,10 @@ internal class LoginService : ILoginService
         {
             try
             {
-                model.CodApplication = "pulse";
-                model.ApplicationName = "LAGAMA Pulse";
-                model.CodCompany = "";
-                model.UserLogin = model.UserEmail;
+                model.CodSolution = "pulse";
+                model.CodCompany ??= model.UserEmail;
+                model.IDSolutionPackage ??= 1; // pulse - free
+                model.UserLogin ??= model.UserEmail;
                 model.IsOwner = true;
 
                 var userIp = _httpContextAccessor.HttpContext?

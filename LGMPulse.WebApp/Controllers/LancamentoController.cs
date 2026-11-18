@@ -40,7 +40,7 @@ public class LancamentoController : LGMController
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
             IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month)
         };
-        model.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        model.IsFreeMode = LocalUserHelper.IsFreeMode();
 
         return LGMResult.Ok(model);
     }

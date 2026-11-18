@@ -62,7 +62,7 @@ namespace LGMPulse.WebApp.Controllers
             var sumario = atualResult.Data;
             viewModel.TotalReceitas = sumario?.TotalReceitas ?? 0;
             viewModel.TotalDespesas = sumario?.TotalDespesas ?? 0;
-            viewModel.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+            viewModel.IsFreeMode = LocalUserHelper.IsFreeMode();
             viewModel.IsMesAtual = isMesAtual;
 
             decimal liquidezAtual = viewModel.TotalReceitas - viewModel.TotalDespesas;
@@ -100,38 +100,34 @@ namespace LGMPulse.WebApp.Controllers
             };
 
             LGMResult<LGMUser> result = await _loginService!.ValidateLoginAsync(loginModel);
-
             LGMUser? lgmUser = result.Data;
-            if (lgmUser != null &&
-                lgmUser.SubscriptStatus == LGMDomains.Identity.Enums.SubscriptStatusEnum.Vencido &&
-                lgmUser.IsOwner == true)
-            {
-                return RedirectToAction("RenovarAssinatura", new
-                {
-                    Name = lgmUser.UserName,
-                    Email = lgmUser.UserEmail,
-                    Phone = lgmUser.UserPhone,
-                    CodCompany = lgmUser.CodCompany,
-                    CompanyName = lgmUser.CompanyName
-                });
-            }
 
-            if (!result.IsSuccess || result.Data == null)
+            if (!result.IsSuccess || lgmUser is null)
             {
                 ModelState.AddModelError(string.Empty, result.Message ?? "Falha na autenticação");
                 return View(model);
             }
 
-            if (lgmUser.RegisterStatus == UserRegisterStatus.New || lgmUser.RegisterStatus == UserRegisterStatus.Initializing)
+            if (lgmUser.SubscriptStatus == LGMDomains.Identity.Enums.SubscriptStatusEnum.Vencido)
             {
-                ModelState.AddModelError(string.Empty, "Sua conta está sendo preparada. Aguarde email de ativação.");
-                return View(model);
-            }
-
-            if (lgmUser.RegisterStatus != UserRegisterStatus.Ready)
-            {
-                ModelState.AddModelError(string.Empty, "Usuário não habilitado ou conta desativada");
-                return View(model);
+                if (lgmUser.IsOwner == true)
+                {
+                    return RedirectToAction(
+                        "RenovarAssinatura",
+                        new CheckoutRequest
+                        {
+                            Name = lgmUser.UserName ?? "",
+                            Email = lgmUser.UserEmail ?? "",
+                            Phone = lgmUser.UserPhone ?? "",
+                            CodCompany = lgmUser.LGMCompany?.CodCompany ?? "",
+                            CompanyName = lgmUser.LGMCompany?.CompanyTradeName ?? ""
+                        });
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, result.Message ?? "Falha na autenticação");
+                    return View(model);
+                }
             }
 
             LGMSession lgmSession = new LGMSession()
@@ -179,8 +175,6 @@ namespace LGMPulse.WebApp.Controllers
             LoginModel loginModel = new()
             {
                 CodAplicacao = "pulse",
-                NomeAplicacao = "LAGAMA Pulse",
-                UrlAplicacao = "https://pulse.lagama.com.br",
                 CodEmpresa = "",
                 Login = model.Email
             };

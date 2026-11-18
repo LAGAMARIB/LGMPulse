@@ -22,4 +22,13 @@ public class LocalUserHelper
         SessionHelper SessionHelper = new HttpContextAccessor().HttpContext!.RequestServices.GetRequiredService<SessionHelper>();
         return SessionHelper.GetLGMSession_Cookie()?.User;
     }
+
+    public static bool IsFreeMode()
+    {
+        return string.Equals(
+            GetLocalUser().SubscriptPackage ?? "free",
+            "free",
+            StringComparison.OrdinalIgnoreCase
+        );
+    }
 }

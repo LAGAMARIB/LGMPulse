@@ -64,7 +64,8 @@ public class AgendaController : LGMController
         viewModel.Agendas = listAgenda.Where(x => x.DataVencto!.Value >= startDate).OrderBy(x => x.DataVencto).ToList() ?? new();
 
         // validar restrição para versão free
-        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        bool isFreeMode = LocalUserHelper.IsFreeMode();
+
         if (isFreeMode)
         {
             var limitDate = hoje.AddMonths(2);
@@ -121,7 +122,7 @@ public class AgendaController : LGMController
             MesReferencia = DateTimeHelper.MesReferencia(dataLancto),
             IsMesAtual = (dataLancto.Year == hoje.Year && dataLancto.Month == hoje.Month),
         };
-        model.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        model.IsFreeMode = LocalUserHelper.IsFreeMode();
 
         return LGMResult.Ok(model);
     }
@@ -175,7 +176,7 @@ public class AgendaController : LGMController
         };
         
         ILGMResult result;
-        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        bool isFreeMode = LocalUserHelper.IsFreeMode();
         if (isFreeMode && model.QtdParcelas > 2)
         {
             throw new RuleException("Transação não permitida");

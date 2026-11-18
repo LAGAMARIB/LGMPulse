@@ -37,8 +37,7 @@ public class LGMController : Controller
     {
         try
         {
-            var localUser = LocalUserHelper.GetLocalUser();
-            ViewBag.IsFreeMode = localUser == null || localUser.SubscriptLevel == 0;
+            ViewBag.IsFreeMode = LocalUserHelper.IsFreeMode();
         }
         catch (UnauthorizedAccessException)
         {
@@ -165,15 +164,21 @@ public class LGMController : Controller
             if (!await TryRefreshSession())
                 return Redirect("/Home/Login");
 
-            if (accessLevel == AccessLevel.PremiumOnly && IsFreeLevel())
+            if (accessLevel == AccessLevel.PremiumOnly && LocalUserHelper.IsFreeMode())
                 throw new UnauthorizedAccessException();
 
             var currentPath = HttpContext.Request.Path + HttpContext.Request.QueryString;
             return Redirect(currentPath);
         }
 
-        if (accessLevel == AccessLevel.PremiumOnly &&
-            lgmSession.User?.SubscriptLevel == 0)
+        bool IsFreeLevel =
+            string.Equals(
+                lgmSession.User.SubscriptPackage ?? "free",
+                "free",
+                StringComparison.OrdinalIgnoreCase
+            );
+
+        if (accessLevel == AccessLevel.PremiumOnly && IsFreeLevel)
                throw new UnauthorizedAccessException();
 
         if (lgmSession.ExpireDateTime < DateTimeHelper.Now() ||
@@ -195,13 +200,6 @@ public class LGMController : Controller
             return false;
 
         return GenerateCookies(refresh);
-    }
-
-
-    private bool IsFreeLevel()
-    {
-        LGMSession? lgmSession = SessionHelper.GetLGMSession_Cookie();
-        return (lgmSession == null || lgmSession.User.SubscriptLevel == 0);
     }
 
     protected async Task PostApiLogout(LGMSession lgmSession)

@@ -44,7 +44,7 @@ public class RelatoriosController : LGMController
             IsMesAtual = (y == hoje.Year && m == hoje.Month),
             MesReferencia = DateTimeHelper.MesReferencia(y, m),
         };
-        vm.IsFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        vm.IsFreeMode = LocalUserHelper.IsFreeMode();
 
         return Task.FromResult( LGMResult.Ok(vm) );
     }
@@ -81,7 +81,7 @@ public class RelatoriosController : LGMController
     [HttpGet("/relatorios/evolucao/{ano=0}/{mes=0}")]
     public async Task<IActionResult> RelatorioEvolucao(int ano=0, int mes=0)
     {
-        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        bool isFreeMode = LocalUserHelper.IsFreeMode();
         DateTime dataBase = new DateTime(ano, mes, 01);
         DateTime dataIni = isFreeMode ? dataBase.AddMonths(-2) : dataBase.AddMonths(-6);
         DateTime dataFim = dataBase.AddMonths(1).AddSeconds(-1);
@@ -104,7 +104,7 @@ public class RelatoriosController : LGMController
 
         int firstMonthToShow = 1;
         int lastMonthToShow = 12;
-        bool isFreeMode = LocalUserHelper.GetLocalUser().SubscriptLevel == 0;
+        bool isFreeMode = LocalUserHelper.IsFreeMode();
 
         if (isFreeMode)
         {
