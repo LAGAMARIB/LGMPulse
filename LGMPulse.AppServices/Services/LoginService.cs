@@ -22,18 +22,47 @@ internal class LoginService : ILoginService
 
     public async Task<LGMResult<string>> RecoverPasswordAsync(LoginModel loginModel)
     {
-        var urlLogin = "/auth/v1/user/restore-password";
-        var result = await _webAPIHelper.SendPostAsync<LGMResult<string>>(urlLogin, loginModel);
-        return result ?? LGMResult.Fail<string>($"API retornou resposta inválida");
+        // IMPORTANTE: Não usar o WebAPIHelper.SendPostAsync aqui
+        var urlLogin = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/user/restore-password";
+        using (var httpClient = new HttpClient())
+        {
+            try
+            {
+                httpClient.DefaultRequestHeaders.Add("X-DbKey", "");
+
+                var response = await httpClient.PostAsJsonAsync(urlLogin, loginModel);
+                if (!response.IsSuccessStatusCode)
+                    return LGMResult.Fail<string>($"Erro na API: {response.StatusCode}");
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var result = await response.Content.ReadFromJsonAsync<LGMResult<string>>(options);
+                if (result == null || !result.IsSuccess)
+                    return LGMResult.Fail<string>(result?.Message ?? "Falha geral ao recuperar senha");
+
+                return LGMResult.Ok<string>(result!.Message);
+            }
+            catch (Exception ex)
+            {
+                return LGMResult.Fail<string>($"Erro de execução da API: {ex.Message}");
+            }
+        }
     }
 
     public async Task<LGMResult<LGMUser>> ValidateLoginAsync(LoginModel loginModel)
     {
+        // IMPORTANTE: Não usar o WebAPIHelper.SendPostAsync aqui
         var urlLogin = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/login";
         var requestBody = new
         {
             codAplicacao = "pulse",
-            codEmpresa = "",
+            codEmpresa = 
+               string.IsNullOrWhiteSpace(loginModel.CodEmpresa)
+                  ? loginModel.Login
+                  : loginModel.CodEmpresa,
             login = loginModel.Login,
             senha = CryptoHelper.Encrypt(loginModel.Senha ?? "")
         };
@@ -72,6 +101,7 @@ internal class LoginService : ILoginService
 
     public async Task<LGMResult<string>> ChangePasswordAsync(LoginModel model)
     {
+        // IMPORTANTE: Não usar o WebAPIHelper.SendPostAsync aqui
         var urlLogin = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/user/change-password";
 
         try
@@ -101,21 +131,25 @@ internal class LoginService : ILoginService
 
     public async Task<LGMResult<LGMUser>> CreateUser(RequestRegisterModel model)
     {
-        var urlCreate = _webAPIHelper.GetAPIBaseUrl() + "/requests/request-register";
+        // IMPORTANTE: Não usar o WebAPIHelper.SendPostAsync aqui
 
         if (model is null ||
             string.IsNullOrWhiteSpace(model.UserEmail) ||
             string.IsNullOrWhiteSpace(model.UserName))
             return LGMResult.Fail<LGMUser>("Campos obrigatórios em branco (Nome, Email, Celular)");
 
+        model.CodSolution = "pulse";
+        model.IDSolutionPackage ??= 1; //pulse free
+        model.UserLogin ??= model.UserEmail;
+        model.CodCompany ??= model.UserEmail;
+        model.CompanyName ??= model.UserName ?? model.UserEmail;
+
+        var urlCreate = _webAPIHelper.GetAPIBaseUrl() + "/requests/request-register";
+
         using (var httpClient = new HttpClient())
         {
             try
             {
-                model.CodSolution = "pulse";
-                model.CodCompany ??= model.UserEmail;
-                model.IDSolutionPackage ??= 1; // pulse - free
-                model.UserLogin ??= model.UserEmail;
                 model.IsOwner = true;
 
                 var userIp = _httpContextAccessor.HttpContext?

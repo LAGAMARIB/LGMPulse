@@ -175,7 +175,7 @@ namespace LGMPulse.WebApp.Controllers
             LoginModel loginModel = new()
             {
                 CodAplicacao = "pulse",
-                CodEmpresa = "",
+                CodEmpresa = model.Email,
                 Login = model.Email
             };
 

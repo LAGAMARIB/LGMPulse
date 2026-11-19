@@ -8,7 +8,12 @@
     bool isAgenda = (ViewBag.IsAgenda != null && ViewBag.IsAgenda);
     string urlBase = isAgenda ? "agenda" : "lancamento";
     string acao = isAgenda ? "Agendar" : "Nova";
-    bool IsFreeMode = ViewBag.Session?.User?.SubscriptPackage != null ? ViewBag.Session?.User?.SubscriptPackage == 0 : true;
+
+    bool IsFreeMode = string.Equals(
+        ViewBag.Session?.User?.SubscriptPackage ?? "free",
+        "free",
+        StringComparison.OrdinalIgnoreCase
+    );
 }
 
 
