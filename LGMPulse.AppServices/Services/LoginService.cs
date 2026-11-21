@@ -56,15 +56,15 @@ internal class LoginService : ILoginService
     {
         // IMPORTANTE: Não usar o WebAPIHelper.SendPostAsync aqui
         var urlLogin = _webAPIHelper.GetAPIBaseUrl() + "/auth/v1/login";
-        var requestBody = new
+        LoginModel requestBody = new()
         {
-            codAplicacao = "pulse",
-            codEmpresa = 
+            CodAplicacao = "pulse",
+            CodEmpresa =
                string.IsNullOrWhiteSpace(loginModel.CodEmpresa)
                   ? loginModel.Login
                   : loginModel.CodEmpresa,
-            login = loginModel.Login,
-            senha = CryptoHelper.Encrypt(loginModel.Senha ?? "")
+            Login = loginModel.Login,
+            Senha = CryptoHelper.Encrypt(loginModel.Senha ?? "")
         };
 
         using (var httpClient = new HttpClient())
